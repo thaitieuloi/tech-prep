@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+
+body {
+  @apply antialiased text-slate-900 bg-slate-50;
+}
