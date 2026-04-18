@@ -602,6 +602,7 @@ export default function App() {
                       key={question.id} 
                       question={question} 
                       language={language}
+                      searchQuery={searchQuery}
                       onLike={() => handleLike(question.id)} 
                       onImageGenerated={(url) => handleImageGenerated(question.id, url)}
                     />

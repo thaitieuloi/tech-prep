@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vehicle Management System — Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+.en-hide { display: inline; }
+body.vi .en-hide { display: none; }
+.lang-dual { display: none; }
+body.vi .lang-dual { display: block; margin-top: 5px; }
+.lang-dual .lang-en { display: block; opacity: 0.6; font-size: 0.9em; margin-bottom: 4px; }
+.lang-dual .lang-vi { display: block; font-style: italic; color: #a1a1aa; border-top: 1px dotted rgba(255,255,255,0.15); padding-top: 6px; }
+
+:root {
+  --bg:        #070a10;
+  --bg2:       #0b0f1a;
+  --bg3:       #0f1525;
+  --border:    #1a2238;
+  --text:      #c9d4e8;
+  --muted:     #4a5578;
+  --bright:    #e8eeff;
+
+  --cdn:       #06b6d4;   /* cyan    */
+  --sec:       #ef4444;   /* red     */
+  --gw:        #8b5cf6;   /* violet  */
+  --client:    #3b82f6;   /* blue    */
+  --svc:       #10b981;   /* emerald */
+  --ml:        #f59e0b;   /* amber   */
+  --data:      #a855f7;   /* purple  */
+  --infra:     #64748b;   /* slate   */
+  --msg:       #f97316;   /* orange  */
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 32px 24px 60px;
+  max-width: 1120px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ─── HEADER ─────────────────────────────── */
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+.page-header h1 {
+  font-size: 26px; font-weight: 800; color: var(--bright);
+  letter-spacing: -0.5px; margin-bottom: 8px;
+}
+.page-header .tagline { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.chip-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; }
+.chip {
+  font-size: 10px; font-weight: 600; padding: 3px 10px;
+  border-radius: 20px; border: 1px solid; letter-spacing: 0.4px;
+}
+
+/* ─── LANG TOGGLE ─────────────────────────── */
+.lang-bar {
+  display: flex; justify-content: flex-end; align-items: center;
+  gap: 10px; margin-bottom: 18px;
+}
+.lang-bar span { font-size: 10px; color: var(--muted); }
+.lang-btn {
+  font-size: 10px; font-weight: 700; padding: 4px 12px;
+  border-radius: 6px; border: 1px solid var(--border);
+  cursor: pointer; transition: all .2s; background: var(--bg2);
+  color: var(--muted); letter-spacing: 0.5px;
+}
+.lang-btn.active { background: #1a2a4a; color: #60a5fa; border-color: #3b82f6; }
+
+/* ─── LAYER SYSTEM ────────────────────────── */
+.arch { display: flex; flex-direction: column; gap: 0; }
+
+.conn {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0; position: relative; z-index: 1;
+}
+.conn-line { width: 1px; height: 20px; background: var(--border); }
+.conn-pill {
+  font-size: 9px; color: var(--muted); font-family: 'JetBrains Mono', monospace;
+  background: var(--bg); border: 1px solid var(--border);
+  padding: 2px 10px; border-radius: 20px; white-space: nowrap;
+}
+
+.layer {
+  border-radius: 14px; border: 1px solid;
+  overflow: hidden; position: relative;
+  transition: box-shadow .3s;
+}
+.layer:hover { box-shadow: 0 0 0 1px rgba(255,255,255,0.06); }
+
+.layer-head {
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; user-select: none;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background .2s;
+}
+.layer-head:hover { background: rgba(255,255,255,0.02); }
+
+.layer-badge {
+  font-size: 9px; font-weight: 800; padding: 2px 9px;
+  border-radius: 4px; letter-spacing: 0.8px;
+  text-transform: uppercase; flex-shrink: 0; font-family: 'JetBrains Mono', monospace;
+}
+.layer-info { flex: 1; }
+.layer-name { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; }
+.layer-en-desc { font-size: 10px; margin-top: 2px; opacity: 0.55; }
+.layer-vi-desc { font-size: 10px; margin-top: 1px; opacity: 0; max-height: 0; overflow: hidden; transition: all .3s; font-style: italic; }
+body.vi .layer-vi-desc { opacity: 0.5; max-height: 40px; }
+
+.layer-expand-icon { font-size: 11px; color: var(--muted); transition: transform .3s; flex-shrink: 0; }
+.layer.open .layer-expand-icon { transform: rotate(180deg); }
+
+.layer-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height .4s cubic-bezier(.4,0,.2,1), padding .3s;
+  padding: 0 12px;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.layer.open .layer-body { max-height: 800px; padding: 12px; }
+
+/* ─── SERVICE CARD ────────────────────────── */
+.scard {
+  flex: 1; min-width: 150px;
+  border-radius: 9px; padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer; transition: all .2s; position: relative;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.scard:hover { border-color: rgba(255,255,255,0.14); transform: translateY(-1px); }
+.scard.active { border-color: rgba(255,255,255,0.2); }
+
+.scard-name { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.scard-tech {
+  font-size: 8.5px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+  padding: 1px 6px; border-radius: 3px; display: inline-block;
+  margin-top: 3px; letter-spacing: 0.3px; align-self: flex-start;
+}
+.scard-desc-en { font-size: 9.5px; line-height: 1.55; opacity: 0.55; margin-top: 4px; }
+.scard-desc-vi {
+  font-size: 9px; line-height: 1.5; color: #6b7280;
+  font-style: italic; margin-top: 3px;
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: all .3s;
+}
+body.vi .scard-desc-vi { max-height: 100px; opacity: 1; }
+
+.scard-keywords {
+  display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px;
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: all .35s;
+}
+.scard.active .scard-keywords { max-height: 100px; opacity: 1; }
+
+.kw {
+  font-size: 8px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+  padding: 1px 5px; border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.08);
+  letter-spacing: 0.2px;
+}
+.kw.hot { animation: pulse-kw 2s infinite; }
+@keyframes pulse-kw {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.scard-detail {
+  max-height: 0; overflow: hidden; opacity: 0;
+  font-size: 9.5px; color: #64748b; line-height: 1.6;
+  margin-top: 0; border-top: 0px solid var(--border);
+  transition: all .35s;
+}
+.scard.active .scard-detail {
+  max-height: 200px; opacity: 1;
+  margin-top: 8px; padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── LAYER ACCENT COLORS ─────────────────── */
+/* CDN */
+.lc-cdn { background:#02141a; border-color:#0e4a55; }
+.lc-cdn .layer-head { background:#031a22; }
+.lc-cdn .layer-badge { background:#06b6d4; color:#fff; }
+.lc-cdn .layer-name  { color:#22d3ee; }
+.lc-cdn .scard { background:#031a22; color:#a5f3fc; }
+.lc-cdn .scard-tech { background:#0e4a55; color:#22d3ee; }
+.lc-cdn .kw { background:#0e3340; color:#22d3ee; }
+
+/* Security */
+.lc-sec { background:#140808; border-color:#7f1d1d; }
+.lc-sec .layer-head { background:#1c0a0a; }
+.lc-sec .layer-badge { background:#ef4444; color:#fff; }
+.lc-sec .layer-name  { color:#f87171; }
+.lc-sec .scard { background:#1c0a0a; color:#fca5a5; }
+.lc-sec .scard-tech { background:#7f1d1d; color:#f87171; }
+.lc-sec .kw { background:#450a0a; color:#f87171; }
+
+/* Gateway */
+.lc-gw { background:#100b1e; border-color:#4c1d95; }
+.lc-gw .layer-head { background:#160d28; }
+.lc-gw .layer-badge { background:#8b5cf6; color:#fff; }
+.lc-gw .layer-name  { color:#a78bfa; }
+.lc-gw .scard { background:#160d28; color:#ddd6fe; }
+.lc-gw .scard-tech { background:#3b1f7a; color:#a78bfa; }
+.lc-gw .kw { background:#2e1065; color:#a78bfa; }
+
+/* Client */
+.lc-client { background:#080f20; border-color:#1e3a8a; }
+.lc-client .layer-head { background:#0a1428; }
+.lc-client .layer-badge { background:#3b82f6; color:#fff; }
+.lc-client .layer-name  { color:#60a5fa; }
+.lc-client .scard { background:#0a1428; color:#bfdbfe; }
+.lc-client .scard-tech { background:#1e3a8a; color:#60a5fa; }
+.lc-client .kw { background:#1e3a5f; color:#60a5fa; }
+
+/* Messaging */
+.lc-msg { background:#120a02; border-color:#7c2d12; }
+.lc-msg .layer-head { background:#1c1002; }
+.lc-msg .layer-badge { background:#f97316; color:#fff; }
+.lc-msg .layer-name  { color:#fb923c; }
+.lc-msg .scard { background:#1c1002; color:#fed7aa; }
+.lc-msg .scard-tech { background:#7c2d12; color:#fb923c; }
+.lc-msg .kw { background:#431407; color:#fb923c; }
+
+/* Services */
+.lc-svc { background:#060f0a; border-color:#065f46; }
+.lc-svc .layer-head { background:#071410; }
+.lc-svc .layer-badge { background:#10b981; color:#fff; }
+.lc-svc .layer-name  { color:#34d399; }
+.lc-svc .scard { background:#071410; color:#a7f3d0; }
+.lc-svc .scard-tech { background:#064e3b; color:#34d399; }
+.lc-svc .kw { background:#052e1c; color:#34d399; }
+
+/* ML */
+.lc-ml { background:#130a02; border-color:#92400e; }
+.lc-ml .layer-head { background:#1c1004; }
+.lc-ml .layer-badge { background:#f59e0b; color:#1a0e00; }
+.lc-ml .layer-name  { color:#fbbf24; }
+.lc-ml .scard { background:#1c1004; color:#fde68a; }
+.lc-ml .scard-tech { background:#78350f; color:#fbbf24; }
+.lc-ml .kw { background:#451a03; color:#fbbf24; }
+
+/* Data */
+.lc-data { background:#0c0614; border-color:#581c87; }
+.lc-data .layer-head { background:#110820; }
+.lc-data .layer-badge { background:#a855f7; color:#fff; }
+.lc-data .layer-name  { color:#c084fc; }
+.lc-data .scard { background:#110820; color:#e9d5ff; }
+.lc-data .scard-tech { background:#4a1272; color:#c084fc; }
+.lc-data .kw { background:#3b0764; color:#c084fc; }
+
+/* Infra */
+.lc-infra { background:#0a0c10; border-color:#2d3748; }
+.lc-infra .layer-head { background:#0f1218; }
+.lc-infra .layer-badge { background:#64748b; color:#fff; }
+.lc-infra .layer-name  { color:#94a3b8; }
+.lc-infra .scard { background:#0f1218; color:#cbd5e1; }
+.lc-infra .scard-tech { background:#2d3748; color:#94a3b8; }
+.lc-infra .kw { background:#1e293b; color:#94a3b8; }
+
+/* ─── CONCURRENCY SECTION ─────────────────── */
+.conc-section {
+  margin-top: 20px; border-radius: 14px;
+  border: 1px solid #92400e; background: #0d0902; padding: 18px;
+}
+.section-hd { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.section-sub-en { font-size: 10px; color: var(--muted); margin-bottom: 14px; line-height: 1.6; }
+.section-sub-vi { font-size: 10px; color: #4b5563; margin-bottom: 14px; font-style: italic; line-height: 1.6; display: none; }
+body.vi .section-sub-vi { display: block; }
+body.vi .section-sub-en { display: none; }
+
+.conc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+.conc-card {
+  border-radius: 9px; padding: 12px;
+  border: 1px solid rgba(255,255,255,0.07);
+  cursor: pointer; transition: all .2s;
+}
+.conc-card:hover { border-color: rgba(255,255,255,0.15); }
+.conc-title { font-size: 11px; font-weight: 700; margin-bottom: 5px; }
+.conc-body-en { font-size: 9.5px; line-height: 1.6; }
+.conc-body-vi { font-size: 9px; line-height: 1.6; font-style: italic; margin-top: 6px; color: #6b7280; display: none; }
+body.vi .conc-body-vi { display: block; }
+body.vi .conc-body-en { display: none; }
+
+.lat-bar { display: flex; border-radius: 8px; overflow: hidden; margin-bottom: 6px; }
+.lat-seg { flex: 1; padding: 10px 8px; text-align: center; }
+.lat-lbl { font-size: 8.5px; font-weight: 600; font-family: 'JetBrains Mono',monospace; opacity: .7; }
+.lat-val { font-size: 16px; font-weight: 800; margin-top: 2px; }
+.lat-note { text-align: center; font-size: 9px; color: var(--muted); }
+
+/* ─── FLOW SECTION ────────────────────────── */
+.flow-section {
+  margin-top: 20px; border-radius: 14px;
+  border: 1px solid var(--border); background: var(--bg2); padding: 18px;
+}
+.flow-grid { display: grid; grid-template-columns:1fr 1fr; gap: 14px; }
+.flow-card { background: var(--bg); border-radius: 9px; padding: 13px; border-left: 3px solid; }
+.flow-title { font-size: 11px; font-weight: 700; margin-bottom: 9px; color: var(--bright); }
+.step { display:flex; gap:8px; margin-bottom:6px; align-items:flex-start; }
+.step-n {
+  width:18px;height:18px;border-radius:50%;background:var(--bg3);
+  font-size:9px;font-weight:700;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.step-t { font-size:10px; color:#94a3b8; line-height:1.5; }
+.step-t-vi { font-size:9.5px; color:#4b5563; font-style:italic; line-height:1.4; margin-top:2px; display:none; }
+body.vi .step-t-vi { display: block; }
+body.vi .step-t    { display: none; }
+
+/* ─── Q&A SECTION ────────────────────────── */
+.qa-section {
+  margin-top: 20px; border-radius: 14px; padding: 20px;
+}
+.qa-section.qa-r1 { border: 1px solid #1e3a8a; background: #050c1c; }
+.qa-section.qa-r2 { border: 1px solid #065f46; background: #030c07; }
+
+.qa-hd { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+.qa-sub { font-size: 10px; color: var(--muted); margin-bottom: 16px; }
+
+.qa-card {
+  margin-bottom: 12px; border-radius: 10px;
+  border: 1px solid var(--border); overflow: hidden;
+  cursor: pointer; transition: border-color .2s;
+}
+.qa-card:last-child { margin-bottom: 0; }
+.qa-card:hover { border-color: rgba(255,255,255,0.1); }
+.qa-card.open { border-color: rgba(255,255,255,0.15); }
+
+.qa-q-row {
+  padding: 11px 14px; display:flex; align-items:flex-start; gap:10px;
+}
+.qa-badge {
+  font-size: 9px; font-weight: 800; padding: 2px 9px; border-radius: 4px;
+  flex-shrink: 0; margin-top: 2px; font-family: 'JetBrains Mono',monospace;
+  letter-spacing: 0.5px;
+}
+.qa-q-text { flex:1; }
+.qa-q-en { font-size: 12px; font-weight: 600; line-height: 1.5; color: var(--bright); display: block; }
+.qa-q-vi { font-size: 10.5px; font-weight: 400; font-style: italic; opacity: 0.5; margin-top: 3px; display: none; }
+body.vi .qa-q-vi { display: block; }
+.qa-arrow { font-size: 11px; color: var(--muted); transition: transform .3s; flex-shrink:0; margin-top:3px; }
+.qa-card.open .qa-arrow { transform: rotate(180deg); }
+
+.qa-ans {
+  max-height: 0; overflow: hidden;
+  transition: max-height .45s cubic-bezier(.4,0,.2,1), padding .3s;
+  padding: 0 14px; border-top: 0px solid var(--border);
+}
+.qa-card.open .qa-ans {
+  max-height: 1200px; padding: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.qa-ans-en { font-size: 10.5px; color: #94a3b8; line-height: 1.8; }
+.qa-ans-vi {
+  font-size: 10px; color: #4b5563; font-style: italic;
+  line-height: 1.7; margin-top: 10px; padding-top: 10px;
+  border-top: 1px dashed var(--border); display: none;
+}
+body.vi .qa-ans-vi { display: block; }
+
+.qa-ans-en strong, .qa-ans-vi strong { color: var(--bright); font-style: normal; }
+.qa-ans-en code, .qa-ans-vi code {
+  font-family: 'JetBrains Mono',monospace; font-size: 9px;
+  background: var(--bg3); padding: 1px 5px; border-radius: 3px; color: #a5b4fc;
+}
+.hl-blue   { color: #60a5fa !important; font-weight: 700; }
+.hl-green  { color: #34d399 !important; font-weight: 700; }
+.hl-amber  { color: #fbbf24 !important; font-weight: 700; }
+.hl-purple { color: #c084fc !important; font-weight: 700; }
+.hl-red    { color: #f87171 !important; font-weight: 700; }
+.hl-cyan   { color: #22d3ee !important; font-weight: 700; }
+
+.tip {
+  margin-top: 10px; padding: 9px 12px; border-radius: 7px;
+  font-size: 10px; line-height: 1.6; border-left: 3px solid;
+  font-style: italic;
+}
+.tip-blue  { background: #0a1628; border-color: #3b82f6; color: #60a5fa; }
+.tip-green { background: #051209; border-color: #10b981; color: #34d399; }
+.tip-amber { background: #120a00; border-color: #f59e0b; color: #fbbf24; }
+
+.code-block {
+  display: block; background: var(--bg3); padding: 11px;
+  border-radius: 7px; font-size: 9.5px; font-family: 'JetBrains Mono',monospace;
+  color: #c4b5fd; line-height: 2; margin: 8px 0;
+  border: 1px solid var(--border);
+}
+.code-comment { color: #4a5578; }
+
+.sm-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 8px 0; }
+.sm-card { border-radius: 7px; padding: 9px; border: 1px solid rgba(255,255,255,0.06); }
+.sm-title { font-size: 10px; font-weight: 700; margin-bottom: 3px; }
+.sm-body  { font-size: 9px; color: #6b7280; line-height: 1.5; }
+
+.tag-row { display:flex;flex-wrap:wrap;gap:5px;margin-top:12px; }
+.tag {
+  font-size: 8.5px; padding: 2px 8px; border-radius: 4px;
+  background: var(--bg3); color: var(--muted);
+  border: 1px solid var(--border); font-family: 'JetBrains Mono',monospace;
+}
+
+/* ─── FOOTER ──────────────────────────────── */
+.footer { text-align:center; margin-top:40px; font-size:10px; color:var(--muted); }
+
+/* ─── SCROLL TOP ──────────────────────────── */
+.scroll-top {
+  position: fixed; bottom: 24px; right: 24px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--muted); cursor: pointer; display:flex;
+  align-items:center;justify-content:center;font-size:14px;
+  transition: all .2s; z-index: 99;
+}
+.scroll-top:hover { background: #1e293b; color: var(--bright); }
+
+/* ─── EXPAND ALL BTN ──────────────────────── */
+.ctrl-bar {
+  display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px;
+}
+.ctrl-btn {
+  font-size: 9.5px; font-weight: 600; padding: 4px 12px;
+  border-radius: 6px; border: 1px solid var(--border);
+  cursor: pointer; background: var(--bg2); color: var(--muted);
+  transition: all .2s;
+}
+.ctrl-btn:hover { background: var(--bg3); color: var(--bright); }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════ -->
+<div class="page-header">
+  <h1>🚗 Vehicle Management System — Architecture</h1>
+  <p class="tagline">Solution Architecture Design · Real-time GPS Tracking · Pothole & Obstacle Detection · Fleet Management</p>
+  <div class="chip-row">
+    <span class="chip" style="border-color:#06b6d4;color:#22d3ee;">CDN / Edge</span>
+    <span class="chip" style="border-color:#ef4444;color:#f87171;">Zero Trust Security</span>
+    <span class="chip" style="border-color:#8b5cf6;color:#a78bfa;">API Gateway</span>
+    <span class="chip" style="border-color:#10b981;color:#34d399;">Microservices</span>
+    <span class="chip" style="border-color:#f59e0b;color:#fbbf24;">ML / AI Detection</span>
+    <span class="chip" style="border-color:#a855f7;color:#c084fc;">Polyglot Persistence</span>
+    <span class="chip" style="border-color:#64748b;color:#94a3b8;">K8s · GitOps</span>
+  </div>
+</div>
+
+<!-- ══ CONTROLS ════════════════════════════ -->
+<div class="ctrl-bar">
+  <button class="ctrl-btn" onclick="expandAll()">⊞ Expand All</button>
+  <button class="ctrl-btn" onclick="collapseAll()">⊟ Collapse All</button>
+</div>
+<div class="lang-bar">
+  <span>Language / Ngôn ngữ:</span>
+  <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+  <button class="lang-btn"        id="btn-vi" onclick="setLang('vi')">VI</button>
+</div>
+
+<!-- ══ ARCHITECTURE LAYERS ═════════════════
+  Best-practice top-down order (SA standard):
+  1. CDN / Edge                    ← user hits this first
+  2. Security / WAF / DDoS         ← gate before anything enters
+  3. API Gateway / Load Balancer   ← routing + auth entry
+  4. Client (BFF / presentation)   ← client-facing services
+  5. Messaging / Event Bus         ← async backbone
+  6. Core Microservices            ← business logic
+  7. ML / AI Processing            ← inference layer
+  8. Data / Persistence            ← storage
+  9. Infrastructure / Observability← platform foundation
+══════════════════════════════════════════ -->
+<div class="arch" id="arch">
+
+<!-- ─── L1: CDN / EDGE ──────────────────── -->
+<div class="layer lc-cdn" id="layer-cdn">
+  <div class="layer-head" onclick="toggleLayer('layer-cdn')">
+    <span class="layer-badge">L1</span>
+    <div class="layer-info">
+      <div class="layer-name" style="color:#22d3ee;">CDN & Edge Layer — Cloudflare</div>
+      <div class="layer-en-desc">Global edge network · Static asset caching · Anycast routing · DDoS absorption at PoP level</div>
+      <div class="layer-vi-desc">Mạng edge toàn cầu · Cache tài nguyên tĩnh · Anycast routing · Hấp thụ DDoS tại PoP</div>
+    </div>
+    <span class="layer-expand-icon">▾</span>
+  </div>
+  <div class="layer-body">
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">☁️ Cloudflare CDN</div>
+      <span class="scard-tech">Edge Cache · Anycast</span>
+      <div class="scard-desc-en">300+ global PoPs · Static JS/CSS/image caching · Smart routing to nearest healthy origin · Reduces latency for mobile app assets by 60–80%</div>
+      <div class="scard-desc-vi">300+ điểm PoP toàn cầu · Cache JS/CSS/ảnh tĩnh · Smart routing đến origin gần nhất · Giảm latency 60–80% cho mobile app</div>
+      <div class="scard-keywords">
+        <span class="kw hot">PoP</span><span class="kw">Anycast</span><span class="kw">Edge Cache</span><span class="kw">TTL</span><span class="kw">Cache-Control</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Cloudflare's Anycast routes each DNS query to the geographically closest PoP. Cache-hit ratio &gt;90% for static assets means the origin never sees most requests — critical for global fleet management apps serving drivers across 50+ cities.</span><div class="lang-dual"><span class="lang-en">Cloudflare's Anycast routes each DNS query to the geographically closest PoP. Cache-hit ratio &gt;90% for static assets means the origin never sees most requests — critical for global fleet management apps serving drivers across 50+ cities.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Cloudflare Anycast định tuyến truy vấn đến PoP gần nhất. Cache-hit >90% giúp giảm tải hoàn toàn cho origin server — cốt lõi để scale ứng dụng quản lý xe trên 50+ thành phố.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🛡️ Cloudflare WAF</div>
+      <span class="scard-tech">WAF · Bot Protection</span>
+      <div class="scard-desc-en">Layer 7 attack filtering · OWASP Top 10 rules · Bot detection · Rate limiting at edge before traffic reaches backend</div>
+      <div class="scard-desc-vi">Lọc tấn công L7 · Luật OWASP Top 10 · Phát hiện bot · Rate limiting tại edge trước khi vào backend</div>
+      <div class="scard-keywords">
+        <span class="kw hot">OWASP Top 10</span><span class="kw">Rate Limit</span><span class="kw">Bot Score</span><span class="kw">Layer 7</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">WAF at the edge means malicious traffic is dropped at Cloudflare's PoP — never consuming backend compute. This is far more cost-effective than WAF behind the load balancer.</span><div class="lang-dual"><span class="lang-en">WAF at the edge means malicious traffic is dropped at Cloudflare's PoP — never consuming backend compute. This is far more cost-effective than WAF behind the load balancer.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">WAF tại edge chặn traffic độc hại ngay tại PoP của Cloudflare — không bao giờ chạm đến backend. Việc này tiết kiệm chi phí compute hơn rất nhiều so với đặt WAF sau Load Balancer.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">⚡ Cloudflare Workers</div>
+      <span class="scard-tech">Edge Compute · V8 Isolates</span>
+      <div class="scard-desc-en">Serverless logic at edge · JWT pre-validation · A/B routing · Request transformation before hitting origin — zero cold start</div>
+      <div class="scard-desc-vi">Logic serverless tại edge · Validate JWT sớm · A/B routing · Transform request trước origin — không cold start</div>
+      <div class="scard-keywords">
+        <span class="kw hot">V8 Isolate</span><span class="kw">Serverless Edge</span><span class="kw">JWT Pre-auth</span><span class="kw">Cold Start: 0ms</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Workers use V8 isolates (not containers) — startup in &lt;1ms vs 50–500ms for Lambda cold starts. Ideal for auth pre-checks: reject invalid tokens before they consume API Gateway capacity.</span><div class="lang-dual"><span class="lang-en">Workers use V8 isolates (not containers) — startup in &lt;1ms vs 50–500ms for Lambda cold starts. Ideal for auth pre-checks: reject invalid tokens before they consume API Gateway capacity.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Workers dùng V8 isolates (không phải container) — khởi động <1ms so với 50–500ms của Lambda cold start. Lý tưởng cho auth pre-checks: chặn token sai trước đỉnh API Gateway.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🌐 Cloudflare R2 / Stream</div>
+      <span class="scard-tech">Edge Storage · Video CDN</span>
+      <div class="scard-desc-en">Zero egress cost storage · Dashcam video streaming at edge · Map tile delivery · Compatible with S3 API</div>
+      <div class="scard-desc-vi">Lưu trữ không tốn phí egress · Stream video dashcam tại edge · Phân phối map tile · Tương thích S3 API</div>
+      <div class="scard-keywords">
+        <span class="kw">Zero Egress</span><span class="kw">S3-compatible</span><span class="kw">HLS Stream</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">R2 vs S3: R2 has zero egress fees — critical when streaming dashcam footage to investigators. At 1TB/month egress, R2 saves ~$90/month vs S3 Standard.</span><div class="lang-dual"><span class="lang-en">R2 vs S3: R2 has zero egress fees — critical when streaming dashcam footage to investigators. At 1TB/month egress, R2 saves ~$90/month vs S3 Standard.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">R2 so với S3: R2 miễn phí egress — cực kỳ quan trọng khi stream video dashcam. Với 1TB/tháng, R2 tiết kiệm ~$90/tháng so sánh S3 Standard.</span></div>"</div>
+    </div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><div class="conn-pill">TLS 1.3 · Filtered + cached traffic passes through</div><div class="conn-line"></div></div>
+
+<!-- ─── L2: SECURITY ─────────────────────── -->
+<div class="layer lc-sec" id="layer-sec">
+  <div class="layer-head" onclick="toggleLayer('layer-sec')">
+    <span class="layer-badge">L2</span>
+    <div class="layer-info">
+      <div class="layer-name" style="color:#f87171;">Security Layer — Zero Trust Architecture</div>
+      <div class="layer-en-desc">Defense-in-depth · mTLS between services · Secret management · Audit logging · SIEM / threat detection</div>
+      <div class="layer-vi-desc">Bảo vệ nhiều lớp · mTLS giữa các service · Quản lý secret · Audit log · SIEM / phát hiện mối đe dọa</div>
+    </div>
+    <span class="layer-expand-icon">▾</span>
+  </div>
+  <div class="layer-body">
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🔒 HashiCorp Vault</div>
+      <span class="scard-tech">Secret Management · PKI</span>
+      <div class="scard-desc-en">Dynamic secrets · Auto-rotating DB credentials · PKI for mTLS certs · Encryption-as-a-Service · Full audit trail on every key access</div>
+      <div class="scard-desc-vi">Secret động · Tự động rotate DB credential · PKI cho mTLS · Encryption-as-a-Service · Audit trail đầy đủ</div>
+      <div class="scard-keywords">
+        <span class="kw hot">Dynamic Secrets</span><span class="kw">PKI</span><span class="kw">Seal/Unseal</span><span class="kw">Audit Log</span><span class="kw">Transit Engine</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Static secrets in env vars are a vulnerability — they're long-lived and hard to rotate. Vault issues dynamic credentials: a DB password valid for 1 hour. Even if leaked, it's useless in 60 minutes.</span><div class="lang-dual"><span class="lang-en">Static secrets in env vars are a vulnerability — they're long-lived and hard to rotate. Vault issues dynamic credentials: a DB password valid for 1 hour. Even if leaked, it's useless in 60 minutes.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Lưu secret trong env vars là rủi ro vì chúng sống lâu và khó xoay vòng. Vault cấp dynamic credentials: VD password DB chỉ sống 1 giờ. Dù bị lộ, nó sẽ vô dụng sau 60 phút.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🕸️ Service Mesh (mTLS)</div>
+      <span class="scard-tech">Istio · mTLS · SPIFFE</span>
+      <div class="scard-desc-en">Mutual TLS for all pod-to-pod communication · Zero trust network: every service proves its identity · SPIFFE/SPIRE workload identity · Circuit breaker built-in</div>
+      <div class="scard-desc-vi">mTLS cho toàn bộ giao tiếp pod-to-pod · Zero trust: mọi service phải xác minh danh tính · SPIFFE/SPIRE workload identity · Circuit breaker tích hợp</div>
+      <div class="scard-keywords">
+        <span class="kw hot">mTLS</span><span class="kw">SPIFFE</span><span class="kw">Zero Trust</span><span class="kw">Istio</span><span class="kw">Circuit Breaker</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">mTLS means a compromised internal service cannot impersonate another — it must present a valid certificate. Combined with SPIFFE workload identity, each pod has a cryptographic identity, not just a network IP.</span><div class="lang-dual"><span class="lang-en">mTLS means a compromised internal service cannot impersonate another — it must present a valid certificate. Combined with SPIFFE workload identity, each pod has a cryptographic identity, not just a network IP.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">mTLS đảm bảo một service bị hack không thể giả mạo service khác — nó phải có chứng chỉ. Kết hợp SPIFFE, mỗi pod có định danh mã hóa không chỉ IP mạng.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">📋 SIEM & Compliance</div>
+      <span class="scard-tech">OpenSearch · GDPR · SOC2</span>
+      <div class="scard-desc-en">Security event aggregation · PII access audit logging · GDPR right-to-erasure workflow · SOC2 Type II evidence collection · Anomalous access alerting</div>
+      <div class="scard-desc-vi">Tổng hợp security event · Audit log truy cập PII · Quy trình xóa dữ liệu GDPR · Thu thập bằng chứng SOC2 Type II</div>
+      <div class="scard-keywords">
+        <span class="kw hot">GDPR</span><span class="kw">SOC2</span><span class="kw">PII</span><span class="kw">SIEM</span><span class="kw">Right to Erasure</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">GDPR Article 17 (right to erasure): when a driver requests deletion, we run a data erasure job that removes all records keyed to their vehicle_id across Cassandra, PostgreSQL, MongoDB, and S3 — with a compliance receipt generated.</span><div class="lang-dual"><span class="lang-en">GDPR Article 17 (right to erasure): when a driver requests deletion, we run a data erasure job that removes all records keyed to their vehicle_id across Cassandra, PostgreSQL, MongoDB, and S3 — with a compliance receipt generated.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">GDPR Điều 17: khi yêu cầu xóa, chạy job xóa toàn bộ dữ liệu theo vehicle_id trên Cassandra, Postgres, Mongo và S3 — xuất hóa đơn tuân thủ.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🔑 Identity & IoT Auth</div>
+      <span class="scard-tech">X.509 · Device PKI</span>
+      <div class="scard-desc-en">Per-device X.509 certificates provisioned at manufacture · Individual device revocation without affecting fleet · OAuth 2.0 / OIDC for human users</div>
+      <div class="scard-desc-vi">Chứng chỉ X.509 per-device · Thu hồi từng thiết bị riêng lẻ · OAuth 2.0 / OIDC cho người dùng</div>
+      <div class="scard-keywords">
+        <span class="kw hot">X.509</span><span class="kw">Device PKI</span><span class="kw">CRL</span><span class="kw">OCSP</span><span class="kw">OAuth 2.0</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Shared API keys for IoT devices are dangerous — one compromised key affects the whole fleet. Per-device X.509 certs mean revocation is surgical: one cert in the CRL, that device is silenced, others continue normally.</span><div class="lang-dual"><span class="lang-en">Shared API keys for IoT devices are dangerous — one compromised key affects the whole fleet. Per-device X.509 certs mean revocation is surgical: one cert in the CRL, that device is silenced, others continue normally.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Dùng chung API key cho IoT rất nguy hiểm. X.509 cert cấp từng thiết bị giúp thu hồi chính xác: 1 cert vào CRL, thiết bị đó bị chặn, còn lại bình thường.</span></div>"</div>
+    </div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><div class="conn-pill">Authenticated · Authorized · Encrypted traffic only</div><div class="conn-line"></div></div>
+
+<!-- ─── L3: API GATEWAY ──────────────────── -->
+<div class="layer lc-gw" id="layer-gw">
+  <div class="layer-head" onclick="toggleLayer('layer-gw')">
+    <span class="layer-badge">L3</span>
+    <div class="layer-info">
+      <div class="layer-name" style="color:#a78bfa;">API Gateway & Load Balancer Layer</div>
+      <div class="layer-en-desc">Single entry point · JWT validation · Rate limiting · Service routing · SSL termination · Request tracing injection</div>
+      <div class="layer-vi-desc">Điểm vào duy nhất · Validate JWT · Rate limiting · Routing service · SSL termination · Inject trace ID</div>
+    </div>
+    <span class="layer-expand-icon">▾</span>
+  </div>
+  <div class="layer-body">
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🔀 API Gateway</div>
+      <span class="scard-tech">Kong / AWS API GW</span>
+      <div class="scard-desc-en">Routing to microservices · Plugin ecosystem: rate-limit, JWT, logging, tracing · Canary routing by header/weight · Request/response transformation</div>
+      <div class="scard-desc-vi">Routing đến microservices · Plugin: rate-limit, JWT, logging, tracing · Canary routing · Transform request/response</div>
+      <div class="scard-keywords">
+        <span class="kw hot">Rate Limiting</span><span class="kw">Canary Routing</span><span class="kw">Plugin</span><span class="kw">Upstream</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Kong in DB-less mode uses declarative config (YAML) — GitOps-friendly, no DB dependency, faster restart. Canary routing by weight lets us shift 5% traffic to a new service version, monitor error rate, then promote or rollback.</span><div class="lang-dual"><span class="lang-en">Kong in DB-less mode uses declarative config (YAML) — GitOps-friendly, no DB dependency, faster restart. Canary routing by weight lets us shift 5% traffic to a new service version, monitor error rate, then promote or rollback.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Kong DB-less dùng file YAML — chuẩn GitOps, không phụ thuộc DB. Canary routing đẩy 5% traffic sang bản mới, theo dõi lỗi để promote/rollback.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🔐 Auth Service</div>
+      <span class="scard-tech">Keycloak · JWT · RBAC</span>
+      <div class="scard-desc-en">OAuth 2.0 / OIDC token issuance · RBAC: Driver / Fleet Manager / Admin / Road Authority · Token introspection · Refresh token rotation</div>
+      <div class="scard-desc-vi">Phát JWT · RBAC: Tài xế / Quản lý đội · Token introspection · Xoay vòng refresh token</div>
+      <div class="scard-keywords">
+        <span class="kw hot">RBAC</span><span class="kw">OIDC</span><span class="kw">JWT Claims</span><span class="kw">Refresh Rotation</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">JWT claims embed tenant_id and role. The Gateway validates the token signature locally (no round-trip to Auth Service on every request) — adds only ~0.2ms latency vs ~20ms for introspection.</span><div class="lang-dual"><span class="lang-en">JWT claims embed tenant_id and role. The Gateway validates the token signature locally (no round-trip to Auth Service on every request) — adds only ~0.2ms latency vs ~20ms for introspection.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">JWT chứa sẵn tenant_id/role. API Gateway check signature nội bộ (không gọi Auth Service mỗi request) — tốn ~0.2ms so với ~20ms introspection.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">⚖️ Load Balancer</div>
+      <span class="scard-tech">Nginx / ALB · Health Check</span>
+      <div class="scard-desc-en">L4/L7 load balancing · Least-connection algorithm for WebSocket affinity · Active health checks · Graceful drain on pod shutdown</div>
+      <div class="scard-desc-vi">Load balancing L4/L7 · Least-connection cho WebSocket · Health check chủ động · Graceful drain khi pod shutdown</div>
+      <div class="scard-keywords">
+        <span class="kw hot">Least-Connection</span><span class="kw">Health Check</span><span class="kw">Graceful Drain</span><span class="kw">Sticky Session</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">WebSocket connections are long-lived — round-robin breaks them. Least-connection algorithm keeps existing connections on the same pod. On pod shutdown, a 30s graceful drain lets active WebSockets migrate before the pod dies.</span><div class="lang-dual"><span class="lang-en">WebSocket connections are long-lived — round-robin breaks them. Least-connection algorithm keeps existing connections on the same pod. On pod shutdown, a 30s graceful drain lets active WebSockets migrate before the pod dies.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">WebSocket sống rất lâu. Thuật toán Least-connection giữ kết nối ở cùng 1 pod. Khi pod tắt, cơ chế 30s graceful drain giúp kết nối chuyển pod.</span></div>"</div>
+    </div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><div class="conn-pill">HTTPS (REST) · WebSocket · MQTT over TLS 1.3</div><div class="conn-line"></div></div>
+
+<!-- ─── L4: CLIENT / IoT ─────────────────── -->
+<div class="layer lc-client" id="layer-client">
+  <div class="layer-head" onclick="toggleLayer('layer-client')">
+    <span class="layer-badge">L4</span>
+    <div class="layer-info">
+      <div class="layer-name" style="color:#60a5fa;">Client Layer — Mobile · Web · IoT Edge Devices</div>
+      <div class="layer-en-desc">User-facing apps · OBD edge device with store-and-forward · Real-time alert rendering · Offline-capable PWA</div>
+      <div class="layer-vi-desc">Ứng dụng người dùng · OBD có store-and-forward · Render alert real-time · PWA offline-capable</div>
+    </div>
+    <span class="layer-expand-icon">▾</span>
+  </div>
+  <div class="layer-body">
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">📱 Mobile App (Driver)</div>
+      <span class="scard-tech">React Native · Offline-first</span>
+      <div class="scard-desc-en">Real-time hazard alerts overlay on map · WebSocket persistent connection · Background location tracking · Offline-first with local SQLite cache</div>
+      <div class="scard-desc-vi">Cảnh báo nguy hiểm overlay trên map · WebSocket persistent · Background tracking · Offline-first với SQLite local</div>
+      <div class="scard-keywords"><span class="kw hot">Offline-first</span><span class="kw">WebSocket</span><span class="kw">Background Location</span><span class="kw">Push FCM/APNs</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Offline-first design: the app caches map tiles and hazard data locally. When connectivity drops (tunnel, dead zone), the driver still sees the last known hazard overlay — then syncs delta on reconnect.</span><div class="lang-dual"><span class="lang-en">Offline-first design: the app caches map tiles and hazard data locally. When connectivity drops (tunnel, dead zone), the driver still sees the last known hazard overlay — then syncs delta on reconnect.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Offline-first: app cache bản đồ/cảnh báo ở local. Khi mất sóng, tài xế vẫn thấy cảnh báo gần nhất — sau có mạng sẽ sync đồng bộ trở lại.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🖥️ Web Dashboard (Fleet Manager)</div>
+      <span class="scard-tech">React + MapboxGL + WebSocket</span>
+      <div class="scard-desc-en">Live fleet map · Vehicle health heatmap · Hazard density overlay · Report export · Role-gated views by tenant</div>
+      <div class="scard-desc-vi">Bản đồ đội xe trực tiếp · Heatmap sức khỏe xe · Overlay mật độ nguy hiểm · Xuất báo cáo · View phân quyền theo tenant</div>
+      <div class="scard-keywords"><span class="kw">MapboxGL</span><span class="kw">WebSocket SSE</span><span class="kw">Tenant-scoped</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">MapboxGL renders 100k+ vehicle markers using WebGL — pure DOM manipulation would crash the browser. Vector tiles from PostGIS serve only visible viewport, not the entire dataset.</span><div class="lang-dual"><span class="lang-en">MapboxGL renders 100k+ vehicle markers using WebGL — pure DOM manipulation would crash the browser. Vector tiles from PostGIS serve only visible viewport, not the entire dataset.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">MapboxGL dùng WebGL vẽ 100k+ xe — việc dùng DOM sẽ gây treo browser. Vector tiles từ PostGIS chỉ hiển thị khu vực màn hình chứ không tải toàn bộ.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🚗 IoT / OBD Device</div>
+      <span class="scard-tech">MQTT QoS 1/2 · SQLite buffer</span>
+      <div class="scard-desc-en">GPS + 3-axis accelerometer + gyroscope · 100ms sensor sampling · Local SQLite store-and-forward for connectivity gaps · X.509 device auth</div>
+      <div class="scard-desc-vi">GPS + gia tốc kế 3 trục + con quay hồi chuyển · Sample 100ms · SQLite buffer khi mất kết nối · Xác thực X.509</div>
+      <div class="scard-keywords"><span class="kw hot">Store-and-Forward</span><span class="kw">QoS 1/2</span><span class="kw">Dead Reckoning</span><span class="kw">IMU</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">QoS 2 = exactly-once delivery but high overhead. We use QoS 1 (at-least-once) with deduplication at the broker — better throughput with acceptable duplicate handling via Redis idempotency key.</span><div class="lang-dual"><span class="lang-en">QoS 2 = exactly-once delivery but high overhead. We use QoS 1 (at-least-once) with deduplication at the broker — better throughput with acceptable duplicate handling via Redis idempotency key.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">QoS 2 tốn rất nhiều overhead. Dùng QoS 1 kèm deduplication ở broker tăng throughput, xử lý trùng lặp nhẹ nhàng bằng Redis idempotency key.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🔔 Notification Client</div>
+      <span class="scard-tech">FCM · APNs · Twilio</span>
+      <div class="scard-desc-en">Priority-tiered delivery: WebSocket (primary, &lt;50ms) → FCM/APNs push (secondary) → SMS via Twilio (critical fallback) · Dedup by alert_id</div>
+      <div class="scard-desc-vi">Giao thông ưu tiên: WebSocket (&lt;50ms) → FCM/APNs → SMS (fallback khẩn cấp) · Dedup theo alert_id</div>
+      <div class="scard-keywords"><span class="kw hot">Priority Tiers</span><span class="kw">FCM</span><span class="kw">Dedup</span><span class="kw">Idempotency</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Three-tier delivery ensures alerts reach drivers even if the app is backgrounded. alert_id dedup prevents double-notification — the driver sees the hazard once, not three times.</span><div class="lang-dual"><span class="lang-en">Three-tier delivery ensures alerts reach drivers even if the app is backgrounded. alert_id dedup prevents double-notification — the driver sees the hazard once, not three times.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Delivery 3 tầng cam kết cảnh báo tới kể cả app đã tắt. Cơ chế Dedup alert_id giữ nguyên tốc độ, tài xế không bao giờ bị spam 3 báo cáo cho cùng 1 sự kiện.</span></div>"</div>
+    </div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><div class="conn-pill">MQTT (IoT) · Kafka events (internal async) · gRPC (sync service calls)</div><div class="conn-line"></div></div>
+<!-- ─── L5: MESSAGING ────────────────────── -->
+<div class="layer lc-msg" id="layer-msg">
+  <div class="layer-head" onclick="toggleLayer('layer-msg')">
+    <span class="layer-badge">L5</span>
+    <div class="layer-info">
+      <div class="layer-name" style="color:#fb923c;">Messaging & Event Streaming Layer</div>
+      <div class="layer-en-desc">Async backbone · IoT ingestion · Event-driven decoupling · Geo-hash partitioning · Guaranteed delivery</div>
+      <div class="layer-vi-desc">Backbone bất đồng bộ · IoT ingestion · Event-driven decoupling · Geo-hash partitioning · Đảm bảo delivery</div>
+    </div>
+    <span class="layer-expand-icon">▾</span>
+  </div>
+  <div class="layer-body">
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">📡 MQTT Broker</div>
+      <span class="scard-tech">EMQX Cluster · QoS 0/1/2</span>
+      <div class="scard-desc-en">Handles millions of concurrent IoT connections · Persistent sessions survive device reconnect · Bridges directly to Kafka · Per-device topic ACL via X.509 CN</div>
+      <div class="scard-desc-vi">Hàng triệu kết nối IoT đồng thời · Session bền vững qua reconnect · Bridge vào Kafka · ACL per-device qua X.509 CN</div>
+      <div class="scard-keywords"><span class="kw hot">Persistent Session</span><span class="kw">QoS Levels</span><span class="kw">Kafka Bridge</span><span class="kw">Topic ACL</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">EMQX is chosen over Mosquitto for its horizontal scalability — EMQX cluster can handle 10M+ concurrent connections. The built-in Kafka bridge means sensor data flows: Device → MQTT → Kafka with no extra service in the path.</span><div class="lang-dual"><span class="lang-en">EMQX is chosen over Mosquitto for its horizontal scalability — EMQX cluster can handle 10M+ concurrent connections. The built-in Kafka bridge means sensor data flows: Device → MQTT → Kafka with no extra service in the path.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Chọn EMQX thay vì Mosquitto nhờ horizontal scalability — cluster tải được 10 triệu+ connection. Tích hợp sẵn Kafka bridge giúp luồng Device → MQTT → Kafka kết nối trực tiếp.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🔁 Apache Kafka</div>
+      <span class="scard-tech">Kafka · Geo-hash Partition</span>
+      <div class="scard-desc-en">Partitioned by geo-hash region (level 5 ≈ 4km²) · Consumer groups per region enable parallel processing · Replication factor 3 · Exactly-once semantics via idempotent producers</div>
+      <div class="scard-desc-vi">Partition theo geo-hash region · Consumer group per region xử lý song song · Replication factor 3 · Exactly-once qua idempotent producer</div>
+      <div class="scard-keywords"><span class="kw hot">Geo-hash Partition</span><span class="kw">Consumer Group</span><span class="kw">Exactly-once</span><span class="kw">Replication Factor 3</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Geo-hash partitioning is the key insight for scaling. Without it, all vehicles in Ho Chi Minh City hit the same partition — a hot-spot bottleneck. With level-5 geo-hash, the city is split into ~200 cells, each processed by independent consumer groups in parallel.</span><div class="lang-dual"><span class="lang-en">Geo-hash partitioning is the key insight for scaling. Without it, all vehicles in Ho Chi Minh City hit the same partition — a hot-spot bottleneck. With level-5 geo-hash, the city is split into ~200 cells, each processed by independent consumer groups in parallel.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Geo-hash partition là chìa khóa scale. Mọi xe ở TP.HCM ghi chung 1 hướng gây nghẽn cổ chai. Với Level 5 geo-hash, thành phố chia làm ~200 vùng độc lập đa luồng xử lý.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">📮 Dead Letter Queue</div>
+      <span class="scard-tech">Kafka DLQ · Retry Policy</span>
+      <div class="scard-desc-en">Failed messages after max retries (exponential backoff) → DLQ topic · Alerting on DLQ depth · Manual replay or compensating transaction trigger</div>
+      <div class="scard-desc-vi">Message thất bại sau max retry → DLQ topic · Alert khi DLQ đầy · Replay thủ công hoặc compensating transaction</div>
+      <div class="scard-keywords"><span class="kw hot">Exponential Backoff</span><span class="kw">DLQ</span><span class="kw">Compensating Tx</span><span class="kw">Replay</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">DLQ depth is a critical metric — a growing DLQ means a downstream service is sick. We alert on DLQ depth &gt;100 and trigger a PagerDuty incident. This is how we catch silent failures in the async pipeline.</span><div class="lang-dual"><span class="lang-en">DLQ depth is a critical metric — a growing DLQ means a downstream service is sick. We alert on DLQ depth &gt;100 and trigger a PagerDuty incident. This is how we catch silent failures in the async pipeline.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Số message trong DLQ là metric chí mạng — DLQ tụ đọng nghĩa là 1 service đang yếu. Nếu DLQ > 100 sẽ Trigger báo ứng trực tiếp PagerDuty.</span></div>"</div>
+    </div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><div class="conn-pill">Internal gRPC (sync) + Kafka consumer (async)</div><div class="conn-line"></div></div>
+
+<!-- ─── L6: CORE SERVICES ─────────────────── -->
+<div class="layer lc-svc" id="layer-svc">
+  <div class="layer-head" onclick="toggleLayer('layer-svc')">
+    <span class="layer-badge">L6</span>
+    <div class="layer-info">
+      <div class="layer-name" style="color:#34d399;">Core Microservices Layer — Business Logic</div>
+      <div class="layer-en-desc">Domain-driven microservices · Each owns its data · Communicate via gRPC sync + Kafka async · Independently deployable</div>
+      <div class="layer-vi-desc">Microservices theo domain · Mỗi service sở hữu data riêng · gRPC sync + Kafka async · Triển khai độc lập</div>
+    </div>
+    <span class="layer-expand-icon">▾</span>
+  </div>
+  <div class="layer-body">
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🗂️ Vehicle Service</div>
+      <span class="scard-tech">REST API · PostgreSQL</span>
+      <div class="scard-desc-en">CRUD vehicle profiles · Registration, specs, insurance, maintenance records · Ownership history with audit trail · Publishes vehicle.registered Kafka event on creation</div>
+      <div class="scard-desc-vi">CRUD hồ sơ xe · Đăng ký, thông số, bảo hiểm, bảo dưỡng · Lịch sử sở hữu có audit trail · Publish event khi tạo xe</div>
+      <div class="scard-keywords"><span class="kw">Domain Entity</span><span class="kw">Event Sourcing</span><span class="kw">Audit Trail</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Vehicle Service is the system of record for vehicle identity. It publishes vehicle.registered events — downstream services (Tracking, Telemetry) react and provision their own data structures. Loose coupling via events, not direct DB sharing.</span><div class="lang-dual"><span class="lang-en">Vehicle Service is the system of record for vehicle identity. It publishes vehicle.registered events — downstream services (Tracking, Telemetry) react and provision their own data structures. Loose coupling via events, not direct DB sharing.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Vehicle Service là System of Record. Nó bắn event 'vehicle.registered' — Tracking, Telemetry tự phản hồi và tạo DB của mình (Loose Coupling thay vì chia sẻ DB chung).</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">📍 Tracking Service</div>
+      <span class="scard-tech">Kafka Consumer · Cassandra · Redis GEO</span>
+      <div class="scard-desc-en">Real-time GPS ingestion from Kafka · Writes time-series to Cassandra · Updates Redis GEO set every event · Dead-reckoning on gap · vehicle.reconnected event on GPS restore</div>
+      <div class="scard-desc-vi">Nhận GPS từ Kafka · Ghi time-series vào Cassandra · Cập nhật Redis GEO mỗi event · Dead-reckoning khi mất GPS · Publish reconnect event</div>
+      <div class="scard-keywords"><span class="kw hot">Dead Reckoning</span><span class="kw">Redis GEO</span><span class="kw">IMU Interpolation</span><span class="kw">Reconnect Sweep</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">On vehicle.reconnected, Tracking Service publishes an event that triggers Alert Service to run a one-time GEORADIUS sweep — catching the driver up on hazards reported during the GPS gap (e.g. while in a tunnel).</span><div class="lang-dual"><span class="lang-en">On vehicle.reconnected, Tracking Service publishes an event that triggers Alert Service to run a one-time GEORADIUS sweep — catching the driver up on hazards reported during the GPS gap (e.g. while in a tunnel).</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Khi 'vehicle.reconnected', hệ thống Trigger Alert tự động quét GEORADIUS 1 lần — bù những cảnh báo đã bị lọt thỏm trong lúc đoạn xe khuất GPS (đi hầm).</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">⚠️ Alert Service</div>
+      <span class="scard-tech">Redis GEORADIUS · WebSocket Registry</span>
+      <div class="scard-desc-en">Consumes hazard.confirmed events · GEORADIUS lookup for nearby vehicles · Routes via WebSocket connection registry (vehicle_id → pod_id) · FCM fallback · Dedup by alert_id</div>
+      <div class="scard-desc-vi">Consume hazard.confirmed · GEORADIUS tìm xe lân cận · Route qua WebSocket registry · FCM fallback · Dedup theo alert_id</div>
+      <div class="scard-keywords"><span class="kw hot">GEORADIUS</span><span class="kw">Connection Registry</span><span class="kw">Fanout</span><span class="kw">Dedup</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">The connection registry in Redis maps vehicle_id → pod_id. Without it, each pod would need to broadcast to all other pods to find the right WebSocket — O(N) fan-out that kills performance. With the registry, it's O(1) direct route.</span><div class="lang-dual"><span class="lang-en">The connection registry in Redis maps vehicle_id → pod_id. Without it, each pod would need to broadcast to all other pods to find the right WebSocket — O(N) fan-out that kills performance. With the registry, it's O(1) direct route.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Giữ cấu trúc Registry ở Redis ánh xạ vehicle_id → pod_id. Nếu không mỗi Pod phải Broadcast mảng lưới để tìm WebSocket (O(N) fan-out hại hiệu năng). Có Registry ta quy về O(1).</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">📊 Telemetry Service</div>
+      <span class="scard-tech">Kafka Consumer · Cassandra</span>
+      <div class="scard-desc-en">OBD diagnostics ingestion · Speed, fuel level, engine temp, brake pressure · Publishes anomaly.detected event · Feeds raw sensor stream to ML layer</div>
+      <div class="scard-desc-vi">Nhận dữ liệu OBD · Tốc độ, nhiên liệu, nhiệt động cơ, áp suất phanh · Publish anomaly.detected · Cung cấp stream cho ML layer</div>
+      <div class="scard-keywords"><span class="kw">OBD-II</span><span class="kw">Time-series</span><span class="kw">Sensor Fusion</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Telemetry Service is stateless — it ingests, validates, enriches (adds road type context), and publishes. The ML layer pulls from the enriched stream, not raw sensor data — separation of concerns.</span><div class="lang-dual"><span class="lang-en">Telemetry Service is stateless — it ingests, validates, enriches (adds road type context), and publishes. The ML layer pulls from the enriched stream, not raw sensor data — separation of concerns.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Telemetry Service hoàn toàn Stateless — chỉ xử lý Validate/Enrich. ML kéo Layer Enrichment thay cho Raw stream rác — Độc lập Mối lo (Separation of Concerns).</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🗺️ Map Hazard Service</div>
+      <span class="scard-tech">PostGIS · Hazard FSM · Redis TTL</span>
+      <div class="scard-desc-en">Hazard lifecycle FSM: PENDING→ACTIVE→UNDER_REVIEW→RESOLVED · Severity scoring: f(ML_confidence, report_count, speed, time_decay) · Crowd-sourced resolution via clean passes</div>
+      <div class="scard-desc-vi">FSM lifecycle hazard · Scoring: f(ML, số báo cáo, tốc độ, time_decay) · Giải quyết crowd-sourced qua "xe sạch"</div>
+      <div class="scard-keywords"><span class="kw hot">Hazard FSM</span><span class="kw">Severity Score</span><span class="kw">Time Decay</span><span class="kw">Self-healing</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">The FSM is the system's self-healing mechanism. '5 consecutive clean passes' means if 5 vehicles drive through a reported hazard location without sensor triggering, the system marks it RESOLVED automatically — no ops team needed.</span><div class="lang-dual"><span class="lang-en">The FSM is the system's self-healing mechanism. '5 consecutive clean passes' means if 5 vehicles drive through a reported hazard location without sensor triggering, the system marks it RESOLVED automatically — no ops team needed.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Cấu trúc vòng đời tự trị FSM: '5 xe lướt mượt qua đoạn đường cảnh báo' mà không nhảy Sensor thì nó sẽ đưa trạng thái hạ cảnh báo RESOLVED hoàn toàn tự động.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">📋 Report Service</div>
+      <span class="scard-tech">Async Job Queue · PDF/CSV</span>
+      <div class="scard-desc-en">Async report generation (never blocks request) · Trip summaries, incident logs, compliance reports · Tenant-scoped data isolation · S3 pre-signed URL for download</div>
+      <div class="scard-desc-vi">Tạo báo cáo bất đồng bộ · Tóm tắt chuyến đi, nhật ký sự cố, báo cáo tuân thủ · Pre-signed URL cho download</div>
+      <div class="scard-keywords"><span class="kw">Async Job</span><span class="kw">Pre-signed URL</span><span class="kw">Compliance</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Reports are generated async via a job queue — a 10,000-vehicle fleet report can take 30 seconds. We never block the HTTP response. Client polls a job_id endpoint, or we push a notification when ready.</span><div class="lang-dual"><span class="lang-en">Reports are generated async via a job queue — a 10,000-vehicle fleet report can take 30 seconds. We never block the HTTP response. Client polls a job_id endpoint, or we push a notification when ready.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Report trả về Async qua Job Queue. Tải báo cáo 10k xe mất khoảng 30s nhưng máy chủ không bao giờ Block HTTP. App Client sẽ gọi job_id endpoint hoặc đợi Push notify trả kết quả.</span></div>"</div>
+    </div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><div class="conn-pill">gRPC inference API · Kafka ML event stream</div><div class="conn-line"></div></div>
+
+<!-- ─── L7: ML / AI ──────────────────────── -->
+<div class="layer lc-ml" id="layer-ml">
+  <div class="layer-head" onclick="toggleLayer('layer-ml')">
+    <span class="layer-badge">L7</span>
+    <div class="layer-info">
+      <div class="layer-name" style="color:#fbbf24;">AI / ML Processing Layer — Detection & Continuous Learning</div>
+      <div class="layer-en-desc">Real-time inference · Model versioning · Feedback loop retraining · Auto-rollback on precision degradation</div>
+      <div class="layer-vi-desc">Inference real-time · Versioning model · Feedback loop retraining · Auto-rollback khi precision giảm</div>
+    </div>
+    <span class="layer-expand-icon">▾</span>
+  </div>
+  <div class="layer-body">
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🕳️ Pothole Detector</div>
+      <span class="scard-tech">LSTM + CNN · Accelerometer</span>
+      <div class="scard-desc-en">LSTM captures temporal vibration patterns · CNN extracts spatial features from spectrogram · Context: vehicle speed + road type + known speed-bump DB · Output: confidence score 0–1</div>
+      <div class="scard-desc-vi">LSTM bắt pattern rung theo thời gian · CNN trích đặc trưng từ spectrogram · Context: tốc độ + loại đường + DB gờ giảm tốc · Output: confidence 0–1</div>
+      <div class="scard-keywords"><span class="kw hot">LSTM</span><span class="kw">CNN</span><span class="kw">Spectrogram</span><span class="kw">Confidence Score</span><span class="kw">Context Enrichment</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">LSTM alone captures 'something bumpy happened'. The CNN on the spectrogram captures the frequency signature — potholes have a characteristic ~15Hz spike, while speed bumps are broader and slower. Combined model reduces false positive rate by 40%.</span><div class="lang-dual"><span class="lang-en">LSTM alone captures 'something bumpy happened'. The CNN on the spectrogram captures the frequency signature — potholes have a characteristic ~15Hz spike, while speed bumps are broader and slower. Combined model reduces false positive rate by 40%.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Mô hình LSTM nhạy bắt cú sốc xóc gập. Kèm tích hợp CNN soi quang phổ đo chóp 15Hz sẽ xác minh 100% đó là ổ gà chứ không phải Gờ giảm tốc, né cực mạnh tới 40% sai lệch nhận diện.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🚧 Obstacle Detector</div>
+      <span class="scard-tech">YOLOv8 · TensorRT · Edge GPU</span>
+      <div class="scard-desc-en">Camera-based real-time detection · Classes: debris, stopped vehicle, animal, pedestrian, construction · TensorRT optimized for edge GPU · Runs locally on device if capable</div>
+      <div class="scard-desc-vi">Phát hiện real-time bằng camera · Phân loại: mảnh vỡ, xe dừng, động vật, người, công trình · TensorRT tối ưu cho GPU edge</div>
+      <div class="scard-keywords"><span class="kw hot">YOLOv8</span><span class="kw">TensorRT</span><span class="kw">Edge Inference</span><span class="kw">NMS</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Edge inference with TensorRT INT8 quantization runs YOLOv8n at 30fps on a Jetson Orin Nano (under $200). Cloud inference fallback for complex scenes. NMS (Non-Max Suppression) threshold is tunable at runtime via Redis config.</span><div class="lang-dual"><span class="lang-en">Edge inference with TensorRT INT8 quantization runs YOLOv8n at 30fps on a Jetson Orin Nano (under $200). Cloud inference fallback for complex scenes. NMS (Non-Max Suppression) threshold is tunable at runtime via Redis config.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Chạy Mô hình nhúng TensorRT INT8 với YOLOv8n đạt vọt lên 30FPS ở mạch Nano Jetson (Chỉ ~$200). Fallback cho vùng mù lên Cloud. Tuning ngưỡng bù đè trực tiếp Runtime vào hệ số NMS thông qua Redis Config.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">📈 Anomaly Engine</div>
+      <span class="scard-tech">Isolation Forest · Online Learning</span>
+      <div class="scard-desc-en">Unsupervised anomaly detection on telemetry streams · Sudden braking, erratic steering, abnormal engine temp · Per-vehicle behavioral baseline · Online learning updates baseline daily</div>
+      <div class="scard-desc-vi">Phát hiện bất thường không giám sát · Phanh đột thực, lái lạ, nhiệt độ động cơ bất thường · Baseline hành vi per-xe · Online learning cập nhật hàng ngày</div>
+      <div class="scard-keywords"><span class="kw hot">Isolation Forest</span><span class="kw">Per-vehicle Baseline</span><span class="kw">Online Learning</span><span class="kw">Anomaly Score</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Per-vehicle baseline is critical — aggressive braking is normal for a sports car, abnormal for a delivery truck. Isolation Forest scores each event against that vehicle's own 90-day baseline, not a global threshold.</span><div class="lang-dual"><span class="lang-en">Per-vehicle baseline is critical — aggressive braking is normal for a sports car, abnormal for a delivery truck. Isolation Forest scores each event against that vehicle's own 90-day baseline, not a global threshold.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Mỗi xe là 1 thực thể đặc dụng — Phanh khét lốp bình thường với Sport Car nhưng hỏng lốp với xe Tải nhẹ. Machine Learning nhắm vào chấn động 90 Ngày riêng biệt chứ không dùng mức chung Global.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🔁 MLflow Model Registry</div>
+      <span class="scard-tech">MLflow · Champion/Challenger</span>
+      <div class="scard-desc-en">Driver feedback → labeled dataset → nightly retrain pipeline · Champion/Challenger A/B test on 10% traffic · Auto-promote if precision &gt; SLA · Auto-rollback if degraded</div>
+      <div class="scard-desc-vi">Feedback → dataset → retrain hàng đêm · A/B test Champion/Challenger 10% traffic · Auto-promote nếu vượt SLA · Auto-rollback nếu giảm</div>
+      <div class="scard-keywords"><span class="kw hot">Champion/Challenger</span><span class="kw">Auto-rollback</span><span class="kw">Precision SLA</span><span class="kw">MLflow</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">MLflow Model Registry has 3 stages: Staging, Production (Champion), Archived. Challenger runs on 10% of inference traffic. If Challenger precision &gt; Champion by &gt;2%, auto-promote. If either drops below 75% precision, auto-rollback within one pipeline cycle (~6 hours).</span><div class="lang-dual"><span class="lang-en">MLflow Model Registry has 3 stages: Staging, Production (Champion), Archived. Challenger runs on 10% of inference traffic. If Challenger precision &gt; Champion by &gt;2%, auto-promote. If either drops below 75% precision, auto-rollback within one pipeline cycle (~6 hours).</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Quản lý Version MLFlow gồm: Staging, Sản Phẩm, Đóng Băng. Lôi quy trình Challenger nhử trước 10% traffic. Tỉ lệ chuẩn ăn chặt hơn 2% thì Push toàn bộ Auto-Promote. AutoRollback nếu nhận diện xuống mã.</span></div>"</div>
+    </div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><div class="conn-pill">Read / Write · Polyglot — right DB for right data type</div><div class="conn-line"></div></div>
+<!-- ─── L8: DATA ──────────────────────────── -->
+<div class="layer lc-data" id="layer-data">
+  <div class="layer-head" onclick="toggleLayer('layer-data')">
+    <span class="layer-badge">L8</span>
+    <div class="layer-info">
+      <div class="layer-name" style="color:#c084fc;">Data Layer — Polyglot Persistence</div>
+      <div class="layer-en-desc">Right database for right data type · Strong consistency where needed · Eventual consistency for high-throughput paths</div>
+      <div class="layer-vi-desc">Đúng database cho đúng loại data · Nhất quán mạnh khi cần · Nhất quán cuối cho throughput cao</div>
+    </div>
+    <span class="layer-expand-icon">▾</span>
+  </div>
+  <div class="layer-body">
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🐘 PostgreSQL + PostGIS</div>
+      <span class="scard-tech">ACID · RLS · Spatial Index</span>
+      <div class="scard-desc-en">Vehicle records, users, hazard spatial points, compliance data · Row-Level Security for multi-tenancy · PostGIS GIST index for GEORADIUS + polygon geofence · Read replicas for analytics</div>
+      <div class="scard-desc-vi">Hồ sơ xe, user, spatial hazard, compliance · RLS cho multi-tenancy · GIST index cho spatial query · Read replica cho analytics</div>
+      <div class="scard-keywords"><span class="kw hot">Row-Level Security</span><span class="kw">PostGIS GIST</span><span class="kw">ACID</span><span class="kw">Read Replica</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">RLS is the last line of defense for multi-tenancy. Even if a bug in application code removes the tenant filter, PostgreSQL enforces it at the query plan level. You can test: connect as a tenant role and try SELECT * — you'll only see your own rows.</span><div class="lang-dual"><span class="lang-en">RLS is the last line of defense for multi-tenancy. Even if a bug in application code removes the tenant filter, PostgreSQL enforces it at the query plan level. You can test: connect as a tenant role and try SELECT * — you'll only see your own rows.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">RLS là ngọn cờ cắm mốc chặn cuối cùng trong DB Postgres (của multi-tenant). Tỉ như App code chập mạch thả lưới query trắng xóa thì DB Level Filter vẫn nhét data an toàn khỏi lọt.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">📦 Apache Cassandra</div>
+      <span class="scard-tech">Wide-Column · Query-first Model</span>
+      <div class="scard-desc-en">GPS + telemetry time-series · Partition key (tenant_id, vehicle_id, date) · Clustering ORDER BY recorded_at DESC · Linear horizontal scale · 30-day TTL auto-purge</div>
+      <div class="scard-desc-vi">GPS + telemetry time-series · Partition key theo (tenant_id, vehicle_id, date) · Clustering DESC · Scale tuyến tính · TTL 30 ngày auto-purge</div>
+      <div class="scard-keywords"><span class="kw hot">Query-first Model</span><span class="kw">Partition Key</span><span class="kw">TTL</span><span class="kw">Masterless</span><span class="kw">Linear Scale</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Cassandra's masterless architecture means no single point of failure and true linear write scalability. Adding a node increases write throughput proportionally. The query-first model means 'last 2 hours of vehicle X' is a single-partition range scan — O(log N) not O(N).</span><div class="lang-dual"><span class="lang-en">Cassandra's masterless architecture means no single point of failure and true linear write scalability. Adding a node increases write throughput proportionally. The query-first model means 'last 2 hours of vehicle X' is a single-partition range scan — O(log N) not O(N).</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Ở Cassandra, thiết kế phi Master không có SPF và có Linear Capability. Lấy trích '2 giờ ghi cuối trạm' chỉ là 1 query Range Scan siêu tốc O(log N) do Partion key làm việc quá êm.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">⚡ Redis Cluster</div>
+      <span class="scard-tech">GEO · Pub/Sub · TTL Cache</span>
+      <div class="scard-desc-en">Live vehicle positions (GEO sorted set) · WebSocket connection registry (vehicle_id → pod_id) · Hazard dedup (TTL SET) · Dashboard pub/sub · Confidence threshold config (hot-reload)</div>
+      <div class="scard-desc-vi">Vị trí xe trực tiếp (GEO set) · WebSocket registry · Dedup hazard (TTL SET) · Pub/Sub dashboard · Config threshold (hot-reload không cần deploy)</div>
+      <div class="scard-keywords"><span class="kw hot">GEO Sorted Set</span><span class="kw">TTL Dedup</span><span class="kw">Hot Config</span><span class="kw">Pub/Sub</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Redis serves 5 distinct roles in this system — each leveraging a different data structure: GEO sorted set (positions), Hash (connection registry), Set+TTL (dedup), Pub/Sub (dashboard), String (config). This is intentional: Redis is not just a cache, it's an operational data store.</span><div class="lang-dual"><span class="lang-en">Redis serves 5 distinct roles in this system — each leveraging a different data structure: GEO sorted set (positions), Hash (connection registry), Set+TTL (dedup), Pub/Sub (dashboard), String (config). This is intentional: Redis is not just a cache, it's an operational data store.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Giao dịch qua Redis tại dự án đóng cả thảy 5 vai trò riêng biệt cho từng DB Structure: GEO(Cho map), Hash(Session), Tập hợp Set(Khử trùng lặp Data), Tín hiệu Pub/sub (Sống động màn hình). Redis này không còn là 1 Data cache qua đường.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🗃️ MongoDB</div>
+      <span class="scard-tech">Document Store · Flexible Schema</span>
+      <div class="scard-desc-en">Hazard event logs, driver feedback records, unstructured telemetry payloads · Schema-free for evolving event shapes · Aggregation pipeline for analytics</div>
+      <div class="scard-desc-vi">Log sự kiện hazard, feedback tài xế, telemetry không có cấu trúc · Schema linh hoạt cho event shapes thay đổi · Aggregation pipeline cho analytics</div>
+      <div class="scard-keywords"><span class="kw">Flexible Schema</span><span class="kw">Aggregation Pipeline</span><span class="kw">Event Log</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">MongoDB's flexible schema handles evolving sensor payloads — a new OBD sensor type doesn't require a migration. We store raw event JSON and project it via the aggregation pipeline for analytics, rather than forcing a rigid schema upfront.</span><div class="lang-dual"><span class="lang-en">MongoDB's flexible schema handles evolving sensor payloads — a new OBD sensor type doesn't require a migration. We store raw event JSON and project it via the aggregation pipeline for analytics, rather than forcing a rigid schema upfront.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Nhờ cái DB phi cấu trúc xé nát của Mongo, Mọi loại Module xe hơi Payload dù kì lạ đến đâu đều được đáp xuống mà không dính DB Migration. Json đổ thẳng, Phân tích Aggregation pipeline trực tiếp.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">☁️ Object Storage</div>
+      <span class="scard-tech">Cloudflare R2 / AWS S3</span>
+      <div class="scard-desc-en">Dashcam footage (HLS streaming), ML model artifacts, PDF/CSV reports · Lifecycle policies: 90-day video retention · Pre-signed URLs for secure, time-limited access · Versioning for model artifacts</div>
+      <div class="scard-desc-vi">Video dashcam (HLS), ML model, báo cáo PDF/CSV · Lifecycle: giữ video 90 ngày · Pre-signed URL an toàn có thời hạn · Versioning cho model artifact</div>
+      <div class="scard-keywords"><span class="kw">Pre-signed URL</span><span class="kw">Lifecycle Policy</span><span class="kw">HLS</span><span class="kw">Versioning</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Pre-signed URLs are critical for dashcam footage — we never proxy the video through our servers. The client gets a time-limited (15-min) signed URL and streams directly from R2/S3. This eliminates bandwidth costs and server load.</span><div class="lang-dual"><span class="lang-en">Pre-signed URLs are critical for dashcam footage — we never proxy the video through our servers. The client gets a time-limited (15-min) signed URL and streams directly from R2/S3. This eliminates bandwidth costs and server load.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Dấu tích URL Pre-signed có hiệu lực 15 phút rất cực kỳ nhạy cảm và tốt cho việc tránh Server tắc nghẽn Dashcam băng tần. Trả Link từ S3 về để Stream triệt tiêu mọi nỗi lo đường truyền.</span></div>"</div>
+    </div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><div class="conn-pill">Kubernetes control plane · Infrastructure as Code</div><div class="conn-line"></div></div>
+
+<!-- ─── L9: INFRA ─────────────────────────── -->
+<div class="layer lc-infra" id="layer-infra">
+  <div class="layer-head" onclick="toggleLayer('layer-infra')">
+    <span class="layer-badge">L9</span>
+    <div class="layer-info">
+      <div class="layer-name" style="color:#94a3b8;">Infrastructure, Observability & Platform — Foundation</div>
+      <div class="layer-en-desc">Kubernetes orchestration · GitOps CI/CD · Full observability stack · SLO-based alerting · Disaster recovery</div>
+      <div class="layer-vi-desc">Kubernetes orchestration · GitOps CI/CD · Observability stack đầy đủ · Alert theo SLO · Disaster recovery</div>
+    </div>
+    <span class="layer-expand-icon">▾</span>
+  </div>
+  <div class="layer-body">
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">☸️ Kubernetes (K8s)</div>
+      <span class="scard-tech">EKS/GKE · HPA · PDB</span>
+      <div class="scard-desc-en">HPA on Kafka consumer lag metric (KEDA) · Pod Disruption Budgets prevent all replicas going down during rolling update · Node affinity for data-locality · Spot/Preemptible for ML inference nodes</div>
+      <div class="scard-desc-vi">HPA theo Kafka lag (KEDA) · PDB ngăn toàn bộ replica down · Node affinity data-locality · Spot instance cho ML inference</div>
+      <div class="scard-keywords"><span class="kw hot">KEDA</span><span class="kw">HPA on Lag</span><span class="kw">PDB</span><span class="kw">Node Affinity</span><span class="kw">Spot Nodes</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">KEDA (Kubernetes Event-Driven Autoscaling) scales pods based on Kafka consumer lag — not CPU/memory. When GPS events spike (rush hour), lag rises, KEDA adds Telemetry Service pods within ~30s. CPU-based HPA would react too slowly to bursty IoT workloads.</span><div class="lang-dual"><span class="lang-en">KEDA (Kubernetes Event-Driven Autoscaling) scales pods based on Kafka consumer lag — not CPU/memory. When GPS events spike (rush hour), lag rises, KEDA adds Telemetry Service pods within ~30s. CPU-based HPA would react too slowly to bursty IoT workloads.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Cơ chế KEDA tự bung Pod phụ trợ thông qua độ nghẽn Delay trạm thông điệp thay vì dùng độ mỏi CPU/Mem. Lúc ùn tắc kẹt xe làm tràn thông tin, HPA dội nọc mới ở tầm ~30 giây. 1 con CPU load metric bình thường sẽ không kịp cứu thua 1 đợt IoT bão tuyết.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🔍 Observability Stack</div>
+      <span class="scard-tech">Prometheus · Grafana · Loki · Jaeger</span>
+      <div class="scard-desc-en">RED metrics (Rate, Errors, Duration) per service · Distributed tracing via OpenTelemetry → Jaeger · Log aggregation Loki · SLO-based alerting: alert when error budget burns too fast</div>
+      <div class="scard-desc-vi">RED metrics per service · Distributed tracing OpenTelemetry → Jaeger · Log Loki · Alert theo SLO: báo khi error budget cháy nhanh</div>
+      <div class="scard-keywords"><span class="kw hot">RED Metrics</span><span class="kw">Error Budget</span><span class="kw">OpenTelemetry</span><span class="kw">SLO Alerting</span><span class="kw">Distributed Trace</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">SLO-based alerting is smarter than threshold alerting. Instead of 'alert if error rate &gt;1%', we alert when the error budget is being consumed faster than expected. A 1% error rate at 3am burns budget slowly; the same rate during rush hour burns it 10x faster — the alert reflects actual user impact.</span><div class="lang-dual"><span class="lang-en">SLO-based alerting is smarter than threshold alerting. Instead of 'alert if error rate &gt;1%', we alert when the error budget is being consumed faster than expected. A 1% error rate at 3am burns budget slowly; the same rate during rush hour burns it 10x faster — the alert reflects actual user impact.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Báo Alert ở hệ quy tắc SLO khôn khéo hơn Threshold cứng chập chờn. Không cần hô hoán khi Lỗi lên >1% nếu Budget chịu tải còn thoải mái. Cùng 1 lỗi bùng lên ở đỉnh điểm Rush Hour mới cắn cháy Budget nhanh gấp 10 lúc bình thường.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🔄 CI/CD Pipeline</div>
+      <span class="scard-tech">GitHub Actions · ArgoCD · GitOps</span>
+      <div class="scard-desc-en">GitHub Actions: build, test, security scan (Trivy), push image · ArgoCD: GitOps sync cluster to git state · Progressive delivery: canary → 10% → 50% → 100% with automated rollback on error rate spike</div>
+      <div class="scard-desc-vi">GitHub Actions: build, test, Trivy scan, push image · ArgoCD GitOps sync · Progressive delivery: canary → 10% → 50% → 100% với auto-rollback</div>
+      <div class="scard-keywords"><span class="kw hot">GitOps</span><span class="kw">Progressive Delivery</span><span class="kw">Trivy</span><span class="kw">ArgoCD</span><span class="kw">Canary</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">GitOps means the cluster state is always defined in git. ArgoCD continuously reconciles. If someone manually changes a Kubernetes resource (kubectl edit), ArgoCD reverts it within minutes. The git repo is the single source of truth — not the cluster.</span><div class="lang-dual"><span class="lang-en">GitOps means the cluster state is always defined in git. ArgoCD continuously reconciles. If someone manually changes a Kubernetes resource (kubectl edit), ArgoCD reverts it within minutes. The git repo is the single source of truth — not the cluster.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Truyền thống GitOps tự động hòa giải qua ArgoCD trên Cluster. Nếu 1 gã quản trị thay đổi file rác qua CMD Kubernetes, ArgoCD đè bẹp chúng sau vài giây đưa nó về cội nguồn ở Git (Nguồn duy nhất sinh Truth).</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🛡️ Disaster Recovery</div>
+      <span class="scard-tech">Multi-AZ · RTO/RPO · Backup</span>
+      <div class="scard-desc-en">Multi-AZ deployment for all stateful services · PostgreSQL streaming replication (RPO &lt;5s) · Cassandra multi-DC with LOCAL_QUORUM · Daily Velero cluster backup · Chaos engineering quarterly</div>
+      <div class="scard-desc-vi">Multi-AZ cho tất cả stateful service · PostgreSQL streaming replication (RPO &lt;5s) · Cassandra multi-DC LOCAL_QUORUM · Backup Velero hàng ngày · Chaos engineering hàng quý</div>
+      <div class="scard-keywords"><span class="kw hot">RTO / RPO</span><span class="kw">Multi-AZ</span><span class="kw">LOCAL_QUORUM</span><span class="kw">Chaos Engineering</span><span class="kw">Velero</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Chaos engineering (quarterly GameDay) is how we validate our RTO claims. We literally kill an AZ in staging and measure: did the system recover within the promised RTO? If not, fix the gap before production finds it.</span><div class="lang-dual"><span class="lang-en">Chaos engineering (quarterly GameDay) is how we validate our RTO claims. We literally kill an AZ in staging and measure: did the system recover within the promised RTO? If not, fix the gap before production finds it.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Tự tiêu diệt hệ thống qua Chaos Engineer mỗi đợt GameDay đem về kiểm chứng sâu sắc RTO của khối vận hành. Tự diệt Staging Server rồi ngồi xem hệ thống tự chữa bệnh, nếu không thì chắp lại khâu hổng ngay lúc đó.</span></div>"</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end arch -->
+
+<!-- ══ HIGH CONCURRENCY SECTION ════════════ -->
+<div class="conc-section">
+  <div class="section-hd" style="color:#fbbf24;">⚡ High-Concurrency Hazard Scoring & Fast Alert Strategy</div>
+  <div class="section-sub-en">Problem: Thousands of vehicles simultaneously report sensor data. The system must score severity, deduplicate, and push geo-targeted alerts within <strong style="color:#fbbf24;">&lt;500ms end-to-end</strong>.</div>
+  <div class="section-sub-vi">Bài toán: Hàng nghìn xe đồng thời báo cáo. Hệ thống phải chấm điểm mức độ, loại trùng, và đẩy cảnh báo đúng địa lý trong vòng &lt;500ms.</div>
+  <div class="conc-grid">
+    <div class="conc-card" style="background:#1c1200;border-color:#92400e;">
+      <div class="conc-title" style="color:#fcd34d;">① Kafka Geo-Hash Partition</div>
+      <div class="conc-body-en" style="color:#d97706;">Partition by Geohash level 5 (≈4km²). Consumer groups per region process in parallel — eliminates hot-spot when thousands of vehicles converge at city center rush hour.</div>
+      <div class="conc-body-vi" style="color:#92400e;">Partition theo Geohash level 5. Consumer group per region xử lý song song — loại hot-spot khi hàng nghìn xe dồn vào trung tâm giờ cao điểm.</div>
+    </div>
+    <div class="conc-card" style="background:#1c1200;border-color:#92400e;">
+      <div class="conc-title" style="color:#fcd34d;">② Redis TTL Deduplication</div>
+      <div class="conc-body-en" style="color:#d97706;">Key: <code style="background:#2d1f00;color:#fbbf24;font-size:9px;">hazard:{geohash}:{type}</code> with 60s TTL. First vehicle triggers ML scoring; subsequent vehicles increment confirmation counter → boosts severity score. Zero redundant ML calls.</div>
+      <div class="conc-body-vi" style="color:#92400e;">Key có TTL 60s. Xe đầu trigger ML; xe sau chỉ tăng counter → tăng severity score. Không gọi ML dư thừa.</div>
+    </div>
+    <div class="conc-card" style="background:#1c1200;border-color:#92400e;">
+      <div class="conc-title" style="color:#fcd34d;">③ In-Memory Severity Scoring</div>
+      <div class="conc-body-en" style="color:#d97706;"><code style="background:#2d1f00;color:#fbbf24;font-size:9px;">Score = f(ML_confidence, report_count, speed, time_decay)</code> — computed in-memory per Kafka event. Higher score = broader alert radius. Zero DB round-trip in the hot path.</div>
+      <div class="conc-body-vi" style="color:#92400e;">Tính score trong memory mỗi Kafka event. Score cao hơn = bán kính cảnh báo rộng hơn. Không round-trip DB trong hot path.</div>
+    </div>
+    <div class="conc-card" style="background:#0a1f12;border-color:#065f46;">
+      <div class="conc-title" style="color:#34d399;">④ Redis GEORADIUS Fanout</div>
+      <div class="conc-body-en" style="color:#6ee7b7;">GEORADIUS on Redis GEO set (all active vehicles in-memory). Sub-millisecond lookup even at 500k+ vehicles. Geohash pre-filter cuts candidate set from 500k → ~500 vehicles before GEORADIUS call.</div>
+      <div class="conc-body-vi" style="color:#166534;">GEORADIUS trên Redis GEO set (tất cả xe trong memory). Sub-ms kể cả 500k xe. Geohash pre-filter cắt từ 500k → ~500 xe trước khi gọi GEORADIUS.</div>
+    </div>
+    <div class="conc-card" style="background:#0a1f12;border-color:#065f46;">
+      <div class="conc-title" style="color:#34d399;">⑤ Direct WebSocket Routing</div>
+      <div class="conc-body-en" style="color:#6ee7b7;">Redis maps <code style="background:#051a0a;color:#6ee7b7;font-size:9px;">vehicle_id → pod_id</code>. Alert Service routes directly to the correct pod — no broadcast storms. O(1) lookup vs O(N) broadcast without registry.</div>
+      <div class="conc-body-vi" style="color:#166534;">Redis map vehicle_id → pod_id. Route thẳng vào đúng pod — không broadcast storm. O(1) thay vì O(N).</div>
+    </div>
+    <div class="conc-card" style="background:#0a1f12;border-color:#065f46;">
+      <div class="conc-title" style="color:#34d399;">⑥ KEDA Horizontal Auto-Scale</div>
+      <div class="conc-body-en" style="color:#6ee7b7;">KEDA scales Alert + Telemetry pods on Kafka consumer lag. Lag spikes → new pods in ~30s. Cassandra scales writes linearly by adding nodes. No single master bottleneck anywhere.</div>
+      <div class="conc-body-vi" style="color:#166534;">KEDA scale pod theo Kafka lag. Lag tăng → pod mới trong ~30s. Cassandra scale write tuyến tính. Không có master bottleneck ở đâu cả.</div>
+    </div>
+  </div>
+  <div class="lat-bar">
+    <div class="lat-seg" style="background:#1e3a5f;"><div class="lat-lbl" style="color:#93c5fd;">IoT → MQTT → Kafka</div><div class="lat-val" style="color:#60a5fa;">~50ms</div></div>
+    <div class="lat-seg" style="background:#2e1065;"><div class="lat-lbl" style="color:#c4b5fd;">ML Inference</div><div class="lat-val" style="color:#a78bfa;">~100ms</div></div>
+    <div class="lat-seg" style="background:#451a03;"><div class="lat-lbl" style="color:#fcd34d;">Dedup + Score</div><div class="lat-val" style="color:#fbbf24;">~10ms</div></div>
+    <div class="lat-seg" style="background:#064e3b;"><div class="lat-lbl" style="color:#6ee7b7;">GEORADIUS + Fanout</div><div class="lat-val" style="color:#34d399;">~20ms</div></div>
+    <div class="lat-seg" style="background:#1e1b4b;"><div class="lat-lbl" style="color:#a5b4fc;">WebSocket Push</div><div class="lat-val" style="color:#818cf8;">~50ms</div></div>
+  </div>
+  <div class="lat-note">Total ≈ 230ms typical · &lt;500ms P99 under peak load</div>
+  <div class="tag-row">
+    <span class="tag">Kafka geo-partitioning</span><span class="tag">Redis GEORADIUS</span><span class="tag">Crowd-sourced severity</span>
+    <span class="tag">WebSocket registry</span><span class="tag">KEDA on Kafka lag</span><span class="tag">Redis TTL dedup</span>
+  </div>
+</div>
+
+<!-- ══ Q&A ROUND 1 ══════════════════════════ -->
+<div class="qa-section qa-r1">
+  <div class="qa-hd" style="color:#60a5fa;">🎯 Interview Q&amp;A — Round 1: Core System Design</div>
+  <div class="qa-sub">Click each question to reveal full bilingual answer · Nhấn vào câu hỏi để xem trả lời song ngữ</div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q-row" style="background:#080f20;">
+      <span class="qa-badge" style="background:#1d4ed8;color:#fff;">Q1</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">How would you handle data consistency between Cassandra and PostGIS when a new hazard is confirmed? What if one write succeeds and the other fails?</span>
+        <span class="qa-q-vi">Làm thế nào để đảm bảo data consistency giữa Cassandra và PostGIS khi một hazard mới được xác nhận? Nếu một write thành công còn write kia thất bại?</span>
+      </div>
+      <span class="qa-arrow">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        This is a classic <span class="hl-blue">distributed transaction problem</span>. Since Cassandra and PostGIS are two separate stores, ACID transactions across both are impossible. My approach: <span class="hl-blue">Saga pattern with compensating transactions</span>.<br><br>
+        <strong>Step 1:</strong> Write telemetry to Cassandra first (append-only, low risk).<br>
+        <strong>Step 2:</strong> Publish <code>hazard.confirmed</code> event to Kafka.<br>
+        <strong>Step 3:</strong> Map Hazard Service consumes event → writes spatial point to PostGIS.<br>
+        <strong>Failure handling:</strong> Kafka retains message → consumer retries with <span class="hl-amber">exponential backoff</span> → max retries exceeded → <span class="hl-amber">Dead Letter Queue (DLQ)</span>. Hazard stays "PENDING" until resolved.<br><br>
+        A periodic <span class="hl-blue">reconciliation job</span> (every 5 min) cross-checks Cassandra vs PostGIS and re-queues missing spatial records — ensuring eventual consistency without blocking the real-time alert path.
+        <div class="tip tip-blue"><strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">We achieve eventual consistency without a distributed transaction coordinator. The Saga pattern trades atomicity for availability — correct trade-off for a system where writes must not block reads.</span><div class="lang-dual"><span class="lang-en">We achieve eventual consistency without a distributed transaction coordinator. The Saga pattern trades atomicity for availability — correct trade-off for a system where writes must not block reads.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Chúng ta đạt trạng thái Nhất quán cuối (Eventual Consistency) mà không cần bộ điều phối (Coordinator) phân tán tốn kém. Mô hình Saga đánh đổi tính toàn vẹn tức thời (Atomicity) lấy tính khả dụng (Availability) — đánh đổi chính xác để Write không cản Read.</span></div>"</div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>Vấn đề:</strong> Không thể dùng ACID cross-store. Giải pháp: <strong>Saga pattern</strong> — write Cassandra trước → publish event Kafka → service khác write PostGIS. Nếu fail: retry exponential backoff → DLQ sau max retry. Hazard giữ trạng thái PENDING. <strong>Reconciliation job</strong> 5 phút/lần so sánh 2 store và re-queue record thiếu. Đây là eventual consistency không block real-time path.
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q-row" style="background:#080f20;">
+      <span class="qa-badge" style="background:#1d4ed8;color:#fff;">Q2</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">The ML model flags too many false positives on roads with speed bumps. How do you improve accuracy without redeploying the whole system?</span>
+        <span class="qa-q-vi">ML model báo nhầm quá nhiều trên đường có gờ giảm tốc. Cải thiện accuracy mà không cần redeploy toàn hệ thống?</span>
+      </div>
+      <span class="qa-arrow">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        Address at 3 levels simultaneously:<br><br>
+        <strong>1. Context enrichment (pre-processing):</strong> Feed the model vehicle speed + road type from map tiles + <span class="hl-green">known speed bump coordinates from OpenStreetMap</span>. Filter known speed bump locations at pre-processing — never reach ML inference.<br><br>
+        <strong>2. Runtime threshold tuning:</strong> Store confidence threshold in <span class="hl-green">Redis as a hot-config key</span>. Ops team raises threshold in real-time via admin API — no redeploy, effect in &lt;1 second. Alert fires only above threshold.<br><br>
+        <strong>3. Continuous retraining with crowd feedback:</strong> Driver dismissal → labeled false positive → <span class="hl-green">nightly MLflow retrain</span>. Champion/Challenger A/B test on 10% traffic. <span class="hl-amber">Auto-rollback</span> if new model precision drops below SLA.
+        <div class="tip tip-green"><strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">The threshold in Redis is the fastest lever — we can tune the model's behavior in production within seconds, without a deployment pipeline.</span><div class="lang-dual"><span class="lang-en">The threshold in Redis is the fastest lever — we can tune the model's behavior in production within seconds, without a deployment pipeline.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Sử dụng Redis Threshold để tinh chỉnh AI Model Production là đòn bẩy phản ứng thần tốc — ngay lập tức chuyển đổi hành vi trí tuệ nhân tạo chỉ bằng config.</span></div>"</div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>3 lớp:</strong> (1) <strong>Context enrichment</strong>: enrich data với tốc độ xe, loại đường, vị trí gờ giảm tốc từ OpenStreetMap → filter trước khi vào ML; (2) <strong>Threshold Redis hot-config</strong>: thay đổi ngưỡng runtime không cần deploy, có hiệu lực &lt;1 giây; (3) <strong>Nightly retrain</strong>: feedback tài xế → label false positive → MLflow retrain → Champion/Challenger A/B 10% traffic → auto-rollback nếu precision giảm.
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q-row" style="background:#080f20;">
+      <span class="qa-badge" style="background:#1d4ed8;color:#fff;">Q3</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">If Kafka cluster goes down, what happens? How do you ensure zero data and alert loss?</span>
+        <span class="qa-q-vi">Kafka cluster bị down thì sao? Đảm bảo không mất dữ liệu và alert như thế nào?</span>
+      </div>
+      <span class="qa-arrow">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        <span class="hl-blue">Layered resilience strategy</span> — 3 buffers before data is lost:<br><br>
+        <strong>Buffer 1 — IoT Device:</strong> Local <span class="hl-blue">SQLite store-and-forward</span>. If MQTT publish fails, data queues locally, retransmits on reconnect. Never drops at the edge.<br><br>
+        <strong>Buffer 2 — MQTT Broker (EMQX):</strong> <span class="hl-blue">Persistent sessions + QoS 1/2</span>. Messages held at broker until Kafka recovers. Device reconnects and messages flow immediately.<br><br>
+        <strong>Buffer 3 — Kafka itself:</strong> <span class="hl-blue">Replication factor = 3, min.insync.replicas = 2</span>. Tolerates one broker failure with zero data loss. For complete cluster failure, upstream buffers (1+2) absorb.<br><br>
+        <strong>Critical alert bypass:</strong> Alert Service has a <span class="hl-amber">direct Redis Pub/Sub path</span> that bypasses Kafka entirely for CRITICAL severity hazards — high-danger warnings still reach drivers.
+        <div class="tip tip-blue"><strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">We have 3 layers of buffering before data is lost. The system degrades gracefully — not catastrophically.</span><div class="lang-dual"><span class="lang-en">We have 3 layers of buffering before data is lost. The system degrades gracefully — not catastrophically.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Kiến trúc bọc 3 lớp Buffer kiên cố trước khi mất trắng Dữ liệu. Tính thoái triển hệ thống mềm mỏng (Graceful Degradation) mới làm nên System an toàn.</span></div>"</div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>3 lớp buffer:</strong> (1) <strong>SQLite on OBD device</strong>: lưu local, gửi lại khi phục hồi kết nối; (2) <strong>EMQX persistent session + QoS 1/2</strong>: broker giữ message cho đến khi Kafka phục hồi; (3) <strong>Kafka replication factor=3</strong>: chịu 1 broker chết. Alert khẩn cấp có path riêng qua <strong>Redis Pub/Sub</strong> bypass hoàn toàn Kafka — tài xế vẫn nhận cảnh báo.
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q-row" style="background:#080f20;">
+      <span class="qa-badge" style="background:#1d4ed8;color:#fff;">Q4</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">How do you design the Cassandra data model so "last 2 hours of vehicle X's route" is fast at scale?</span>
+        <span class="qa-q-vi">Thiết kế data model Cassandra như thế nào để query "2 giờ gần nhất của xe X" chạy nhanh ở quy mô lớn?</span>
+      </div>
+      <span class="qa-arrow">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        In Cassandra: <span class="hl-purple">query-first data modeling</span> — design the table around the query, not normalization rules.<br><br>
+        <code class="code-block">CREATE TABLE vehicle_gps_track (<br>&nbsp;&nbsp;tenant_id &nbsp;&nbsp;&nbsp;UUID,<br>&nbsp;&nbsp;vehicle_id &nbsp;&nbsp;UUID,<br>&nbsp;&nbsp;date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATE,&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">-- day bucket: limits partition size</span><br>&nbsp;&nbsp;recorded_at &nbsp;TIMESTAMP,<br>&nbsp;&nbsp;latitude &nbsp;&nbsp;&nbsp;&nbsp;DOUBLE,<br>&nbsp;&nbsp;longitude &nbsp;&nbsp;&nbsp;DOUBLE,<br>&nbsp;&nbsp;speed &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FLOAT,<br>&nbsp;&nbsp;PRIMARY KEY ((tenant_id, vehicle_id, date), recorded_at)<br>) WITH CLUSTERING ORDER BY (recorded_at DESC);</code>
+        <span class="hl-purple">Partition key</span> <code>(tenant_id, vehicle_id, date)</code>: all GPS points for one vehicle on one day live on one node — <strong>single-partition read, zero scatter-gather</strong>.<br>
+        <span class="hl-purple">Clustering DESC</span>: "last 2 hours" is a top-of-partition range scan — O(log N) not O(N).<br>
+        <strong>Date bucket</strong>: prevents unbounded partition growth (1 event/3s = 28,800 rows/day — manageable).<br>
+        <strong>Multi-day query</strong>: app queries N partitions and merges client-side.
+        <div class="tip tip-blue"><strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">In Cassandra, you model the table for the query, not the query for the table. The partition key is the unit of co-location — get it right and every query is a single-node, single-partition read.</span><div class="lang-dual"><span class="lang-en">In Cassandra, you model the table for the query, not the query for the table. The partition key is the unit of co-location — get it right and every query is a single-node, single-partition read.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Sử dụng Cassandra, Database phải tạo nắn theo form của Query. Dùng đúng đắn khóa cấu trúc Phân mảnh thì Read nào cũng chỉ về vỏn vẹn đúng 1 Node.</span></div>"</div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>Query-first modeling:</strong> Partition key <code>(tenant_id, vehicle_id, date)</code> — toàn bộ GPS một xe trong một ngày nằm trên cùng 1 node. Clustering <code>recorded_at DESC</code> → "2 giờ gần nhất" là range scan đầu partition, cực nhanh. Date bucket tránh partition vô hạn. Query nhiều ngày thì app query nhiều partition và merge client-side.
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q-row" style="background:#080f20;">
+      <span class="qa-badge" style="background:#1d4ed8;color:#fff;">Q5</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">How do you ensure privacy and security of real-time vehicle location data continuously streamed to the backend?</span>
+        <span class="qa-q-vi">Đảm bảo privacy và security của dữ liệu vị trí xe stream liên tục lên backend như thế nào?</span>
+      </div>
+      <span class="qa-arrow">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        Defense-in-depth — 4 layers:<br><br>
+        <strong>Transport:</strong> <span class="hl-red">TLS 1.3</span> for all connections. IoT devices use <span class="hl-red">per-device X.509 mTLS certificates</span> — a compromised device is individually revocable without affecting the fleet.<br><br>
+        <strong>Access control:</strong> JWT claims embed <code>tenant_id</code> + role. <span class="hl-red">PostgreSQL Row-Level Security (RLS)</span> enforces tenant isolation at DB level — even if app code forgets a WHERE clause, the DB enforces it.<br><br>
+        <strong>Data minimization:</strong> Cassandra GPS data has <span class="hl-red">30-day TTL</span> auto-delete. GDPR erasure: a data deletion job removes all records keyed to <code>vehicle_id</code> across Cassandra, PostgreSQL, MongoDB, and S3.<br><br>
+        <strong>Encryption at rest:</strong> AES-256 disk encryption. Sensitive PII fields encrypted at <span class="hl-red">application layer</span>. Keys managed in <span class="hl-red">HashiCorp Vault</span> with full audit logging — DB admins cannot read PII without the key.
+        <div class="tip tip-blue"><strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">RLS is the last line of defense. It's not a replacement for application-level security — it's the backstop that catches mistakes.</span><div class="lang-dual"><span class="lang-en">RLS is the last line of defense. It's not a replacement for application-level security — it's the backstop that catches mistakes.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">RLS chỉ là chiến tuyến bảo vệ trong cùng cuối. Phải dùng nó như chiếc lưới lọc bọc đuôi cho Application Layer thay vì trốn tránh làm Security ở App.</span></div>"</div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>4 lớp:</strong> (1) <strong>TLS 1.3 + mTLS X.509 per-device</strong>: thu hồi từng thiết bị riêng; (2) <strong>JWT + PostgreSQL RLS</strong>: enforce tenant isolation ở DB layer kể cả khi app code quên filter; (3) <strong>TTL 30 ngày</strong> + GDPR erasure job xóa toàn bộ record theo vehicle_id across all stores; (4) <strong>AES-256 at rest + app-layer encryption</strong> + HashiCorp Vault quản lý key với full audit log.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ Q&A ROUND 2 ══════════════════════════ -->
+<div class="qa-section qa-r2">
+  <div class="qa-hd" style="color:#34d399;">🔥 Interview Q&amp;A — Round 2: Advanced Deep-Dive</div>
+  <div class="qa-sub">High-difficulty questions · Architecture decisions under pressure · Bilingual · Nhấn để xem trả lời</div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q-row" style="background:#040e08;">
+      <span class="qa-badge" style="background:#047857;color:#fff;">Q6</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">At 500,000 concurrent vehicles, PostGIS GEORADIUS becomes the bottleneck. How do you redesign the spatial query layer without replacing PostGIS entirely?</span>
+        <span class="qa-q-vi">Tại 500k xe đồng thời, GEORADIUS PostGIS trở thành bottleneck. Redesign spatial query layer như thế nào mà không thay PostGIS hoàn toàn?</span>
+      </div>
+      <span class="qa-arrow">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        <span class="hl-green">Two-tier spatial lookup strategy</span>:<br><br>
+        <strong>Tier 1 — Redis GEO (95% of queries, real-time path):</strong><br>
+        All active vehicle positions stored in Redis GEO sorted set, updated on every GPS event (~every 3–5s). Redis GEORADIUS runs in-memory — handles 500k+ members at thousands of queries/second. Redis Cluster shards the GEO set by region.<br><br>
+        <strong>Geohash pre-filter (the key optimization):</strong><br>
+        Before GEORADIUS, pre-filter by Geohash cell. A hazard at location X maps to a Geohash prefix. Only vehicles in matching cells are candidates (~500 max per cell). This cuts the search space from 500k → &lt;500 before the actual radius query — making GEORADIUS trivially fast.<br><br>
+        <strong>Tier 2 — PostGIS (5% of queries, async path only):</strong><br>
+        Reserved for: geofence polygon checks, hazard clustering/dedup, historical analytics. All triggered via Kafka, never in the real-time alert path.<br><br>
+        <span class="hl-amber">Trade-off:</span> Redis GEO uses a flat Earth approximation (~0.6% position error at city scale). Acceptable for 500m–2km alert radius. For sub-100m precision, fall back to PostGIS read replicas behind PgBouncer.
+        <div class="tip tip-green"><strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">Redis GEO is not just a cache — it's the primary spatial data store for real-time lookups. PostGIS is the analytical and complex-geometry store. The separation of concerns is intentional.</span><div class="lang-dual"><span class="lang-en">Redis GEO is not just a cache — it's the primary spatial data store for real-time lookups. PostGIS is the analytical and complex-geometry store. The separation of concerns is intentional.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Tách bạch mảng chuyên trách (Separation of Concerns). Redis Geo cho Real-time cực tiểu Delay — PostGIS cho Analytics độ trễ rộng hơn. Logic này là Intentional từ bộ khung kiến trúc.</span></div>"</div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>Two-tier strategy:</strong> Tier 1: <strong>Redis GEO set</strong> làm primary real-time lookup (in-memory, sub-ms, scale với Redis Cluster). Geohash pre-filter cắt 500k xe → ~500 candidates trước khi gọi GEORADIUS. Tier 2: <strong>PostGIS chỉ cho async/complex</strong> (geofence polygon, clustering, analytics) — không bao giờ ở real-time alert path. Trade-off: Redis GEO có ~0.6% sai số vị trí — chấp nhận cho bán kính 500m+.
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q-row" style="background:#040e08;">
+      <span class="qa-badge" style="background:#047857;color:#fff;">Q7</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">A pothole is fixed at 3PM but your system keeps warning drivers. How do you design the full hazard lifecycle — creation, validation, expiry, and self-healing removal?</span>
+        <span class="qa-q-vi">Ổ gà được vá lúc 3 giờ chiều nhưng hệ thống vẫn cảnh báo. Thiết kế hazard lifecycle đầy đủ: tạo, validate, hết hạn, và tự xóa như thế nào?</span>
+      </div>
+      <span class="qa-arrow">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        <span class="hl-green">Hazard Finite State Machine (FSM)</span>:<br><br>
+        <code class="code-block">PENDING → ACTIVE → UNDER_REVIEW → RESOLVED → ARCHIVED</code>
+        <strong>Transitions:</strong><br>
+        • <strong>PENDING → ACTIVE:</strong> ≥3 vehicle reports within 10 min AND score exceeds threshold.<br>
+        • <strong>ACTIVE → UNDER_REVIEW:</strong> No new reports for 2 hours → time-decay drops score → alert radius shrinks → flagged for re-validation.<br>
+        • <strong>UNDER_REVIEW → RESOLVED (passive):</strong> <span class="hl-green">5+ consecutive vehicles pass without triggering sensor</span> — crowd-sourced confirmation that the hazard is gone.<br>
+        • <strong>UNDER_REVIEW → RESOLVED (active):</strong> Road authority API call marks resolved (explicit integration).<br>
+        • <strong>Auto-expiry:</strong> Every hazard has <code>expires_at</code> timestamp. Background job sweeps every 15 min → publishes <code>hazard.expired</code> Kafka event → Alert Service removes from Redis GEO set + map tile cache invalidated.<br><br>
+        <span class="hl-amber">Self-healing insight:</span> "5 consecutive clean passes" requires no ops team intervention — the system heals itself from crowd signal at scale.
+        <div class="tip tip-green"><strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">Stale alerts are more damaging to user trust than missed alerts. The FSM ensures every hazard has an exit path — nothing stays ACTIVE forever.</span><div class="lang-dual"><span class="lang-en">Stale alerts are more damaging to user trust than missed alerts. The FSM ensures every hazard has an exit path — nothing stays ACTIVE forever.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Người dùng thù ghét những cảnh báo giả và quá hạn. Hệ biểu diễn vòng đời FSM xử lý mọi lối thoát tự động, không rủi ro nào ở mức Tồn Tại (Active) mãi mãi.</span></div>"</div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>FSM 5 state:</strong> PENDING → ACTIVE → UNDER_REVIEW → RESOLVED → ARCHIVED. <strong>Transition key:</strong> "5 xe liên tiếp đi qua không trigger sensor" = passive crowd-sourced resolution, không cần ops team. Auto-expiry bằng <code>expires_at</code> + background sweep 15 phút → publish Kafka event → xóa khỏi Redis GEO + invalidate map tile cache. Hệ thống self-healing ở quy mô lớn.
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q-row" style="background:#040e08;">
+      <span class="qa-badge" style="background:#047857;color:#fff;">Q8</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">Company A and Company B both use the platform — how do you design multi-tenancy so data isolation is guaranteed at every layer?</span>
+        <span class="qa-q-vi">Công ty A và B dùng chung platform — thiết kế multi-tenancy sao cho data isolation được đảm bảo ở mọi layer?</span>
+      </div>
+      <span class="qa-arrow">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        <span class="hl-green">Bridge Model with defense-in-depth</span> (not Silo = too expensive, not Pool = too risky):<br><br>
+        <strong>Layer 1 — API Gateway:</strong> JWT claims embed <code>tenant_id</code>. Gateway validates token and rejects requests with invalid tenant context before any service receives them.<br><br>
+        <strong>Layer 2 — Application:</strong> All service queries filter by <code>tenant_id</code>. Kafka topics namespaced: <code>tenant-A.gps.events</code> with ACLs preventing cross-topic consumption.<br><br>
+        <strong>Layer 3 — Database (last line of defense):</strong> <span class="hl-green">PostgreSQL Row-Level Security</span>: <code>WHERE tenant_id = current_setting('app.tenant_id')</code> enforced by the DB itself — catches bugs in application code. Cassandra partition key includes <code>tenant_id</code> — physically separate data, cross-tenant scan structurally impossible.<br><br>
+        <strong>Layer 4 — Audit:</strong> Every cross-tenant access attempt logged to SIEM. Anomalous patterns trigger security alert.
+        <div class="tip tip-green"><strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">We don't trust any single layer. If the application layer has a bug, the DB layer catches it. Defense-in-depth means N independent failures must occur simultaneously to breach isolation.</span><div class="lang-dual"><span class="lang-en">We don't trust any single layer. If the application layer has a bug, the DB layer catches it. Defense-in-depth means N independent failures must occur simultaneously to breach isolation.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Chúng tôi Không tin ở 1 Layer đơn cực. Nếu logic hở khóa, DB sẽ gánh vác. Defense-in-depth ép chuỗi Error ngẫu nhiên rơi đồng loạt rớt cùng chung thì rủi ro mới suy yếu hệ thống Multi-tenant.</span></div>"</div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>Bridge Model (shared infra, isolated data):</strong> 4 lớp: (1) <strong>JWT tenant_id</strong> tại API Gateway; (2) <strong>App filter + Kafka ACL</strong> theo namespace; (3) <strong>PostgreSQL RLS</strong> enforce ở DB level — safety net cuối cùng; Cassandra partition key bao gồm tenant_id — tách data vật lý, không thể cross-tenant scan; (4) <strong>SIEM audit log</strong> mọi access attempt bất thường.
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q-row" style="background:#040e08;">
+      <span class="qa-badge" style="background:#047857;color:#fff;">Q9</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">A vehicle exits a tunnel after 8 minutes with a 3km position gap. How does the system handle tracking continuity, alert accuracy, and safety during and after the gap?</span>
+        <span class="qa-q-vi">Xe ra khỏi hầm sau 8 phút, vị trí nhảy 3km. Hệ thống xử lý tracking continuity, alert accuracy và safety trong và sau gap như thế nào?</span>
+      </div>
+      <span class="qa-arrow">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        <span class="hl-green">GPS gap handling — 3-phase strategy</span>:<br><br>
+        <strong>Phase 1 — During gap (Dead Reckoning):</strong><br>
+        OBD device continues sampling <span class="hl-green">accelerometer + gyroscope + wheel speed (IMU)</span> even without GPS. Data buffered locally. On GPS restore, device sends a <code>gps_gap</code> event: {last_gps_pos, restored_gps_pos, gap_duration_ms, raw_imu_buffer}. Tracking Service performs <span class="hl-green">IMU-based path reconstruction</span> — accurate enough for route history display (~2–5% drift over 8 min).<br><br>
+        <strong>Phase 2 — Alert suppression during gap:</strong><br>
+        &gt;30s without GPS heartbeat → vehicle marked <code>status: offline</code> in Redis GEO set. Alert Service <span class="hl-amber">stops geo-targeted alerts to this vehicle</span> — no point alerting a driver when location is unknown.<br><br>
+        <strong>Phase 3 — Reconnect hazard sweep (critical for safety):</strong><br>
+        On <code>vehicle.reconnected</code> event, Alert Service runs a <span class="hl-green">one-time GEORADIUS sweep</span> at the restored position — checking all active hazards within the configured radius. Driver is immediately caught up on hazards reported during the gap.
+        <div class="tip tip-green"><strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">A vehicle at 80km/h exiting a tunnel has ~2 seconds before reaching any hazard within 50m. The reconnect sweep runs in &lt;20ms — the driver gets the warning before they arrive.</span><div class="lang-dual"><span class="lang-en">A vehicle at 80km/h exiting a tunnel has ~2 seconds before reaching any hazard within 50m. The reconnect sweep runs in &lt;20ms — the driver gets the warning before they arrive.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Phản gia tốc cho chiếc ô tô đi 80 cây số/h khi qua hầm là rất mong manh (2s). Lực xử lý quá độ mượt 20ms càn dữ liệu Sweep mang lại cái cảnh báo hoàn chỉnh kịp bảo toàn tài xế.</span></div>"</div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>3 phase:</strong> (1) <strong>Dead reckoning</strong>: OBD buffer IMU data khi mất GPS → gửi <code>gps_gap</code> event khi phục hồi → Tracking Service reconstruct path từ IMU (~2–5% drift sau 8 phút); (2) <strong>Alert suppression</strong>: mark xe offline trong Redis, ngừng gửi alert vì không biết xe đang ở đâu; (3) <strong>Reconnect sweep</strong>: khi GPS phục hồi, chạy ngay GEORADIUS sweep tại vị trí mới → catch up tất cả hazard báo trong lúc xe trong hầm. Sweep chạy &lt;20ms, tài xế nhận cảnh báo kịp thời.
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q-row" style="background:#040e08;">
+      <span class="qa-badge" style="background:#047857;color:#fff;">Q10</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">How do you define KPIs and SLOs for this system — and how would you detect silent degradation: failures that produce no errors but silently harm users?</span>
+        <span class="qa-q-vi">Định nghĩa KPIs và SLOs cho hệ thống này như thế nào? Và phát hiện silent degradation — lỗi không throw error nhưng âm thầm gây hại cho người dùng?</span>
+      </div>
+      <span class="qa-arrow">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        <span class="hl-green">Two-tier measurement: Technical SLOs + Business KPIs</span><br><br>
+        <strong>Technical SLOs (Prometheus/Grafana):</strong><br>
+        • Alert end-to-end latency P99 &lt; 500ms<br>
+        • Kafka consumer lag &lt; 2 seconds<br>
+        • API availability ≥ 99.9% (30-day rolling window)<br>
+        • WebSocket connection success rate ≥ 99.5%<br><br>
+        <strong>Business KPIs (what actually matters to users):</strong><br>
+        • <span class="hl-green">Alert Precision Rate:</span> % alerts confirmed by drivers as real hazards. Target &gt;80%. Drop below 60% = model degradation signal.<br>
+        • <span class="hl-green">Alert Recall Rate:</span> % of actual hazards that generated an alert. Cross-reference with road authority incident reports.<br>
+        • <span class="hl-green">MTTA (Mean Time to Alert):</span> First detection → first nearby driver alerted. Target &lt;10 seconds.<br><br>
+        <strong>Silent degradation detection (the hard part):</strong><br>
+        • <span class="hl-amber">GPS event rate drop per vehicle:</span> Baseline per-vehicle expected rate. Sudden drop → OBD device failure. Alert before driver notices.<br>
+        • <span class="hl-amber">Alert volume anomaly:</span> Zero alerts in a busy city at rush hour ≠ safer roads. Monitor expected alert volume per region/time window. Anomalous silence = pipeline failure.<br>
+        • <span class="hl-amber">ML confidence score distribution drift:</span> Histogram of confidence scores. Distribution shifting lower over time = model becoming uncertain → retrain before precision visibly degrades.<br>
+        • <span class="hl-amber">Cassandra write latency creep:</span> 5ms → 50ms rise won't throw errors but signals compaction pressure. Caught by Cassandra JMX metrics in Grafana.
+        <div class="tip tip-green"><strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">We monitor not just for errors, but for the absence of expected signals. In a safety-critical system, silence can be more dangerous than noise.</span><div class="lang-dual"><span class="lang-en">We monitor not just for errors, but for the absence of expected signals. In a safety-critical system, silence can be more dangerous than noise.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Tracking phải có tính Cảnh giác sự biến mất Data (Absence). Ở ngành giao thông chí mạng này, Im ắng không số hiệu thường đáng sợ và đau đớn hơn sự chật chội ồn ào.</span></div>"</div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>2 tier metrics:</strong> Technical SLOs (latency P99 &lt;500ms, Kafka lag &lt;2s, availability 99.9%) + Business KPIs (Alert Precision/Recall, MTTA &lt;10s). <strong>Silent degradation:</strong> (1) GPS event rate drop per vehicle → OBD device hỏng; (2) Alert volume drop trong giờ cao điểm → pipeline fail ẩn; (3) ML confidence distribution drift → model degrading trước khi precision thấy rõ; (4) Cassandra write latency creep → compaction pressure. <em>"Monitor sự vắng mặt của tín hiệu kỳ vọng — silence trong safety-critical system còn nguy hiểm hơn noise."</em>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ Q&A ROUND 3 ══════════════════════════ -->
+<div style="margin-top:20px; border:1px solid #7f1d1d; background:#0d0404; border-radius:14px; padding:20px;" class="qa-section qa-r3">
+  <div class="qa-hd" style="color:#f87171;">💀 Interview Q&amp;A — Round 3: Principal / Staff Engineer Level</div>
+  <div class="qa-sub">Extreme difficulty · No single right answer · Tests architecture judgment under ambiguity · Nhấn để xem trả lời song ngữ</div>
+
+  <!-- Q11 -->
+  <div class="qa-card" onclick="toggleQA(this)" style="border-color:#3f1010;">
+    <div class="qa-q-row" style="background:#110505;">
+      <span class="qa-badge" style="background:#dc2626;color:#fff;">Q11</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">Your system works well at city scale. Now the product team wants to expand to 50 countries simultaneously — each with different data residency laws, network latencies, and vehicle sensor hardware. How do you architect for global scale without rebuilding from scratch?</span>
+        <span class="qa-q-vi">Hệ thống tốt ở quy mô thành phố. Product team muốn mở rộng ra 50 quốc gia cùng lúc — mỗi nước có luật data residency khác nhau, latency mạng khác nhau, phần cứng cảm biến khác nhau. Thiết kế global scale mà không rebuild từ đầu?</span>
+      </div>
+      <span class="qa-arrow" style="color:#6b7280;">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        This is a <span class="hl-red">multi-dimensional global architecture problem</span> — data sovereignty + latency + hardware heterogeneity must be solved simultaneously.<br><br>
+        <strong>1. Data Residency — Cell-based Architecture:</strong><br>
+        Deploy independent <span class="hl-red">regional "cells"</span> — each cell is a complete isolated stack (Kafka + Cassandra + PostgreSQL + ML inference) within a single legal jurisdiction. EU data never leaves EU cells; Vietnam data never leaves Vietnam cells. Cloudflare Workers performs <span class="hl-red">geo-routing</span> at the edge: every request routes to the correct cell based on the user's registered country, not IP (which can lie).<br>
+        A lightweight <span class="hl-red">global control plane</span> holds only non-PII metadata: tenant registry, cell routing table, cross-cell hazard aggregates for shared border roads. PII never enters the control plane.<br><br>
+        <strong>2. Network Latency — Regional Edge ML Inference:</strong><br>
+        Deploy <span class="hl-red">lightweight ML model replicas at each regional cell</span>. MLflow pushes model artifacts to all cells on a 6-hour sync cycle. A cell with poor connectivity uses the previous model version until sync succeeds — graceful degradation, not failure.<br><br>
+        <strong>3. Hardware Heterogeneity — Adapter Pattern + Schema Registry:</strong><br>
+        Different OBD hardware produces incompatible payloads. A <span class="hl-red">hardware adapter layer</span> at MQTT ingestion normalizes raw payload to a canonical <code>SensorEvent</code> schema. <span class="hl-red">Confluent Schema Registry</span> enforces the canonical schema — malformed payloads are rejected at ingestion, never corrupting downstream ML pipelines.<br><br>
+        <strong>4. Rollout Strategy — Strangler Fig:</strong><br>
+        Use <span class="hl-red">Strangler Fig pattern</span>: each new country is a new cell routed by the global control plane. Existing system continues serving existing customers. Migration is additive, not replacement.
+        <div class="tip" style="background:#1a0505;border-color:#dc2626;color:#f87171;margin-top:10px;padding:9px 12px;border-radius:7px;font-size:10px;border-left:3px solid #dc2626;">
+          <strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">Cell-based architecture solves data residency and blast radius simultaneously. A regulatory change in Germany doesn't require an emergency deployment in Vietnam.</span><div class="lang-dual"><span class="lang-en">Cell-based architecture solves data residency and blast radius simultaneously. A regulatory change in Germany doesn't require an emergency deployment in Vietnam.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Cell-based xử lý trọn vẹn nỗi lo cô lập ranh giới Data. Vùng chịu sát thương cũng giới hạn. Có chỉnh sửa luật ở Châu Âu cũng không cần phải gồng rống Update ở VN.</span></div>"
+        </div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>3 bài toán song song:</strong><br>
+        (1) <strong>Data residency</strong>: Cell-based — mỗi quốc gia 1 cell độc lập, PII không rời jurisdiction. Global control plane chỉ metadata phi-PII. Cloudflare Workers geo-route theo quốc gia đăng ký.<br>
+        (2) <strong>Latency</strong>: ML inference replica tại mỗi cell regional. MLflow sync artifact mỗi 6 giờ. Cell kém kết nối dùng model phiên bản cũ — graceful degradation.<br>
+        (3) <strong>Hardware dị biệt</strong>: Adapter layer normalize payload về canonical SensorEvent schema tại MQTT ingestion. Schema Registry enforce — lỗi bị reject ngay tại ingestion.<br>
+        (4) <strong>Rollout</strong>: Strangler Fig — mỗi quốc gia mới = 1 cell mới, hệ thống cũ vẫn chạy song song.
+      </div>
+    </div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="qa-card" onclick="toggleQA(this)" style="border-color:#3f1010;margin-top:12px;">
+    <div class="qa-q-row" style="background:#110505;">
+      <span class="qa-badge" style="background:#dc2626;color:#fff;">Q12</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">A senior engineer proposes replacing Kafka with Redis Streams to reduce operational complexity. You disagree. How do you make the technical case — and when would you actually agree with them?</span>
+        <span class="qa-q-vi">Senior engineer đề xuất thay Kafka bằng Redis Streams để giảm phức tạp vận hành. Bạn không đồng ý. Lập luận kỹ thuật như thế nào — và khi nào bạn sẽ đồng ý?</span>
+      </div>
+      <span class="qa-arrow" style="color:#6b7280;">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        This is a <span class="hl-red">technology trade-off argument</span> — the right answer depends on constraints, and a good architect knows when to concede.<br><br>
+        <strong>Why Kafka is justified for this system (3 specific reasons):</strong><br>
+        <span class="hl-red">① Replay capability:</span> When a new ML model deploys, we replay 7 days of sensor events to validate before promoting. 168M events at 1M events/hour — Redis would require enormous RAM. Kafka stores on disk with compression at a fraction of the cost.<br><br>
+        <span class="hl-red">② Independent consumer group isolation:</span> Kafka allows multiple consumer groups (Telemetry Service, ML Service, Audit Service) to read the same topic at different offsets independently. Redis Streams requires manual offset tracking and doesn't natively support competing consumers across groups the same way.<br><br>
+        <span class="hl-red">③ Geo-hash partitioning at scale:</span> Kafka's partition model enables precise control over which consumer processes which geographic region. Redis Streams has no native partitioning — you'd re-implement what Kafka gives for free.<br><br>
+        <strong>When I would genuinely agree with them:</strong><br>
+        Single-city MVP, &lt;10k vehicles, no ML replay requirement, small ops team → <span class="hl-amber">Redis Streams is the right call</span>. Simpler ops, no KRaft to manage, already in the stack. I'd propose: <span class="hl-amber">Redis Streams for MVP with a defined migration trigger</span> — "&gt;50k vehicles OR first ML replay requirement → migrate to Kafka".
+        <div class="tip" style="background:#1a0505;border-color:#dc2626;color:#f87171;margin-top:10px;padding:9px 12px;border-radius:7px;font-size:10px;border-left:3px solid #dc2626;">
+          <strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">I never argue technology for its own sake. Kafka is justified here specifically because of replay, independent consumer groups, and geo-partitioning. At MVP scale, I'd agree with Redis Streams.</span><div class="lang-dual"><span class="lang-en">I never argue technology for its own sake. Kafka is justified here specifically because of replay, independent consumer groups, and geo-partitioning. At MVP scale, I'd agree with Redis Streams.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Không đem đồ cộ ra để loè nhau! Chọn Kafka vì sức mạnh của Data Replay và rẽ nhánh luồng dữ liệu (Geo-Hash group). Giả sử App nhỏ hơn, tôi sẵn lòng ôm cái dễ dàng của Redis Stream.</span></div>"
+        </div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>3 lý do Kafka justified:</strong><br>
+        (1) <strong>Replay</strong>: 168M events không lưu được trong RAM Redis. Kafka lưu đĩa, nén, giá rẻ hơn nhiều.<br>
+        (2) <strong>Consumer group độc lập</strong>: Nhiều service consume cùng topic tại offset khác nhau — Redis Streams không support tốt bằng.<br>
+        (3) <strong>Geo-hash partition</strong>: Kafka partition kiểm soát chính xác consumer nào xử lý region nào — Redis không có native partitioning.<br>
+        <strong>Khi nào đồng ý:</strong> MVP &lt;10k xe, không cần replay, team nhỏ → Redis Streams là đúng. Đề xuất: Redis Streams cho MVP, migrate sang Kafka khi vượt 50k xe hoặc có nhu cầu replay đầu tiên.
+      </div>
+    </div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="qa-card" onclick="toggleQA(this)" style="border-color:#3f1010;margin-top:12px;">
+    <div class="qa-q-row" style="background:#110505;">
+      <span class="qa-badge" style="background:#dc2626;color:#fff;">Q13</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">A critical pothole causes a vehicle accident. The legal team needs to reconstruct exactly what data the system had, when it had it, and why it didn't alert the driver in time. How does your architecture support forensic auditability — and what are its honest limits?</span>
+        <span class="qa-q-vi">Một ổ gà gây tai nạn. Pháp lý cần tái hiện chính xác hệ thống có dữ liệu gì, khi nào, và tại sao không cảnh báo tài xế kịp thời. Architecture hỗ trợ forensic auditability như thế nào — và giới hạn thực sự của nó là gì?</span>
+      </div>
+      <span class="qa-arrow" style="color:#6b7280;">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        <span class="hl-red">4-layer forensic evidence chain:</span><br><br>
+        <span class="hl-red">① Immutable Kafka event log:</span> Every sensor event has a Kafka offset, timestamp, partition ID. With 7–30 day retention, we replay exactly what the device transmitted and when — byte-for-byte ground truth.<br><br>
+        <span class="hl-red">② ML inference audit log (MongoDB):</span> Every inference logs: input features (accelerometer values, speed, road type), model version (MLflow model ID + Git SHA), output confidence score, threshold at time of decision. If confidence was 0.62 and threshold was 0.70 → system shows exactly why no alert fired.<br><br>
+        <span class="hl-red">③ Alert decision log:</span> Every Alert Service evaluation logs: hazard severity score, vehicle distance, alert radius, WebSocket status (online/offline), final decision (sent/suppressed). Reconstructs the exact decision path.<br><br>
+        <span class="hl-red">④ Distributed trace (OpenTelemetry → Jaeger):</span> A single trace_id links the full causal chain: sensor event → Kafka message → ML inference → alert decision → WebSocket push (or failure). Queryable by incident timestamp.<br><br>
+        <strong>Honest limits (critical to name in an interview):</strong><br>
+        • <span class="hl-amber">Kafka retention is finite</span> — incident discovered 45 days later + 30-day retention = raw data gone. Mitigation: archive surrounding 10-minute sensor window to S3 for every high-severity confirmed hazard.<br>
+        • <span class="hl-amber">Clock skew:</span> IoT device timestamps may drift 100–500ms from Kafka ingest timestamps. For legal proceedings, Kafka ingest time is authoritative — device clocks can be manipulated.<br>
+        • <span class="hl-amber">First-occurrence limit:</span> If the pothole was never reported before this vehicle hit it, the system has zero prior data. Cannot alert for unknown hazards — this is a fundamental limit, not a bug, and must be documented in operational SLAs.
+        <div class="tip" style="background:#1a0505;border-color:#dc2626;color:#f87171;margin-top:10px;padding:9px 12px;border-radius:7px;font-size:10px;border-left:3px solid #dc2626;">
+          <strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">Forensic auditability is not a feature you add later — it shapes your logging strategy, retention policy, and trace design from day one. Knowing the limits of what you can prove is as important as knowing what you can.</span><div class="lang-dual"><span class="lang-en">Forensic auditability is not a feature you add later — it shapes your logging strategy, retention policy, and trace design from day one. Knowing the limits of what you can prove is as important as knowing what you can.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Giám định và Forensic phải được bồi thấm thiết kế Database chứ chẳng phải 1 Feature thêm bằng mồm cho app. Hiểu sự chứng minh dữ liệu và sự bất tín (Audit Logging Trace) đắp vào ngay Day 1.</span></div>"
+        </div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>4 lớp bằng chứng:</strong><br>
+        (1) <strong>Kafka immutable log</strong>: replay byte-for-byte những gì thiết bị gửi và khi nào.<br>
+        (2) <strong>ML inference audit log (MongoDB)</strong>: input features, model version (MLflow ID + Git SHA), confidence score, threshold tại thời điểm quyết định.<br>
+        (3) <strong>Alert decision log</strong>: severity score, khoảng cách xe, WebSocket status, quyết định cuối — tái hiện toàn bộ decision path.<br>
+        (4) <strong>Distributed trace</strong>: trace_id nối toàn bộ chuỗi nhân quả.<br>
+        <strong>Giới hạn thật:</strong> Kafka retention hữu hạn → archive sensor window xung quanh hazard cao vào S3. Clock skew OBD device → Kafka ingest time là authoritative. Hazard chưa từng báo → không thể cảnh báo → đây là giới hạn cơ bản cần document rõ trong SLA.
+      </div>
+    </div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="qa-card" onclick="toggleQA(this)" style="border-color:#3f1010;margin-top:12px;">
+    <div class="qa-q-row" style="background:#110505;">
+      <span class="qa-badge" style="background:#dc2626;color:#fff;">Q14</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">The business decides to offer a real-time hazard API to third parties (Google Maps, Waze). This introduces external consumers with SLA requirements you can't control. How do you design a public API layer without compromising your internal system's reliability?</span>
+        <span class="qa-q-vi">Business muốn mở public API cho bên thứ ba (Google Maps, Waze) để consume hazard data. Điều này đưa vào external consumer với SLA không kiểm soát được. Thiết kế public API layer như thế nào mà không ảnh hưởng độ tin cậy hệ thống nội bộ?</span>
+      </div>
+      <span class="qa-arrow" style="color:#6b7280;">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        Core risk: external consumers introduce unpredictable traffic patterns, and their failures must not cascade into internal systems.<br><br>
+        <span class="hl-red">① Bulkhead pattern — strict traffic isolation:</span><br>
+        Public API runs on entirely separate infrastructure — separate K8s namespaces, separate API Gateway instances, separate rate limit counters. A Google Maps traffic spike cannot consume resources from internal fleet API. The bulkhead ensures external layer fails independently.<br><br>
+        <span class="hl-red">② Read-only materialized view — never expose internal DB:</span><br>
+        External API consumes a pre-computed, <span class="hl-red">read-only hazard snapshot</span> updated every 30 seconds via a Kafka consumer writing to a dedicated read replica or Redis-backed hazard cache. External APIs never touch operational PostgreSQL/Cassandra. A DDoS on the public API only affects the read replica — internal writes are completely insulated.<br><br>
+        <span class="hl-red">③ API versioning + SLA tiers from day one:</span><br>
+        Design v1/v2 from the start — never release v1 without planning v2. Define SLA tiers by partner class: Tier 1 (Google/Waze — 99.5% SLA, dedicated capacity), Tier 2 (smaller partners — 99%, shared pool), Tier 3 (free tier — best-effort, aggressive rate limits).<br><br>
+        <span class="hl-red">④ Push over poll — Kafka-backed webhooks:</span><br>
+        Most third parties will poll every 5 seconds — catastrophically inefficient at scale. Instead: <span class="hl-red">Kafka-backed webhook delivery</span> — partners register a webhook endpoint and receive hazard events pushed within seconds. Premium partners get direct Kafka topic subscription via Confluent Cloud. Eliminates polling load entirely.
+        <div class="tip" style="background:#1a0505;border-color:#dc2626;color:#f87171;margin-top:10px;padding:9px 12px;border-radius:7px;font-size:10px;border-left:3px solid #dc2626;">
+          <strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">External consumers are untrusted by definition — not maliciously, but because you cannot control their behavior. Bulkhead + read-only materialized view means worst-case for external partners is stale data, not a takedown of your internal system.</span><div class="lang-dual"><span class="lang-en">External consumers are untrusted by definition — not maliciously, but because you cannot control their behavior. Bulkhead + read-only materialized view means worst-case for external partners is stale data, not a takedown of your internal system.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Tất cả App kéo Data API External không bao giờ đáng tin. Ứng dụng chốt chặn Bulkhead đẩy họ vào lối mòn Read-Only, Hệ lụy tồi tệ nhất chỉ là dính vài Data Cũ chứ không thể hạ ngã toàn bộ DB Nội bộ của chúng ta.</span></div>"
+        </div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>4 nguyên tắc:</strong><br>
+        (1) <strong>Bulkhead</strong>: Public API chạy infra hoàn toàn riêng — namespace K8s khác, API Gateway khác, rate limit riêng. Traffic spike từ Google Maps không ảnh hưởng internal API.<br>
+        (2) <strong>Read-only materialized view</strong>: External API chỉ đọc snapshot cập nhật 30 giây từ read replica. DDoS vào public API chỉ ảnh hưởng read replica — internal DB không bị chạm.<br>
+        (3) <strong>API versioning + SLA tier</strong>: v1/v2 từ đầu. Tier 1 (Google/Waze 99.5% dedicated), Tier 2 (99% shared), Tier 3 (best-effort).<br>
+        (4) <strong>Webhook push thay polling</strong>: Kafka-backed webhook push thay vì partner poll mỗi 5s. Premium partner subscribe trực tiếp Kafka topic qua Confluent Cloud. Loại hoàn toàn polling load.
+      </div>
+    </div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="qa-card" onclick="toggleQA(this)" style="border-color:#3f1010;margin-top:12px;">
+    <div class="qa-q-row" style="background:#110505;">
+      <span class="qa-badge" style="background:#dc2626;color:#fff;">Q15</span>
+      <div class="qa-q-text">
+        <span class="qa-q-en">Your team has grown to 8 squads, each owning different microservices. Squad A changes a Kafka event schema and silently breaks Squad B's consumer — no error, just wrong data. How do you design a schema governance strategy that enables team autonomy without creating a distributed monolith?</span>
+        <span class="qa-q-vi">Team đã lớn lên thành 8 squad. Squad A thay đổi Kafka event schema làm break consumer của Squad B một cách âm thầm — không có lỗi, chỉ là dữ liệu sai. Thiết kế schema governance như thế nào để squad tự chủ mà không tạo ra distributed monolith?</span>
+      </div>
+      <span class="qa-arrow" style="color:#6b7280;">▾</span>
+    </div>
+    <div class="qa-ans">
+      <div class="qa-ans-en">
+        This is a <span class="hl-red">sociotechnical governance problem</span> — as much about human coordination as technology. The failure mode (silent wrong data) is more dangerous than an error because it's invisible.<br><br>
+        <span class="hl-red">① Schema Registry as the contract enforcer:</span><br>
+        All Kafka producers must register schemas in <span class="hl-red">Confluent Schema Registry</span>. Registry enforces compatibility rules:<br>
+        • <strong>BACKWARD</strong>: new schema reads old data — consumers don't update immediately.<br>
+        • <strong>FORWARD</strong>: old schema reads new data — producers deploy before consumers.<br>
+        • <strong>FULL</strong>: both directions — safest, most restrictive.<br>
+        A producer attempting a breaking change (removing a required field) is <span class="hl-red">rejected at publish time in CI/CD</span> — never reaches production.<br><br>
+        <span class="hl-red">② Explicit version field in every event envelope:</span><br>
+        Every event includes a <code>schema_version</code> field. Consumers switch on version, not on field presence. v1 and v2 events coexist on the same topic during migration. Consumer supports both for a defined deprecation window (4 sprints), then drops v1.<br><br>
+        <span class="hl-red">③ Consumer-Driven Contract Testing (CDCT — Pact):</span><br>
+        Each consuming squad publishes a <span class="hl-red">Pact contract</span> defining exactly which fields they read. The producing squad's CI pipeline runs contract tests against all registered consumer contracts before merge. If Squad A's change breaks Squad B's Pact → <span class="hl-red">CI fails, Squad A cannot merge without Squad B's explicit consent</span>. Governance shifts left into the development workflow — not post-deployment firefighting.<br><br>
+        <span class="hl-red">④ Events as public API — AsyncAPI spec:</span><br>
+        Teams must treat Kafka events as public API contracts, documented in <span class="hl-red">AsyncAPI spec</span> alongside OpenAPI. Changes require an RFC process reviewed by affected squads. The Platform team owns the Schema Registry as the final arbiter — not the producing squad.
+        <div class="tip" style="background:#1a0505;border-color:#dc2626;color:#f87171;margin-top:10px;padding:9px 12px;border-radius:7px;font-size:10px;border-left:3px solid #dc2626;">
+          <strong>Interview (Highlight Phỏng vấn):</strong> "<span class="en-hide">Schema Registry is the technical enforcement. CDCT is the cultural mechanism — it makes breaking changes visible before production and forces producing teams to negotiate with consuming teams explicitly. Without both, you have either chaos or a distributed monolith.</span><div class="lang-dual"><span class="lang-en">Schema Registry is the technical enforcement. CDCT is the cultural mechanism — it makes breaking changes visible before production and forces producing teams to negotiate with consuming teams explicitly. Without both, you have either chaos or a distributed monolith.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Registry Schema là sự bắt buộc cơ tính cứng. Test (CDCT) là luật bù lại quy trình cấm cửa những anh mưu đồ lách luật thay đổi. Có cả hai là sự an bài hoàn hảo — Bằng không sẽ là 1 mớ rác của Distributed Monolith.</span></div>"
+        </div>
+      </div>
+      <div class="qa-ans-vi">
+        <strong>4 lớp governance:</strong><br>
+        (1) <strong>Confluent Schema Registry</strong>: Producer đăng ký schema trước khi publish. Registry enforce BACKWARD/FORWARD/FULL compatibility. Breaking change bị reject ngay trong CI/CD — không vào production.<br>
+        (2) <strong>Explicit schema_version</strong> trong mọi event: v1 và v2 coexist trong migration window, consumer switch theo version.<br>
+        (3) <strong>Consumer-Driven Contract Testing (Pact)</strong>: Squad B publish contract định nghĩa field nào đọc. CI của Squad A chạy contract test — fail thì Squad A không thể merge nếu không có sự đồng ý của Squad B. Governance shift-left.<br>
+        (4) <strong>AsyncAPI spec</strong>: Kafka event là public API contract. Thay đổi cần RFC review. Platform team sở hữu Schema Registry là final arbiter.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ========================================== -->
+
+<div class="footer">
+  Architectural Diagram &amp; Interview Guide — Interactive Documentation<br>
+  Designed for System Design Interviews
+</div>
+
+<div class="scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑</div>
+
+<script>
+  // ── Language toggle ──────────────────────────────────
+  function setLang(lang) {
+    document.body.classList.toggle('vi', lang === 'vi');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-vi').classList.toggle('active', lang === 'vi');
+  }
+
+  // ── Layer toggle ─────────────────────────────────────
+  function toggleLayer(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+  }
+
+  // ── Service card toggle ──────────────────────────────
+  function toggleCard(el) {
+    el.classList.toggle('active');
+  }
+
+  // ── Q&A card toggle ──────────────────────────────────
+  function toggleQA(el) {
+    el.classList.toggle('open');
+  }
+
+  // ── Expand / Collapse all layers ─────────────────────
+  function expandAll() {
+    document.querySelectorAll('.layer').forEach(l => l.classList.add('open'));
+    document.querySelectorAll('.scard').forEach(c => c.classList.add('active'));
+    document.querySelectorAll('.qa-card').forEach(q => q.classList.add('open'));
+  }
+  function collapseAll() {
+    document.querySelectorAll('.layer').forEach(l => l.classList.remove('open'));
+    document.querySelectorAll('.scard').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.qa-card').forEach(q => q.classList.remove('open'));
+  }
+
+  // ── Auto-open first layer on load ────────────────────
+  window.addEventListener('load', () => {
+    document.getElementById('layer-cdn').classList.add('open');
+  });
+</script>
+
+</body>
+</html>
+
+

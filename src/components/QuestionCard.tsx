@@ -13,6 +13,7 @@ import { supabase } from '../lib/supabase';
 interface QuestionCardProps {
   question: Question;
   language?: Language;
+  searchQuery?: string;
   onLike?: () => void;
   onImageGenerated?: (url: string) => void;
 }
@@ -52,7 +53,7 @@ const Mermaid = ({ chart }: { chart: string }) => {
   return <div ref={ref} className="flex justify-center my-6 overflow-x-auto" />;
 };
 
-export function QuestionCard({ question, language = 'vi', onLike, onImageGenerated }: QuestionCardProps) {
+export function QuestionCard({ question, language = 'vi', searchQuery = '', onLike, onImageGenerated }: QuestionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const isPremium = question.id.includes('premium');
@@ -255,7 +256,53 @@ export function QuestionCard({ question, language = 'vi', onLike, onImageGenerat
               <div className="prose prose-slate prose-indigo max-w-none">
                 <ReactMarkdown 
                   remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]}
+                  rehypePlugins={[
+                    rehypeRaw,
+                    () => {
+                      return (tree: any) => {
+                        if (!searchQuery || !searchQuery.trim()) return;
+                        
+                        const escapedQuery = searchQuery.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        const regex = new RegExp(`(${escapedQuery})`, 'gi');
+
+                        const traverse = (node: any, parent: any, index: number): number | void => {
+                          if (node.type === 'text') {
+                            if (!parent || parent.tagName === 'code' || parent.tagName === 'script' || parent.tagName === 'style' || parent.tagName === 'mark') return;
+                            
+                            const text = node.value;
+                            if (regex.test(text)) {
+                              const parts = text.split(regex);
+                              const newNodes = parts.map((part: string) => {
+                                if (part.toLowerCase() === searchQuery.trim().toLowerCase()) {
+                                  return {
+                                    type: 'element',
+                                    tagName: 'mark',
+                                    properties: { className: ['bg-yellow-200', 'text-slate-900', 'rounded-sm', 'px-1'] },
+                                    children: [{ type: 'text', value: part }]
+                                  };
+                                }
+                                return { type: 'text', value: part };
+                              }).filter((n: any) => n.value !== '' || n.type !== 'text');
+                              
+                              if (newNodes.length > 0) {
+                                parent.children.splice(index, 1, ...newNodes);
+                                return index + newNodes.length;
+                              }
+                            }
+                          } else if (node.children && Array.isArray(node.children)) {
+                            for (let i = 0; i < node.children.length; i++) {
+                              const nextIndex = traverse(node.children[i], node, i);
+                              if (typeof nextIndex === 'number') {
+                                i = nextIndex - 1;
+                              }
+                            }
+                          }
+                        };
+                        
+                        traverse(tree, null, 0);
+                      };
+                    }
+                  ]}
                   components={{
                     code({node, inline, className, children, ...props}: any) {
                       const match = /language-(\w+)/.exec(className || '');
