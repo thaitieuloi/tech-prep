@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glohow — System Architecture & Interview Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700;800;900&display=swap');
+
+:root {
+  --bg:        #05080f;
+  --surface:   #0c1220;
+  --surface2:  #111d2e;
+  --surface3:  #172033;
+  --border:    #1c2d42;
+  --border2:   #243547;
+  --cyan:      #00e5ff;
+  --cyan-dim:  rgba(0,229,255,.12);
+  --cyan-glow: rgba(0,229,255,.06);
+  --teal:      #00c9a7;
+  --amber:     #ffb340;
+  --violet:    #818cf8;
+  --rose:      #fb7185;
+  --green:     #34d399;
+  --text:      #cdd9e5;
+  --muted:     #4d6680;
+  --white:     #f0f6ff;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Outfit', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ─── ANIMATED BG ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(0,229,255,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(0,201,167,.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── HERO ─── */
+.hero {
+  position: relative;
+  padding: 60px 48px 52px;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  z-index: 1;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: end;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--cyan);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 28px; height: 1px;
+  background: var(--cyan);
+}
+.hero h1 {
+  font-family: var(--sans);
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.hero h1 span { color: var(--cyan); }
+.hero-sub {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+.hero-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+.badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 100px;
+  letter-spacing: .5px;
+}
+.badge-cyan  { background: var(--cyan-dim);  color: var(--cyan);   border: 1px solid rgba(0,229,255,.25); }
+.badge-teal  { background: rgba(0,201,167,.1); color: var(--teal);  border: 1px solid rgba(0,201,167,.25); }
+.badge-amber { background: rgba(255,179,64,.1); color: var(--amber); border: 1px solid rgba(255,179,64,.25); }
+.badge-violet{ background: rgba(129,140,248,.1); color: var(--violet); border: 1px solid rgba(129,140,248,.25); }
+.badge-green { background: rgba(52,211,153,.1); color: var(--green); border: 1px solid rgba(52,211,153,.25); }
+.badge-rose  { background: rgba(251,113,133,.1); color: var(--rose);  border: 1px solid rgba(251,113,133,.25); }
+
+.hero-meta {
+  text-align: right;
+}
+.hero-meta-name { font-size: 20px; font-weight: 800; color: var(--white); }
+.hero-meta-role { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ─── NAV ─── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(5,8,15,.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 24px; height: 48px;
+  text-decoration: none;
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: .5px; color: var(--muted);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color .2s, border-color .2s;
+}
+.nav-item:hover { color: var(--cyan); border-bottom-color: var(--cyan); }
+.nav-num { opacity: .5; font-size: 9px; }
+
+/* ─── LAYOUT ─── */
+.wrap { max-width: 1300px; margin: 0 auto; padding: 0 48px; position: relative; z-index: 1; }
+.section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+.section:last-child { border-bottom: none; }
+
+/* ─── SECTION HEADER ─── */
+.sec-header { display: flex; align-items: center; gap: 18px; margin-bottom: 40px; }
+.sec-num { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px; }
+.sec-title { font-size: 30px; font-weight: 800; color: var(--white); letter-spacing: -1px; }
+.sec-title .c { color: var(--cyan); }
+.sec-title .t { color: var(--teal); }
+.sec-title .a { color: var(--amber); }
+.sec-title .v { color: var(--violet); }
+.sec-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ─── CARD ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.card-top-line {
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.line-cyan   { background: linear-gradient(90deg, var(--cyan), transparent); }
+.line-teal   { background: linear-gradient(90deg, var(--teal), transparent); }
+.line-amber  { background: linear-gradient(90deg, var(--amber), transparent); }
+.line-violet { background: linear-gradient(90deg, var(--violet), transparent); }
+.line-green  { background: linear-gradient(90deg, var(--green), transparent); }
+.line-rose   { background: linear-gradient(90deg, var(--rose), transparent); }
+
+.card-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2.5px;
+  text-transform: uppercase; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.dot-cyan   { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
+.dot-teal   { background: var(--teal); box-shadow: 0 0 6px var(--teal); }
+.dot-amber  { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+.dot-violet { background: var(--violet); box-shadow: 0 0 6px var(--violet); }
+.dot-green  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.dot-rose   { background: var(--rose); }
+
+/* ─── CHIPS ─── */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 100px;
+}
+.chip-c { background: var(--cyan-dim);  color: var(--cyan);   border: 1px solid rgba(0,229,255,.2); }
+.chip-t { background: rgba(0,201,167,.08); color: var(--teal); border: 1px solid rgba(0,201,167,.2); }
+.chip-a { background: rgba(255,179,64,.08); color: var(--amber); border: 1px solid rgba(255,179,64,.2); }
+.chip-v { background: rgba(129,140,248,.08); color: var(--violet); border: 1px solid rgba(129,140,248,.2); }
+.chip-g { background: rgba(52,211,153,.08); color: var(--green); border: 1px solid rgba(52,211,153,.2); }
+.chip-r { background: rgba(251,113,133,.08); color: var(--rose); border: 1px solid rgba(251,113,133,.2); }
+.chip-m { background: rgba(77,102,128,.1); color: var(--muted); border: 1px solid rgba(77,102,128,.2); }
+
+/* ─── GRID LAYOUTS ─── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media(max-width:1024px) { .grid-4 { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:768px)  { .grid-2,.grid-3,.grid-4 { grid-template-columns: 1fr; } }
+
+/* ─── OVERVIEW CARD ─── */
+.overview-text { color: #7a9ab5; font-size: 14px; line-height: 1.8; }
+.overview-text strong { color: var(--text); }
+
+/* ─── SYSTEM TOPOLOGY ─── */
+.topology {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+.svg-scroll { overflow-x: auto; border-radius: 10px; background: #030609; padding: 20px; }
+svg { font-family: var(--sans); }
+
+/* ─── FLOW STEPS ─── */
+.steps { display: flex; flex-direction: column; }
+.step {
+  display: flex; gap: 20px; align-items: flex-start;
+  position: relative;
+}
+.step:not(:last-child)::after {
+  content: ''; position: absolute;
+  left: 17px; top: 42px;
+  width: 2px; height: calc(100% - 10px);
+  background: var(--border2);
+}
+.step-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  flex-shrink: 0; position: relative; z-index: 1;
+}
+.si-c { background: var(--cyan-dim); color: var(--cyan); border: 1.5px solid rgba(0,229,255,.35); }
+.si-t { background: rgba(0,201,167,.1); color: var(--teal); border: 1.5px solid rgba(0,201,167,.35); }
+.si-a { background: rgba(255,179,64,.1); color: var(--amber); border: 1.5px solid rgba(255,179,64,.35); }
+.si-v { background: rgba(129,140,248,.1); color: var(--violet); border: 1.5px solid rgba(129,140,248,.35); }
+.si-g { background: rgba(52,211,153,.1); color: var(--green); border: 1.5px solid rgba(52,211,153,.35); }
+
+.step-body { padding: 4px 0 26px; flex: 1; }
+.step-title { font-weight: 700; color: var(--white); font-size: 15px; margin-bottom: 5px; }
+.step-desc  { color: #5a7a96; font-size: 13px; line-height: 1.7; }
+.step-desc strong { color: var(--text); }
+.step-desc code {
+  font-family: var(--mono); font-size: 11px;
+  background: rgba(0,0,0,.4); padding: 1px 6px; border-radius: 4px;
+  color: var(--cyan);
+}
+
+/* ─── TABLE ─── */
+.tbl-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  background: var(--surface2);
+  font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted);
+  padding: 12px 18px; text-align: left;
+  border-bottom: 1px solid var(--border2);
+}
+tbody td {
+  padding: 13px 18px; font-size: 13px; color: #7a9ab5;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tbody td:first-child { color: var(--white); font-weight: 600; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(0,229,255,.02); }
+
+/* ─── Q&A ─── */
+.qa-category {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 3px;
+  text-transform: uppercase; margin: 36px 0 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.qa-cat-line { flex: 1; height: 1px; background: var(--border); }
+
+.qa-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.qa-item:hover { border-color: var(--border2); }
+
+.qa-q {
+  padding: 18px 22px;
+  display: flex; align-items: flex-start; gap: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.qa-tag {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 6px; flex-shrink: 0; margin-top: 1px;
+}
+.qt-c { background: var(--cyan-dim); color: var(--cyan); }
+.qt-t { background: rgba(0,201,167,.12); color: var(--teal); }
+.qt-a { background: rgba(255,179,64,.12); color: var(--amber); }
+.qt-v { background: rgba(129,140,248,.12); color: var(--violet); }
+.qt-g { background: rgba(52,211,153,.12); color: var(--green); }
+
+.qa-q-text { font-weight: 700; font-size: 15px; color: var(--white); line-height: 1.5; }
+.qa-vi { font-size: 12px; color: var(--muted); margin-top: 3px; font-style: italic; }
+
+.qa-a { padding: 20px 22px; background: var(--surface2); }
+.qa-a p { color: #6e8fa8; font-size: 13px; line-height: 1.85; margin-bottom: 12px; }
+.qa-a p:last-child { margin-bottom: 0; }
+.qa-a strong { color: var(--text); }
+.qa-a code { font-family: var(--mono); font-size: 11px; background: rgba(0,0,0,.35); padding: 1px 6px; border-radius: 4px; color: var(--cyan); }
+
+.tip {
+  margin-top: 14px;
+  background: rgba(0,201,167,.06);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 8px 8px 0;
+  padding: 11px 16px;
+}
+.tip p { color: #5ecfb9 !important; font-size: 12px !important; margin: 0 !important; }
+
+.warn {
+  margin-top: 14px;
+  background: rgba(255,179,64,.06);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 8px 8px 0;
+  padding: 11px 16px;
+}
+.warn p { color: #d4975a !important; font-size: 12px !important; margin: 0 !important; }
+
+/* ─── BEST PRACTICE CARDS ─── */
+.bp-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  position: relative; overflow: hidden;
+}
+.bp-icon { font-size: 22px; margin-bottom: 10px; }
+.bp-title { font-weight: 700; color: var(--white); font-size: 14px; margin-bottom: 8px; }
+.bp-text { color: var(--muted); font-size: 12px; line-height: 1.7; }
+
+/* ─── INLINE PIPE ─── */
+.pipe {
+  display: flex; align-items: center; gap: 0;
+  overflow-x: auto; padding: 16px 0;
+  scrollbar-width: none;
+}
+.pipe::-webkit-scrollbar { display: none; }
+.pipe-box {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 16px;
+  text-align: center; flex-shrink: 0; min-width: 105px;
+}
+.pipe-box.c { border-color: rgba(0,229,255,.3); }
+.pipe-box.t { border-color: rgba(0,201,167,.3); }
+.pipe-box.a { border-color: rgba(255,179,64,.3); }
+.pipe-box.v { border-color: rgba(129,140,248,.3); }
+.pipe-box.g { border-color: rgba(52,211,153,.3); }
+.pipe-lbl { font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 3px; }
+.pipe-name { font-size: 12px; font-weight: 700; color: var(--white); }
+.pipe-arr { color: var(--muted); font-size: 16px; padding: 0 5px; flex-shrink: 0; }
+
+/* ─── FOOTER ─── */
+footer {
+  padding: 28px 48px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono); font-size: 11px; color: var(--muted);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  position: relative; z-index: 1;
+}
+
+@media print {
+  .nav, footer { display: none; }
+  .card, .topology, .qa-item { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════ HERO ═══════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-eyebrow">System Architecture · Interview Document · 2025–2026</div>
+      <h1><span>Glo</span>how</h1>
+      <div class="hero-sub">Enterprise B2B · Project Management + AI-Powered Email Platform</div>
+      <div class="hero-badges">
+        <span class="badge badge-cyan">Spring Boot</span>
+        <span class="badge badge-teal">Apache Kafka</span>
+        <span class="badge badge-amber">RAG · Qdrant · LLM</span>
+        <span class="badge badge-violet">GraphQL · OpenAPI</span>
+        <span class="badge badge-green">Microservices</span>
+        <span class="badge badge-cyan">AWS · CI/CD</span>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-name">Thái Tiểu Lôi</div>
+      <div class="hero-meta-role">TECHNICAL LEADER · SENIOR DEVELOPER<br>thaitieuloi3107@gmail.com · 0977116790</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════ NAV ═══════════════════════════════════ -->
+<nav class="nav">
+  <a class="nav-item" href="#overview"><span class="nav-num">01</span> Overview</a>
+  <a class="nav-item" href="#architecture"><span class="nav-num">02</span> System Architecture</a>
+  <a class="nav-item" href="#pm-module"><span class="nav-num">03</span> PM Module</a>
+  <a class="nav-item" href="#email-module"><span class="nav-num">04</span> Email + AI Module</a>
+  <a class="nav-item" href="#ai-pipeline"><span class="nav-num">05</span> AI Pipeline (RAG)</a>
+  <a class="nav-item" href="#bestpractice"><span class="nav-num">06</span> Best Practices</a>
+  <a class="nav-item" href="#qa"><span class="nav-num">07</span> Q&amp;A Interview</a>
+</nav>
+
+<!-- ═══════════════════════════════════ SECTION 1 ═══════════════════════════════════ -->
+<div class="wrap">
+<section class="section" id="overview">
+  <div class="sec-header">
+    <span class="sec-num">01</span>
+    <h2 class="sec-title"><span class="c">System</span> Overview</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-top-line line-cyan"></div>
+    <div class="card-label"><span class="dot dot-cyan"></span><span style="color:var(--cyan)">WHAT IS GLOHOW?</span></div>
+    <p class="overview-text">
+      Glohow is an <strong>Enterprise B2B SaaS platform</strong> that unifies <strong>Project Management</strong> (task, sprint, workflow) with an
+      <strong>AI-powered Email Inbox</strong>. It enables enterprise teams to manage work in one place while using AI to
+      <strong>translate, summarize, and suggest</strong> email responses — breaking language barriers in global cross-functional teams.
+    </p>
+    <p class="overview-text" style="margin-top:12px;">
+      Built on a <strong>microservices architecture</strong> (Spring Boot), event-driven via <strong>Apache Kafka</strong>,
+      with AI capabilities powered by <strong>RAG (Retrieval-Augmented Generation)</strong> using Qdrant vector database and
+      <strong>multi-model LLMs</strong> (ChatGPT, Gemini, Claude, Ollama — configurable per tenant). Exposed via <strong>REST (OpenAPI/Swagger) and GraphQL APIs</strong>,
+      deployed on <strong>AWS</strong> with full CI/CD via Jenkins.
+    </p>
+  </div>
+
+  <!-- Core modules overview -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-top-line line-violet"></div>
+      <div class="card-label"><span class="dot dot-violet"></span><span style="color:var(--violet)">MODULE 1 — PROJECT MANAGEMENT</span></div>
+      <div class="chips" style="margin-bottom:14px;">
+        <span class="chip chip-v">Task / Ticket</span>
+        <span class="chip chip-v">Sprint / Kanban</span>
+        <span class="chip chip-v">Workflow Engine</span>
+        <span class="chip chip-m">Multi-tenant</span>
+      </div>
+      <p style="color:var(--muted);font-size:13px;line-height:1.7;">
+        Full-featured PM module: projects, epics, tasks, subtasks, sprints, Kanban boards,
+        assignees, due dates, comments, attachments, and role-based permissions per workspace.
+        AI suggests task descriptions and auto-summarizes long comment threads.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-top-line line-cyan"></div>
+      <div class="card-label"><span class="dot dot-cyan"></span><span style="color:var(--cyan)">MODULE 2 — AI EMAIL INBOX</span></div>
+      <div class="chips" style="margin-bottom:14px;">
+        <span class="chip chip-c">Translation</span>
+        <span class="chip chip-c">Summarization</span>
+        <span class="chip chip-t">AI Suggest Reply</span>
+        <span class="chip chip-a">RAG Context</span>
+      </div>
+      <p style="color:var(--muted);font-size:13px;line-height:1.7;">
+        Integrated email inbox linked to project context. AI auto-translates emails to user's
+        preferred language, generates smart summaries, and suggests contextual reply drafts
+        using project history as RAG knowledge base.
+      </p>
+    </div>
+  </div>
+
+  <!-- Tech summary table -->
+  <div style="margin-top:24px;">
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th><th>Technology</th><th>Role</th><th>Why chosen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Backend Framework</td><td><span class="chip chip-c">Spring Boot</span></td><td>Core microservices</td><td>Production-ready framework for building RESTful and event-driven microservices with Spring ecosystem</td></tr>
+          <tr><td>API Contract</td><td><span class="chip chip-v">OpenAPI 3.0</span> <span class="chip chip-v">GraphQL</span></td><td>External REST + flexible client queries</td><td>REST for inter-service, GraphQL for complex FE data aggregation</td></tr>
+          <tr><td>Event Bus</td><td><span class="chip chip-a">Apache Kafka</span></td><td>Async processing, decoupling</td><td>High-throughput, durable, replayable events</td></tr>
+          <tr><td>AI / LLM</td><td><span class="chip chip-t">ChatGPT</span> <span class="chip chip-t">Gemini</span> <span class="chip chip-v">Claude</span> <span class="chip chip-a">Ollama</span></td><td>Translation, summary, reply suggestion</td><td>Multi-model: configurable per tenant. Adapter pattern — LLMPort interface per provider. Fallback chain + circuit breaker.</td></tr>
+          <tr><td>Translation Memory</td><td><span class="chip chip-c">PostgreSQL TM Store</span></td><td>Segment-level translation cache</td><td>100% TM match skips LLM entirely — cuts cost &amp; ensures consistency on repeated content</td></tr>
+          <tr><td>Glossary / Terminology</td><td><span class="chip chip-t">Qdrant (Glossary Collection)</span></td><td>Domain term enforcement</td><td>Tenant-curated approved terms injected as hard constraints into LLM prompt</td></tr>
+          <tr><td>Vector DB</td><td><span class="chip chip-t">Qdrant</span></td><td>RAG knowledge retrieval</td><td>Fast ANN search, filtering, metadata — Rust-based performance</td></tr>
+          <tr><td>Search</td><td><span class="chip chip-a">Elasticsearch</span></td><td>Full-text email &amp; task search</td><td>Inverted index for keyword search, complements vector search</td></tr>
+          <tr><td>Cache</td><td><span class="chip chip-c">Redis</span></td><td>Session, rate-limit, result cache</td><td>Sub-ms latency for frequently accessed AI results</td></tr>
+          <tr><td>Database</td><td><span class="chip chip-v">PostgreSQL</span></td><td>Primary relational data</td><td>ACID guarantees, rich JSON support, mature ecosystem</td></tr>
+          <tr><td>Observability</td><td><span class="chip chip-r">ELK</span> <span class="chip chip-v">Prometheus</span> <span class="chip chip-g">Grafana</span></td><td>Logging, metrics, alerting</td><td>Full-stack visibility across all services</td></tr>
+          <tr><td>Cloud / Infra</td><td><span class="chip chip-c">AWS</span> <span class="chip chip-m">Jenkins</span> <span class="chip chip-m">Git</span></td><td>Deployment, CI/CD, SCM</td><td>Enterprise cloud compliance, automated pipelines</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SECTION 2 — ARCHITECTURE ═══════════════════════════════════ -->
+<section class="section" id="architecture">
+  <div class="sec-header">
+    <span class="sec-num">02</span>
+    <h2 class="sec-title">System <span class="c">Architecture</span> Diagram</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="topology">
+    <div class="card-label" style="margin-bottom:20px;"><span class="dot dot-cyan"></span><span style="color:var(--cyan)">HIGH-LEVEL TOPOLOGY — GLOHOW ENTERPRISE PLATFORM</span></div>
+    <div class="svg-scroll">
+<svg viewBox="0 0 1100 680" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:900px;">
+<defs>
+  <marker id="ac" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00e5ff"/></marker>
+  <marker id="at" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00c9a7"/></marker>
+  <marker id="aa" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#ffb340"/></marker>
+  <marker id="av" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#818cf8"/></marker>
+  <marker id="ag" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#34d399"/></marker>
+  <marker id="am" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#2d4a63"/></marker>
+  <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+
+<rect x="8" y="8" width="1084" height="664" rx="16" fill="#030609" stroke="#1c2d42" stroke-width="1"/>
+
+<!-- ZONE LABELS -->
+<text x="30" y="38" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono" letter-spacing="2.5">CLIENT</text>
+<text x="185" y="38" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono" letter-spacing="2.5">GATEWAY / AUTH</text>
+<text x="395" y="38" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono" letter-spacing="2.5">CORE SERVICES</text>
+<text x="660" y="38" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono" letter-spacing="2.5">AI / MESSAGING</text>
+<text x="880" y="38" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono" letter-spacing="2.5">DATA LAYER</text>
+
+<!-- Dividers -->
+<line x1="168" y1="48" x2="168" y2="660" stroke="#1c2d42" stroke-dasharray="5,4" stroke-width="1"/>
+<line x1="376" y1="48" x2="376" y2="660" stroke="#1c2d42" stroke-dasharray="5,4" stroke-width="1"/>
+<line x1="645" y1="48" x2="645" y2="660" stroke="#1c2d42" stroke-dasharray="5,4" stroke-width="1"/>
+<line x1="863" y1="48" x2="863" y2="660" stroke="#1c2d42" stroke-dasharray="5,4" stroke-width="1"/>
+
+<!-- ── CLIENT ── -->
+<rect x="22" y="60" width="132" height="52" rx="9" fill="#0c1a28" stroke="#00e5ff" stroke-width="1.5" filter="url(#glow)"/>
+<text x="88" y="81" text-anchor="middle" fill="#00e5ff" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">WEB / MOBILE</text>
+<text x="88" y="101" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">React / Angular</text>
+
+<rect x="22" y="130" width="132" height="52" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="88" y="151" text-anchor="middle" fill="#818cf8" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">EMAIL CLIENT</text>
+<text x="88" y="171" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Inbox UI</text>
+
+<!-- ── GATEWAY ── -->
+<rect x="182" y="60" width="178" height="52" rx="9" fill="#0c1a28" stroke="#00e5ff" stroke-width="1.5"/>
+<text x="271" y="81" text-anchor="middle" fill="#00e5ff" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">GATEWAY</text>
+<text x="271" y="101" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">API Gateway (Spring)</text>
+
+<rect x="182" y="130" width="178" height="52" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="271" y="151" text-anchor="middle" fill="#818cf8" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">AUTH</text>
+<text x="271" y="171" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">OAuth2 / JWT Service</text>
+
+<rect x="182" y="200" width="178" height="52" rx="9" fill="#0c1a28" stroke="#ffb340" stroke-width="1.5"/>
+<text x="271" y="221" text-anchor="middle" fill="#ffb340" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">MULTI-TENANT</text>
+<text x="271" y="241" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Tenant Resolver</text>
+
+<!-- ── CORE SERVICES ── -->
+<rect x="390" y="60" width="165" height="52" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="472" y="81" text-anchor="middle" fill="#818cf8" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">PROJECT MGT</text>
+<text x="472" y="101" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">PM Service</text>
+
+<rect x="390" y="130" width="165" height="52" rx="9" fill="#0c1a28" stroke="#00e5ff" stroke-width="1.5"/>
+<text x="472" y="151" text-anchor="middle" fill="#00e5ff" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">EMAIL CORE</text>
+<text x="472" y="171" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Email Service</text>
+
+<rect x="390" y="200" width="165" height="52" rx="9" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<text x="472" y="221" text-anchor="middle" fill="#00c9a7" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">AI FEATURE</text>
+<text x="472" y="241" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">AI Suggestion Svc</text>
+
+<rect x="390" y="270" width="165" height="52" rx="9" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<text x="472" y="291" text-anchor="middle" fill="#00c9a7" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">TRANSLATION</text>
+<text x="472" y="311" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Translation Service</text>
+
+<rect x="390" y="340" width="165" height="52" rx="9" fill="#0c1a28" stroke="#ffb340" stroke-width="1.5"/>
+<text x="472" y="361" text-anchor="middle" fill="#ffb340" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">NOTIFY</text>
+<text x="472" y="381" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Notification Service</text>
+
+<rect x="390" y="410" width="165" height="52" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="472" y="431" text-anchor="middle" fill="#818cf8" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">WORKFLOW</text>
+<text x="472" y="451" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Business Logic Svc</text>
+
+<rect x="390" y="480" width="165" height="52" rx="9" fill="#0c1a28" stroke="#34d399" stroke-width="1.5"/>
+<text x="472" y="501" text-anchor="middle" fill="#34d399" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">SEARCH</text>
+<text x="472" y="521" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Search Service</text>
+
+<!-- ── AI / MESSAGING ── -->
+<rect x="659" y="60" width="178" height="52" rx="9" fill="#0c1a28" stroke="#ffb340" stroke-width="2"/>
+<text x="748" y="81" text-anchor="middle" fill="#ffb340" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">EVENT BUS</text>
+<text x="748" y="101" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Apache Kafka</text>
+
+<rect x="659" y="130" width="178" height="52" rx="9" fill="#0c1a28" stroke="#00c9a7" stroke-width="2"/>
+<text x="748" y="151" text-anchor="middle" fill="#00c9a7" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">AI ORCHESTRATOR</text>
+<text x="748" y="171" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">AI Pipeline Worker</text>
+
+<rect x="659" y="200" width="178" height="52" rx="9" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<text x="748" y="221" text-anchor="middle" fill="#00c9a7" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">LLM PROVIDER</text>
+<text x="748" y="241" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Ollama / Cloud LLM</text>
+
+<rect x="659" y="270" width="178" height="52" rx="9" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<text x="748" y="291" text-anchor="middle" fill="#00c9a7" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">VECTOR STORE</text>
+<text x="748" y="311" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Qdrant (RAG)</text>
+
+<rect x="659" y="340" width="178" height="52" rx="9" fill="#0c1a28" stroke="#34d399" stroke-width="1.5"/>
+<text x="748" y="361" text-anchor="middle" fill="#34d399" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">FULL-TEXT SEARCH</text>
+<text x="748" y="381" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Elasticsearch</text>
+
+<!-- ── DATA LAYER ── -->
+<rect x="877" y="60" width="200" height="52" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="977" y="81" text-anchor="middle" fill="#818cf8" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">PRIMARY DB</text>
+<text x="977" y="101" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">PostgreSQL</text>
+
+<rect x="877" y="130" width="200" height="52" rx="9" fill="#0c1a28" stroke="#ffb340" stroke-width="1.5"/>
+<text x="977" y="151" text-anchor="middle" fill="#ffb340" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">CACHE / SESSION</text>
+<text x="977" y="171" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Redis</text>
+
+<rect x="877" y="200" width="200" height="52" rx="9" fill="#0c1a28" stroke="#4d6680" stroke-width="1.5"/>
+<text x="977" y="221" text-anchor="middle" fill="#4d6680" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">OBJECT STORAGE</text>
+<text x="977" y="241" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">AWS S3</text>
+
+<rect x="877" y="270" width="200" height="52" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="977" y="291" text-anchor="middle" fill="#818cf8" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">OBSERVABILITY</text>
+<text x="977" y="311" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">ELK + Grafana</text>
+
+<rect x="877" y="340" width="200" height="52" rx="9" fill="#0c1a28" stroke="#34d399" stroke-width="1.5"/>
+<text x="977" y="361" text-anchor="middle" fill="#34d399" font-size="8.5" font-family="IBM Plex Mono" letter-spacing="1">AI RESULT CACHE</text>
+<text x="977" y="381" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Redis (AI Results)</text>
+
+<!-- ── ARROWS ── -->
+<!-- Client → Gateway -->
+<line x1="154" y1="86" x2="180" y2="86" stroke="#00e5ff" stroke-width="1.5" marker-end="url(#ac)"/>
+<line x1="154" y1="156" x2="180" y2="156" stroke="#818cf8" stroke-width="1.5" marker-end="url(#av)"/>
+<!-- Gateway → Auth -->
+<line x1="271" y1="112" x2="271" y2="128" stroke="#818cf8" stroke-width="1.5" marker-end="url(#av)"/>
+<!-- Gateway → Tenant -->
+<line x1="271" y1="182" x2="271" y2="198" stroke="#ffb340" stroke-width="1.5" marker-end="url(#aa)"/>
+<!-- Gateway → PM Svc -->
+<line x1="360" y1="74" x2="388" y2="74" stroke="#818cf8" stroke-width="1.5" marker-end="url(#av)"/>
+<!-- Gateway → Email Svc -->
+<line x1="360" y1="86" x2="388" y2="148" stroke="#00e5ff" stroke-width="1.5" marker-end="url(#ac)"/>
+<!-- Email Svc → AI Svc -->
+<line x1="472" y1="182" x2="472" y2="198" stroke="#00c9a7" stroke-width="1.5" marker-end="url(#at)"/>
+<!-- AI Svc → Translation -->
+<line x1="472" y1="252" x2="472" y2="268" stroke="#00c9a7" stroke-width="1.5" marker-end="url(#at)"/>
+<!-- Email Svc → Kafka -->
+<line x1="556" y1="156" x2="657" y2="86" stroke="#ffb340" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#aa)"/>
+<!-- AI Svc → Kafka -->
+<line x1="556" y1="225" x2="657" y2="156" stroke="#ffb340" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#aa)"/>
+<!-- Kafka → AI Worker -->
+<line x1="748" y1="112" x2="748" y2="128" stroke="#00c9a7" stroke-width="1.5" marker-end="url(#at)"/>
+<!-- AI Worker → LLM -->
+<line x1="748" y1="182" x2="748" y2="198" stroke="#00c9a7" stroke-width="1.5" marker-end="url(#at)"/>
+<!-- AI Worker → Qdrant -->
+<line x1="748" y1="252" x2="748" y2="268" stroke="#00c9a7" stroke-width="1.5" marker-end="url(#at)"/>
+<!-- Kafka → Notif -->
+<line x1="748" y1="112" x2="556" y2="348" stroke="#ffb340" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#aa)"/>
+<!-- Search Svc → ES -->
+<line x1="556" y1="505" x2="657" y2="368" stroke="#34d399" stroke-width="1.5" marker-end="url(#ag)"/>
+<!-- Services → PostgreSQL -->
+<line x1="556" y1="86" x2="875" y2="86" stroke="#1c2d42" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#am)"/>
+<!-- Services → Redis -->
+<line x1="556" y1="156" x2="875" y2="156" stroke="#1c2d42" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#am)"/>
+<!-- AI Result → Redis AI -->
+<line x1="838" y1="240" x2="875" y2="360" stroke="#34d399" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#ag)"/>
+<!-- Kafka → ELK -->
+<line x1="838" y1="112" x2="875" y2="286" stroke="#818cf8" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#av)"/>
+
+<!-- MULTI-TENANT ZONE -->
+<rect x="182" y="540" width="559" height="50" rx="8" fill="rgba(255,179,64,.04)" stroke="#ffb340" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="461" y="562" text-anchor="middle" fill="#ffb340" font-size="9" font-family="IBM Plex Mono" letter-spacing="2">MULTI-TENANT ISOLATION LAYER</text>
+<text x="461" y="578" text-anchor="middle" fill="#4d6680" font-size="10" font-family="Outfit">Schema-per-tenant PostgreSQL · Tenant-scoped Kafka topics · Namespaced Qdrant collections</text>
+
+<!-- LEGEND -->
+<text x="30" y="625" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono">SYNC</text>
+<line x1="64" y1="621" x2="100" y2="621" stroke="#00e5ff" stroke-width="1.5" marker-end="url(#ac)"/>
+<text x="108" y="625" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono">ASYNC/KAFKA</text>
+<line x1="190" y1="621" x2="226" y2="621" stroke="#ffb340" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#aa)"/>
+<text x="234" y="625" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono">AI FLOW</text>
+<line x1="283" y1="621" x2="320" y2="621" stroke="#00c9a7" stroke-width="1.5" marker-end="url(#at)"/>
+<text x="328" y="625" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono">DATA ACCESS</text>
+<line x1="414" y1="621" x2="451" y2="621" stroke="#1c2d42" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#am)"/>
+</svg>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SECTION 3 — PM MODULE ═══════════════════════════════════ -->
+<section class="section" id="pm-module">
+  <div class="sec-header">
+    <span class="sec-num">03</span>
+    <h2 class="sec-title">Project Management <span class="v">Module</span></h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-top-line line-violet"></div>
+      <div class="card-label"><span class="dot dot-violet"></span><span style="color:var(--violet)">DATA MODEL — CORE ENTITIES</span></div>
+      <div class="tbl-wrap" style="margin-top:8px;">
+        <table>
+          <thead><tr><th>Entity</th><th>Key Fields</th><th>Relations</th></tr></thead>
+          <tbody>
+            <tr><td>Workspace</td><td>id, name, tenantId, plan</td><td>→ Projects, Members</td></tr>
+            <tr><td>Project</td><td>id, name, status, ownerId</td><td>→ Epics, Sprints</td></tr>
+            <tr><td>Epic</td><td>id, title, dueDate</td><td>→ Tasks</td></tr>
+            <tr><td>Task</td><td>id, title, status, priority, assignee</td><td>→ Subtasks, Comments</td></tr>
+            <tr><td>Sprint</td><td>id, goal, startDate, endDate</td><td>→ Tasks</td></tr>
+            <tr><td>Comment</td><td>id, content, aiSummary, userId</td><td>→ Task</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-top-line line-violet"></div>
+      <div class="card-label"><span class="dot dot-violet"></span><span style="color:var(--violet)">AI INTEGRATION IN PM</span></div>
+      <div class="steps" style="margin-top:8px;">
+        <div class="step">
+          <div class="step-icon si-v">1</div>
+          <div class="step-body">
+            <div class="step-title">Task Description Generation</div>
+            <div class="step-desc">User types a short task name → AI suggests full description using project context from RAG (past tasks, epics, sprint goals).</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-v">2</div>
+          <div class="step-body">
+            <div class="step-title">Comment Thread Summarization</div>
+            <div class="step-desc">Long comment threads auto-summarized by AI into a 2–3 line TL;DR. Triggered async via Kafka when comment count &gt; threshold.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-v">3</div>
+          <div class="step-body">
+            <div class="step-title">Email → Task Linking</div>
+            <div class="step-desc">Emails can be converted to tasks. AI pre-fills task title, description, and suggested assignee based on email content + project members.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM API design -->
+  <div class="card">
+    <div class="card-top-line line-violet"></div>
+    <div class="card-label"><span class="dot dot-violet"></span><span style="color:var(--violet)">API DESIGN — PM SERVICE (OpenAPI + GraphQL)</span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>API Type</th><th>Endpoint / Query</th><th>Purpose</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>REST POST</td><td><code style="color:var(--cyan);font-family:var(--mono);font-size:11px;">/api/projects/{id}/tasks</code></td><td>Create task</td><td>Returns taskId; triggers AI description suggestion async</td></tr>
+          <tr><td>REST PATCH</td><td><code style="color:var(--cyan);font-family:var(--mono);font-size:11px;">/api/tasks/{id}/status</code></td><td>Update task status</td><td>Publishes <code style="color:var(--cyan);font-family:var(--mono);font-size:11px;">task.status.changed</code> Kafka event</td></tr>
+          <tr><td>GraphQL Query</td><td><code style="color:var(--teal);font-family:var(--mono);font-size:11px;">projectDashboard(id)</code></td><td>Fetch project + tasks + AI summary</td><td>Single call replaces 4 REST calls; uses DataLoader</td></tr>
+          <tr><td>GraphQL Mutation</td><td><code style="color:var(--teal);font-family:var(--mono);font-size:11px;">aiSuggestTaskDesc(input)</code></td><td>Get AI-generated description</td><td>Returns suggestion + confidence; user can accept/edit</td></tr>
+          <tr><td>REST GET</td><td><code style="color:var(--cyan);font-family:var(--mono);font-size:11px;">/api/tasks/{id}/ai-summary</code></td><td>Get AI comment summary</td><td>Served from Redis cache; regenerated on stale flag</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SECTION 4 — EMAIL MODULE ═══════════════════════════════════ -->
+<section class="section" id="email-module">
+  <div class="sec-header">
+    <span class="sec-num">04</span>
+    <h2 class="sec-title">Email + AI <span class="c">Suggestion</span> Module</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <!-- Email flow -->
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-top-line line-cyan"></div>
+    <div class="card-label"><span class="dot dot-cyan"></span><span style="color:var(--cyan)">EMAIL AI PROCESSING FLOW — END TO END</span></div>
+    <div class="pipe" style="margin:12px 0 20px;">
+      <div class="pipe-box c"><div class="pipe-lbl">USER</div><div class="pipe-name">Opens Email</div></div>
+      <span class="pipe-arr">→</span>
+      <div class="pipe-box c"><div class="pipe-lbl">API GW</div><div class="pipe-name">Route + Auth</div></div>
+      <span class="pipe-arr">→</span>
+      <div class="pipe-box c"><div class="pipe-lbl">EMAIL SVC</div><div class="pipe-name">Persist + Enrich</div></div>
+      <span class="pipe-arr">→</span>
+      <div class="pipe-box a"><div class="pipe-lbl">KAFKA</div><div class="pipe-name">ai.email.request</div></div>
+      <span class="pipe-arr">→</span>
+      <div class="pipe-box t"><div class="pipe-lbl">AI WORKER</div><div class="pipe-name">RAG + LLM</div></div>
+      <span class="pipe-arr">→</span>
+      <div class="pipe-box t"><div class="pipe-lbl">RESULT</div><div class="pipe-name">WebSocket Push</div></div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon si-c">01</div>
+        <div class="step-body">
+          <div class="step-title">Email Ingestion &amp; Pre-processing</div>
+          <div class="step-desc">User opens or receives email in Glohow inbox. Email Service stores raw content in PostgreSQL (status: <strong>RECEIVED</strong>). Detects language via lightweight classifier. Publishes <code>email.ai.request</code> event to Kafka with payload: {emailId, tenantId, targetLang, requestedFeatures: [TRANSLATE, SUMMARIZE, SUGGEST_REPLY]}.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon si-t">02</div>
+        <div class="step-body">
+          <div class="step-title">RAG Context Retrieval (Qdrant)</div>
+          <div class="step-desc">AI Pipeline Worker reads from Kafka. Generates embedding of email content via embedding model. Queries <strong>Qdrant</strong> with top-k similarity search on tenant's collection (namespaced by tenantId). Retrieves: past similar emails, project context, glossary terms, user reply style profile.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon si-t">03</div>
+        <div class="step-body">
+          <div class="step-title">Translation Engine — TM Lookup → Glossary Inject → LLM Call</div>
+          <div class="step-desc">
+            <strong>Step A — Translation Memory (TM) lookup:</strong> Before any LLM call, the system queries the TM store (PostgreSQL, keyed by source-segment hash + tenantId). 100% match → return instantly, no LLM needed. Fuzzy match ≥75% → injected into prompt as a consistency reference.<br><br>
+            <strong>Step B — Glossary injection:</strong> The tenant Glossary (Qdrant collection) is queried for every term in the email. Matched terms + their approved translations are injected as hard prompt constraints: <em>"Always translate [source_term] as [approved_term]."</em><br><br>
+            <strong>Step C — Multi-model LLM call:</strong> Final prompt = system instructions + TM references + Glossary constraints + RAG context + email body. Routed to the tenant-configured LLM provider (<code>ChatGPT</code>, <code>Gemini</code>, <code>Claude</code>, or <code>Ollama</code>). Returns structured output: <code>translation</code>, <code>summary</code>, <code>suggestedReply[3 variants]</code>.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon si-c">04</div>
+        <div class="step-body">
+          <div class="step-title">Result Persistence, Indexing &amp; Caching</div>
+          <div class="step-desc">Results saved to PostgreSQL. Translation + reply embeddings indexed to Qdrant (continuous RAG learning). Full-text indexed to Elasticsearch. Results cached in Redis (TTL: 1h) keyed by <code>email:{id}:ai:{version}</code>. Status updated to <strong>AI_COMPLETE</strong>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon si-c">05</div>
+        <div class="step-body">
+          <div class="step-title">Push to Client via WebSocket</div>
+          <div class="step-desc">Notification Service consumes <code>email.ai.completed</code> Kafka event. Pushes result via WebSocket (STOMP) to the user's active session. If user is offline: result available on next load from Redis cache. User sees: translated email + summary badge + 3 AI reply suggestions with confidence indicators.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI features grid -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+    <div class="card" style="grid-column: span 3;">
+      <div class="card-top-line line-cyan"></div>
+      <div class="card-label" style="margin-bottom:14px;"><span class="dot dot-cyan"></span><span style="color:var(--cyan)">AI TRANSLATION — TRANSLATION MEMORY + GLOSSARY ARCHITECTURE</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+        <div>
+          <div class="bp-icon">🗂️</div>
+          <div class="bp-title">Translation Memory (TM)</div>
+          <div class="bp-text">
+            Every approved translation is stored as a <strong>TM segment</strong>: {sourceHash, sourceLang, targetLang, translatedText, tenantId, approvedAt}. Stored in <strong>PostgreSQL</strong> for exact/fuzzy match lookups.<br><br>
+            <strong>100% match</strong> → served directly from TM, zero LLM cost.<br>
+            <strong>Fuzzy match (75–99%)</strong> → TM suggestion injected into prompt as reference for the LLM to adapt.<br>
+            <strong>No match</strong> → full LLM translation, result auto-saved to TM on user approval.<br><br>
+            Result: repeated content (boilerplate, standard phrases) never hits the LLM again — cuts cost and ensures <strong>100% consistency</strong> on approved segments.
+          </div>
+        </div>
+        <div>
+          <div class="bp-icon">📖</div>
+          <div class="bp-title">Glossary (Terminology DB)</div>
+          <div class="bp-text">
+            Each tenant maintains a <strong>Glossary</strong> — a curated list of domain terms with approved translations: {sourceTerm, targetTerm, domain, tenantId, isMandatory}. Stored in <strong>Qdrant</strong> as a dedicated named collection for semantic term matching.<br><br>
+            At translation time: email text is scanned for glossary terms (exact + semantic match via Qdrant). Matched terms are injected as <strong>hard constraints</strong> in the LLM prompt.<br><br>
+            <strong>isMandatory=true</strong> → LLM must use the approved term (e.g., "Invoice" must always be "Hóa đơn", not "Biên lai").<br>
+            Glossary is editable by workspace admins — changes take effect on the next translation immediately.
+          </div>
+        </div>
+        <div>
+          <div class="bp-icon">🔀</div>
+          <div class="bp-title">Multi-Model LLM Routing</div>
+          <div class="bp-text">
+            LLM provider is <strong>configurable per tenant</strong> via the LLM Router service. Supported providers:<br><br>
+            <span class="chip chip-c" style="display:inline-block;margin:2px;">ChatGPT (GPT-4o)</span>
+            <span class="chip chip-t" style="display:inline-block;margin:2px;">Gemini 1.5 Pro</span>
+            <span class="chip chip-v" style="display:inline-block;margin:2px;">Claude 3.5 Sonnet</span>
+            <span class="chip chip-a" style="display:inline-block;margin:2px;">Ollama (local)</span><br><br>
+            Each model has a registered <strong>adapter</strong> implementing a common <code>LLMPort</code> interface — provider swap requires zero code change in the AI pipeline. Admin can configure: primary model, fallback model, and cost threshold (e.g., use Gemini Flash for short emails, GPT-4o for complex ones). Circuit breaker per provider; auto-failover to next in chain.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-top-line line-teal"></div>
+      <div class="bp-icon">📋</div>
+      <div class="bp-title">Smart Summary</div>
+      <div class="bp-text">Generates 3-line executive summary for long emails. Extracts: key decisions, action items, deadlines. Linked to project context — if email mentions a task, summary includes task ID and current status.</div>
+    </div>
+    <div class="card">
+      <div class="card-top-line line-amber"></div>
+      <div class="bp-icon">💬</div>
+      <div class="bp-title">Reply Suggestion</div>
+      <div class="bp-text">Generates 3 reply variants: Formal / Neutral / Casual. Each grounded in RAG context (past replies by same user, project status). User can accept, edit, or regenerate. Accepted replies re-indexed to improve future suggestions.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SECTION 5 — AI PIPELINE ═══════════════════════════════════ -->
+<section class="section" id="ai-pipeline">
+  <div class="sec-header">
+    <span class="sec-num">05</span>
+    <h2 class="sec-title">AI Pipeline <span class="t">(RAG Architecture)</span></h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <!-- RAG diagram -->
+  <div class="topology" style="margin-bottom:24px;">
+    <div class="card-label" style="margin-bottom:20px;"><span class="dot dot-teal"></span><span style="color:var(--teal)">RAG PIPELINE DETAIL — RETRIEVAL AUGMENTED GENERATION</span></div>
+    <div class="svg-scroll">
+<svg viewBox="0 0 1080 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:800px;">
+<defs>
+  <marker id="r-t" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00c9a7"/></marker>
+  <marker id="r-a" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#ffb340"/></marker>
+  <marker id="r-c" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00e5ff"/></marker>
+  <marker id="r-v" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#818cf8"/></marker>
+</defs>
+<rect x="5" y="5" width="1070" height="370" rx="14" fill="#030609" stroke="#1c2d42"/>
+
+<!-- PHASE LABELS -->
+<rect x="20" y="20" width="155" height="28" rx="6" fill="rgba(0,229,255,.07)" stroke="rgba(0,229,255,.2)"/>
+<text x="97" y="38" text-anchor="middle" fill="#00e5ff" font-size="9" font-family="IBM Plex Mono" letter-spacing="1.5">PHASE 1 · INDEXING</text>
+
+<rect x="200" y="20" width="340" height="28" rx="6" fill="rgba(0,201,167,.07)" stroke="rgba(0,201,167,.2)"/>
+<text x="370" y="38" text-anchor="middle" fill="#00c9a7" font-size="9" font-family="IBM Plex Mono" letter-spacing="1.5">PHASE 2 · RETRIEVAL</text>
+
+<rect x="560" y="20" width="340" height="28" rx="6" fill="rgba(255,179,64,.07)" stroke="rgba(255,179,64,.2)"/>
+<text x="730" y="38" text-anchor="middle" fill="#ffb340" font-size="9" font-family="IBM Plex Mono" letter-spacing="1.5">PHASE 3 · GENERATION</text>
+
+<rect x="920" y="20" width="140" height="28" rx="6" fill="rgba(129,140,248,.07)" stroke="rgba(129,140,248,.2)"/>
+<text x="990" y="38" text-anchor="middle" fill="#818cf8" font-size="9" font-family="IBM Plex Mono" letter-spacing="1.5">PHASE 4 · LEARNING</text>
+
+<!-- INDEXING PHASE -->
+<rect x="20" y="70" width="155" height="50" rx="9" fill="#0c1a28" stroke="#00e5ff" stroke-width="1.5"/>
+<text x="97" y="90" text-anchor="middle" fill="#00e5ff" font-size="8" font-family="IBM Plex Mono">KNOWLEDGE SOURCES</text>
+<text x="97" y="107" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">Emails / Tasks / Docs</text>
+
+<rect x="20" y="145" width="155" height="50" rx="9" fill="#0c1a28" stroke="#00e5ff" stroke-width="1.5"/>
+<text x="97" y="165" text-anchor="middle" fill="#00e5ff" font-size="8" font-family="IBM Plex Mono">EMBEDDING MODEL</text>
+<text x="97" y="182" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">text-embedding-3-small</text>
+
+<rect x="20" y="220" width="155" height="50" rx="9" fill="#0c1a28" stroke="#00e5ff" stroke-width="1.5"/>
+<text x="97" y="240" text-anchor="middle" fill="#00e5ff" font-size="8" font-family="IBM Plex Mono">VECTOR STORE</text>
+<text x="97" y="257" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">Qdrant (per tenant)</text>
+
+<!-- RETRIEVAL PHASE -->
+<rect x="200" y="70" width="155" height="50" rx="9" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<text x="277" y="90" text-anchor="middle" fill="#00c9a7" font-size="8" font-family="IBM Plex Mono">INCOMING EMAIL</text>
+<text x="277" y="107" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">Raw Email Content</text>
+
+<rect x="200" y="145" width="155" height="50" rx="9" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<text x="277" y="165" text-anchor="middle" fill="#00c9a7" font-size="8" font-family="IBM Plex Mono">EMBED QUERY</text>
+<text x="277" y="182" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">Query Embedding</text>
+
+<rect x="380" y="70" width="155" height="50" rx="9" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<text x="457" y="90" text-anchor="middle" fill="#00c9a7" font-size="8" font-family="IBM Plex Mono">ANN SEARCH</text>
+<text x="457" y="107" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">Top-K Retrieval</text>
+
+<rect x="380" y="145" width="155" height="50" rx="9" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<text x="457" y="165" text-anchor="middle" fill="#00c9a7" font-size="8" font-family="IBM Plex Mono">CONTEXT CHUNKS</text>
+<text x="457" y="182" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">Ranked Relevant Docs</text>
+
+<!-- GENERATION PHASE -->
+<rect x="560" y="70" width="155" height="50" rx="9" fill="#0c1a28" stroke="#ffb340" stroke-width="1.5"/>
+<text x="637" y="90" text-anchor="middle" fill="#ffb340" font-size="8" font-family="IBM Plex Mono">PROMPT BUILDER</text>
+<text x="637" y="107" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">Context + Instruction</text>
+
+<rect x="740" y="70" width="155" height="50" rx="9" fill="#0c1a28" stroke="#ffb340" stroke-width="2"/>
+<text x="817" y="90" text-anchor="middle" fill="#ffb340" font-size="8" font-family="IBM Plex Mono">LLM CALL</text>
+<text x="817" y="107" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">Ollama / Cloud LLM</text>
+
+<rect x="560" y="145" width="335" height="50" rx="9" fill="#0c1a28" stroke="#ffb340" stroke-width="1.5"/>
+<text x="727" y="165" text-anchor="middle" fill="#ffb340" font-size="8" font-family="IBM Plex Mono">STRUCTURED OUTPUT</text>
+<text x="727" y="182" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">Translation · Summary · Reply[3]</text>
+
+<!-- LEARNING PHASE -->
+<rect x="920" y="70" width="140" height="50" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="990" y="90" text-anchor="middle" fill="#818cf8" font-size="8" font-family="IBM Plex Mono">FEEDBACK LOOP</text>
+<text x="990" y="107" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">User Accepts Reply</text>
+
+<rect x="920" y="145" width="140" height="50" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="990" y="165" text-anchor="middle" fill="#818cf8" font-size="8" font-family="IBM Plex Mono">RE-INDEX</text>
+<text x="990" y="182" text-anchor="middle" fill="#cdd9e5" font-size="10.5" font-weight="700" font-family="Outfit">Update Qdrant KB</text>
+
+<!-- ARROWS -->
+<line x1="97" y1="120" x2="97" y2="143" stroke="#00e5ff" stroke-width="1.5" marker-end="url(#r-c)"/>
+<line x1="97" y1="195" x2="97" y2="218" stroke="#00e5ff" stroke-width="1.5" marker-end="url(#r-c)"/>
+<line x1="277" y1="120" x2="277" y2="143" stroke="#00c9a7" stroke-width="1.5" marker-end="url(#r-t)"/>
+<line x1="355" y1="168" x2="378" y2="168" stroke="#00c9a7" stroke-width="1.5" marker-end="url(#r-t)"/>
+<line x1="277" y1="195" x2="277" y2="230" stroke="#00c9a7" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#r-t)"/>
+<line x1="175" y1="240" x2="380" y2="95" stroke="#00c9a7" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#r-t)"/>
+<line x1="535" y1="95" x2="558" y2="95" stroke="#ffb340" stroke-width="1.5" marker-end="url(#r-a)"/>
+<line x1="695" y1="95" x2="738" y2="95" stroke="#ffb340" stroke-width="1.5" marker-end="url(#r-a)"/>
+<line x1="817" y1="120" x2="817" y2="143" stroke="#ffb340" stroke-width="1.5" marker-end="url(#r-a)"/>
+<line x1="895" y1="168" x2="918" y2="95" stroke="#818cf8" stroke-width="1.5" marker-end="url(#r-v)"/>
+<line x1="990" y1="120" x2="990" y2="143" stroke="#818cf8" stroke-width="1.5" marker-end="url(#r-v)"/>
+<line x1="920" y1="170" x2="175" y2="240" stroke="#818cf8" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#r-v)"/>
+
+<!-- Notes -->
+<rect x="200" y="240" width="335" height="42" rx="7" fill="rgba(0,201,167,.05)" stroke="rgba(0,201,167,.15)"/>
+<text x="367" y="258" text-anchor="middle" fill="#4d6680" font-size="9" font-family="IBM Plex Mono">PRIVACY: Tenant data never cross-contaminates</text>
+<text x="367" y="273" text-anchor="middle" fill="#4d6680" font-size="9" font-family="IBM Plex Mono">Each tenant = isolated Qdrant collection + schema</text>
+
+<rect x="560" y="240" width="335" height="42" rx="7" fill="rgba(255,179,64,.05)" stroke="rgba(255,179,64,.15)"/>
+<text x="727" y="258" text-anchor="middle" fill="#4d6680" font-size="9" font-family="IBM Plex Mono">FALLBACK: If cloud LLM slow → use local Ollama</text>
+<text x="727" y="273" text-anchor="middle" fill="#4d6680" font-size="9" font-family="IBM Plex Mono">Circuit breaker pattern with Resilience4j</text>
+</svg>
+    </div>
+  </div>
+
+  <!-- Multi-tenant design -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-top-line line-amber"></div>
+      <div class="card-label"><span class="dot dot-amber"></span><span style="color:var(--amber)">MULTI-TENANT ISOLATION STRATEGY</span></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Layer</th><th>Isolation Method</th></tr></thead>
+          <tbody>
+            <tr><td>Database</td><td>Schema-per-tenant in PostgreSQL (e.g. <code style="font-family:var(--mono);font-size:11px;color:var(--cyan)">tenant_abc.tasks</code>)</td></tr>
+            <tr><td>Kafka</td><td>Tenant-prefixed topics (<code style="font-family:var(--mono);font-size:11px;color:var(--cyan)">tenant-abc.email.ai.request</code>)</td></tr>
+            <tr><td>Qdrant</td><td>Namespaced collections per tenantId</td></tr>
+            <tr><td>Redis</td><td>Key prefix: <code style="font-family:var(--mono);font-size:11px;color:var(--cyan)">t:{tenantId}:email:{id}</code></td></tr>
+            <tr><td>API Gateway</td><td>Tenant resolver middleware reads JWT → sets schema context</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-top-line line-teal"></div>
+      <div class="card-label"><span class="dot dot-teal"></span><span style="color:var(--teal)">AI QUALITY CONTROLS</span></div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon si-t">✓</div>
+          <div class="step-body">
+            <div class="step-title">Confidence Scoring</div>
+            <div class="step-desc">Each AI result tagged with similarity score from RAG retrieval. Low-confidence results flagged with warning to user.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-t">✓</div>
+          <div class="step-body">
+            <div class="step-title">Prompt Versioning</div>
+            <div class="step-desc">All prompts versioned in DB. A/B testing framework allows gradual rollout of new prompt strategies per tenant.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-t">✓</div>
+          <div class="step-body">
+            <div class="step-title">Feedback Loop</div>
+            <div class="step-desc">User accepts/rejects/edits AI suggestions. Accepted outputs re-indexed to Qdrant to improve future retrieval quality.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SECTION 6 — BEST PRACTICES ═══════════════════════════════════ -->
+<section class="section" id="bestpractice">
+  <div class="sec-header">
+    <span class="sec-num">06</span>
+    <h2 class="sec-title">System Design <span class="g">Best Practices</span></h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="grid-4">
+    <div class="bp-card"><div class="card-top-line line-cyan"></div>
+      <div class="bp-icon">🏗️</div>
+      <div class="bp-title">Domain-Driven Microservices</div>
+      <div class="bp-text">Each service owns its domain, DB schema, and API contract. PM Service and Email Service are fully independent — can be deployed, scaled, and failed separately. No shared DB between services.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-amber"></div>
+      <div class="bp-icon">⚡</div>
+      <div class="bp-title">Async-First AI Pipeline</div>
+      <div class="bp-text">AI processing never blocks the API response. Kafka decouples request from processing — Email Service returns 202 immediately. AI results pushed via WebSocket when ready. Scales independently.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-teal"></div>
+      <div class="bp-icon">🧠</div>
+      <div class="bp-title">RAG over Fine-tuning</div>
+      <div class="bp-text">Domain knowledge (emails, tasks, glossary) lives in Qdrant, not model weights. Knowledge updates instantly without retraining. Tenant-specific context without data leakage. Explainable — we can trace every context chunk used.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-violet"></div>
+      <div class="bp-icon">🔐</div>
+      <div class="bp-title">Security by Design</div>
+      <div class="bp-text">JWT with short TTL + refresh rotation. Tenant isolation at every layer. Input sanitization (XSS, SQLi). Sensitive email data encrypted at rest. PII never sent to external LLM without consent flag.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-cyan"></div>
+      <div class="bp-icon">🔄</div>
+      <div class="bp-title">Circuit Breaker for LLM</div>
+      <div class="bp-text">Resilience4j circuit breaker wraps all LLM calls. On cloud LLM failure → fallback to local Ollama. On total failure → return cached result or graceful degradation (show email without AI features).</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-green"></div>
+      <div class="bp-icon">📊</div>
+      <div class="bp-title">Full Observability</div>
+      <div class="bp-text">Structured logs with correlation IDs across services. AI-specific metrics: LLM latency p99, embedding time, cache hit rate, user acceptance rate. Grafana dashboards track AI quality over time.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-amber"></div>
+      <div class="bp-icon">🏢</div>
+      <div class="bp-title">Multi-tenant Architecture</div>
+      <div class="bp-text">Schema-per-tenant in PostgreSQL. Tenant-scoped Kafka topics. Isolated Qdrant collections. Zero cross-tenant data leakage. Tenant resolver middleware ensures correct context propagation throughout call chain.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-violet"></div>
+      <div class="bp-icon">🚀</div>
+      <div class="bp-title">CI/CD + Trunk-Based Dev</div>
+      <div class="bp-text">Jenkins pipelines per microservice. Unit + integration tests as gates. SonarQube quality gates block merges on quality regression. Feature flags for gradual AI feature rollout per tenant.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SECTION 7 — Q&A ═══════════════════════════════════ -->
+<section class="section" id="qa">
+  <div class="sec-header">
+    <span class="sec-num">07</span>
+    <h2 class="sec-title">Interview <span class="g">Q&amp;A</span></h2>
+    <div class="sec-line"></div>
+  </div>
+  <p style="color:var(--muted);margin-bottom:8px;font-size:13px;">
+    Comprehensive Q&amp;A covering System Design, AI/RAG, Architecture Decisions, Leadership, and Scalability.
+    Each answer is structured for a 3–5 minute verbal response.
+  </p>
+
+  <!-- SYSTEM DESIGN -->
+  <div class="qa-category">
+    <span class="dot dot-cyan"></span>
+    <span style="color:var(--cyan)">SYSTEM DESIGN &amp; ARCHITECTURE</span>
+    <div class="qa-cat-line"></div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-c">Q1</span>
+      <div>
+        <div class="qa-q-text">Walk me through the overall architecture of Glohow. How does the PM module integrate with the email/AI features?</div>
+        <div class="qa-vi">Hãy mô tả kiến trúc tổng thể của Glohow. PM module tích hợp với email/AI feature như thế nào?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> Glohow is a microservices-based B2B SaaS platform with two core modules sharing a common infrastructure. The PM Service manages the project graph — workspaces, projects, epics, tasks, sprints. The Email Service handles the inbox. Both are separate Spring Boot services, deployed independently, communicating via events through Apache Kafka.</p>
+      <p>The integration point is the <strong>AI Suggestion Service</strong>, which acts as a bridge. When a user views an email, the Email Service publishes a Kafka event. The AI pipeline processes it — using RAG with Qdrant to pull in relevant project context (the user's current tasks, project vocabulary, past replies). The AI's suggestions are therefore <strong>grounded in project reality</strong>, not generic.</p>
+      <p>Similarly, from PM side, when a user creates a task and wants an AI description, the PM Service calls the AI Suggestion Service, which retrieves similar past task descriptions and epic context from Qdrant. This creates a <strong>connected intelligence</strong> across both modules — users work faster because AI knows their project context.</p>
+      <div class="tip"><p>📌 Key sell: The API layer exposes both REST (OpenAPI/Swagger) for service-to-service and GraphQL for the frontend — GraphQL lets the dashboard fetch project + tasks + AI summaries in one call instead of 4.</p></div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-c">Q2</span>
+      <div>
+        <div class="qa-q-text">Why did you choose Kafka for the AI pipeline instead of direct REST calls?</div>
+        <div class="qa-vi">Tại sao chọn Kafka cho AI pipeline thay vì gọi REST trực tiếp?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> The core problem is that LLM calls are inherently slow — anywhere from 2–15 seconds depending on the model and prompt size. If we blocked the user's HTTP request on that, the UX would be terrible, and we'd exhaust our API thread pool under concurrent users.</p>
+      <p>Kafka solves this with the <strong>async request pattern</strong>: the Email Service publishes an event and immediately returns <code>202 Accepted</code> with a job ID. The AI worker consumers process the event from the Kafka topic in the background. When done, a <code>email.ai.completed</code> event pushes the result to the user via WebSocket.</p>
+      <p>Beyond that, Kafka gives us: <strong>(1) Backpressure</strong> — if the LLM is slow, events queue up without dropping requests. <strong>(2) Replay</strong> — if the AI worker crashes mid-processing, we can replay from the last offset. <strong>(3) Independent scaling</strong> — we can scale AI workers independently from the Email Service based on queue depth (monitored via Prometheus + Grafana). <strong>(4) Audit trail</strong> — Kafka topics are durable logs of every AI request made.</p>
+      <div class="warn"><p>⚠️ Tradeoff: Kafka adds operational complexity (broker management, topic design, consumer group coordination). For a startup in early stage, a simpler Redis queue might suffice. But for B2B enterprise with SLA requirements, Kafka's guarantees are worth it.</p></div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-c">Q3</span>
+      <div>
+        <div class="qa-q-text">How did you design the multi-tenant architecture? How do you prevent data leakage between tenants?</div>
+        <div class="qa-vi">Thiết kế multi-tenant như thế nào? Ngăn rò rỉ dữ liệu giữa các tenant ra sao?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> We use a <strong>schema-per-tenant</strong> approach in PostgreSQL — each tenant gets their own schema (e.g., <code>tenant_companyabc.tasks</code>), giving hard database-level isolation while sharing a single PostgreSQL cluster. This is better than row-level isolation (where a missing WHERE clause could leak all tenants' data) and cheaper than database-per-tenant.</p>
+      <p>The <strong>Tenant Resolver middleware</strong> in the API Gateway reads the JWT's tenant claim, sets the correct schema in the database connection pool context, and propagates the tenant ID as a header throughout the call chain. Every downstream service respects this context — it's injected automatically via Spring's request scope.</p>
+      <p>For AI specifically: each tenant has an <strong>isolated Qdrant collection</strong> — their emails, tasks, and knowledge base never mix with another tenant's. Kafka topics are prefixed by tenantId. Redis keys are namespaced. This means even if a bug caused a query to hit the wrong collection, it would be a random tenant's collection — we added assertion checks at the AI worker level to prevent this.</p>
+      <div class="tip"><p>📌 Key insight: The tenant isolation layer was designed upfront. Retrofitting multi-tenancy into an existing system is 10x harder — always build it in from day one.</p></div>
+    </div>
+  </div>
+
+  <!-- AI / RAG -->
+  <div class="qa-category">
+    <span class="dot dot-teal"></span>
+    <span style="color:var(--teal)">AI / RAG ARCHITECTURE</span>
+    <div class="qa-cat-line"></div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-t">Q4</span>
+      <div>
+        <div class="qa-q-text">Explain the RAG architecture in detail. Why RAG over just calling an LLM directly?</div>
+        <div class="qa-vi">Giải thích chi tiết kiến trúc RAG. Tại sao dùng RAG thay vì gọi LLM trực tiếp?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> RAG — Retrieval-Augmented Generation — is a pattern where we <strong>enrich the LLM prompt with retrieved relevant knowledge</strong> before generating a response, rather than relying on the model's static training data. In Glohow, this works alongside two other precision tools: <strong>Translation Memory (TM)</strong> and a <strong>Glossary</strong>.</p>
+      <p><strong>Full translation pipeline:</strong> Before any LLM call, we first check the TM store (PostgreSQL) — if the source segment has been translated and approved before (100% match), we return that immediately. No LLM cost, perfect consistency. For fuzzy matches (&ge;75%), the TM result is injected into the prompt as a reference. Next, Glossary terms are extracted from the email and injected as hard constraints into the prompt. Only then does the LLM call happen — with: system instructions + TM references + Glossary constraints + RAG context chunks from Qdrant.</p>
+      <p><strong>Multi-model architecture:</strong> The LLM provider is configurable per tenant. We implemented a <code>LLMPort</code> interface (Adapter pattern) with providers for ChatGPT (GPT-4o), Gemini 1.5 Pro, Claude 3.5 Sonnet, and Ollama (local). Swapping models requires zero pipeline code changes. Tenants can configure: primary model, fallback, and routing rules (e.g., use Gemini Flash for short emails under 200 tokens, GPT-4o for complex ones). Circuit breaker per provider with auto-failover.</p>
+      <p>Why this layered approach? <strong>TM</strong> = cost savings + consistency on repetition. <strong>Glossary</strong> = domain accuracy + terminology control. <strong>RAG</strong> = contextual relevance from live project data. <strong>LLM</strong> = generative intelligence for new content. Each layer has a job; none replaces the others.</p>
+      <div class="tip"><p>📌 Metric: RAG reduced terminology inconsistency in translations by ~65% compared to zero-shot LLM calls in our internal testing.</p></div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-t">Q5</span>
+      <div>
+        <div class="qa-q-text">How do you handle LLM failures or slow responses in production? What's your resilience strategy?</div>
+        <div class="qa-vi">Xử lý LLM chậm hoặc lỗi như thế nào trong production? Chiến lược resilience là gì?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> We implemented a multi-layer resilience strategy using <strong>Resilience4j</strong>. At the LLM call level, we have: <strong>(1) Timeout</strong> — 30s hard timeout per LLM call. <strong>(2) Retry</strong> — 2 retries with exponential backoff for transient failures. <strong>(3) Circuit Breaker</strong> — if failure rate &gt; 50% over 10 calls, the circuit opens and we stop calling the failing provider for 60 seconds.</p>
+      <p>The fallback chain: Primary LLM slow/failing → <strong>fall back to next provider in the chain</strong> (e.g., ChatGPT → Gemini → Ollama) (faster, slightly lower quality). Ollama unavailable → <strong>serve from Redis cache</strong> (for identical or near-identical emails). Cache miss + all LLMs down → <strong>graceful degradation</strong>: show the email normally without AI features, with a "AI processing" badge. Never show an error screen — the core product (reading/sending emails) always works.</p>
+      <p>We monitor circuit breaker state in Grafana and alert on-call when the circuit opens. This was tested via chaos engineering — we randomly killed the cloud LLM endpoint in staging and verified the fallback chain worked within SLA.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-t">Q6</span>
+      <div>
+        <div class="qa-q-text">How do you keep the AI suggestions improving over time? What's the feedback loop?</div>
+        <div class="qa-vi">Làm thế nào để AI ngày càng cải thiện? Feedback loop hoạt động như thế nào?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> The key insight is that <strong>user behavior is the training signal</strong>. When a user accepts an AI reply suggestion, edits it minimally, or marks a translation as correct — that's high-quality signal. When they regenerate or discard, that's negative signal.</p>
+      <p>Accepted outputs are <strong>re-embedded and indexed back into Qdrant</strong> with metadata {accepted: true, userId, editDistance: X}. Over time, the RAG retrieval naturally surfaces these high-quality accepted examples when similar emails come in. It's a <strong>continuous learning loop without retraining</strong> the model.</p>
+      <p>We also maintain <strong>prompt versioning</strong> — every prompt template is stored with a version ID. We A/B test new prompts against 10% of traffic and compare: acceptance rate, edit distance (lower = better), and user ratings. Grafana dashboards track these KPIs per tenant. A new prompt only gets promoted to 100% if it statistically outperforms the current one.</p>
+      <div class="tip"><p>📌 This approach means the system gets more personalized per tenant over time — a company that translates many legal emails develops a legal-domain knowledge base that makes future translations sharper.</p></div>
+    </div>
+  </div>
+
+  <!-- TECHNICAL DEPTH -->
+  <div class="qa-category">
+    <span class="dot dot-amber"></span>
+    <span style="color:var(--amber)">TECHNICAL DEPTH &amp; PERFORMANCE</span>
+    <div class="qa-cat-line"></div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-a">Q7</span>
+      <div>
+        <div class="qa-q-text">REST vs GraphQL — when did you use each, and what problems did GraphQL solve?</div>
+        <div class="qa-vi">Khi nào dùng REST, khi nào dùng GraphQL? GraphQL giải quyết vấn đề gì?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> We used both intentionally for different purposes. <strong>REST (OpenAPI)</strong> for: service-to-service communication (where contract predictability and HTTP caching matter), simple CRUD operations, webhook integrations, and file upload/download.</p>
+      <p><strong>GraphQL</strong> for: frontend-facing complex data fetching. The classic problem it solved — the project dashboard originally required 4 REST calls: GET /projects/{id}, GET /projects/{id}/tasks, GET /tasks/{id}/ai-summary, GET /sprints/active. With GraphQL, one query <code>projectDashboard(id)</code> fetches all of this in a single round trip. This cut dashboard load time by ~40%.</p>
+      <p>We addressed GraphQL's classic problems: <strong>N+1</strong> solved with DataLoader (batches DB calls per resolver). <strong>DoS via deep queries</strong> mitigated with query depth limiting and complexity scoring — queries exceeding complexity 100 are rejected. <strong>Versioning</strong> managed via deprecation annotations — old fields stay but are marked deprecated, giving clients time to migrate.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-a">Q8</span>
+      <div>
+        <div class="qa-q-text">How did you implement secure coding practices? What vulnerabilities did you actively guard against?</div>
+        <div class="qa-vi">Bạn áp dụng secure coding như thế nào? Bảo vệ khỏi các lỗ hổng nào?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> Security was integrated into the development process, not bolted on after. <strong>Input validation</strong>: All user inputs are validated with Bean Validation annotations and a custom sanitization layer — HTML is escaped to prevent XSS before storage. GraphQL inputs go through custom scalar validators.</p>
+      <p><strong>SQL Injection</strong>: Completely prevented by using JPA/Hibernate with parameterized queries exclusively. No raw SQL string concatenation anywhere in the codebase — enforced via SonarQube custom rules. <strong>Authentication</strong>: JWT tokens with 15-minute access token TTL and 7-day refresh rotation. Refresh tokens are single-use (revoked on use). <strong>Authorization</strong>: Spring Security method-level annotations (<code>@PreAuthorize</code>) enforce that users can only access their tenant's resources — even if the JWT is compromised, they can't escalate to another tenant.</p>
+      <p><strong>AI-specific security</strong>: Email content sent to LLMs is stripped of PII (configurable per tenant) before the API call. Prompt injection attacks — where malicious email content tries to hijack the LLM prompt — are mitigated by clear prompt delimiters and input escaping.</p>
+    </div>
+  </div>
+
+  <!-- LEADERSHIP -->
+  <div class="qa-category">
+    <span class="dot dot-violet"></span>
+    <span style="color:var(--violet)">TECHNICAL LEADERSHIP</span>
+    <div class="qa-cat-line"></div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-v">Q9</span>
+      <div>
+        <div class="qa-q-text">As Technical Leader, how did you handle the decision to introduce AI/RAG into the product? How did you get team buy-in?</div>
+        <div class="qa-vi">Với vai trò Tech Lead, bạn quyết định tích hợp AI/RAG vào sản phẩm như thế nào? Thuyết phục team ra sao?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> The decision started with a clear problem statement: enterprise users were struggling with email communication across languages — a real pain point in B2B global teams. Before proposing RAG, I ran a <strong>2-week spike</strong> with one developer to validate feasibility: could we build a working prototype with Ollama + Qdrant that produced noticeably better translations than zero-shot LLM calls?</p>
+      <p>The prototype validated it — domain-specific terminology retrieval improved consistency measurably. I then presented to leadership with: <strong>(1)</strong> Demo of the prototype with real emails, <strong>(2)</strong> Architecture proposal with effort estimate, <strong>(3)</strong> Risk assessment (LLM latency, cost, fallback strategy), <strong>(4)</strong> Phased rollout plan — ship basic translation first, add RAG improvement in phase 2.</p>
+      <p>Team buy-in came from involving senior developers early in the spike — they owned the architecture. I documented all decisions as ADRs (Architecture Decision Records) so junior developers understood the "why." We did knowledge sharing sessions on RAG concepts before implementation — nobody wants to build something they don't understand.</p>
+      <div class="tip"><p>📌 Leadership lesson: Spikes de-risk technical bets. Always prove feasibility before committing sprint velocity to a new technology.</p></div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-v">Q10</span>
+      <div>
+        <div class="qa-q-text">How did you ensure code quality and manage technical debt on a fast-moving feature team?</div>
+        <div class="qa-vi">Làm thế nào đảm bảo chất lượng code và quản lý tech debt trong team phát triển nhanh?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> Quality at speed requires systemic constraints, not just good intentions. We implemented four layers: <strong>(1) Automated gates in CI</strong> — Jenkins pipeline runs unit tests, integration tests, and SonarQube analysis on every PR. PRs can't be merged if coverage drops below threshold or if new critical/blocker issues are introduced. This makes quality a technical constraint, not a social one.</p>
+      <p><strong>(2) Architecture governance</strong> — I conducted weekly architecture reviews where new patterns or dependencies were discussed. Architectural decisions were documented as ADRs. This prevented the "we just needed it quickly" anti-patterns that accumulate into debt. <strong>(3) Tech debt as a backlog citizen</strong> — every sprint had 15–20% capacity reserved for refactoring. We tracked debt items in Jira like any feature — with impact assessment and priority. <strong>(4) Pair programming and code reviews</strong> — every PR required at least one senior review. I personally reviewed PRs touching AI pipeline or architecture-sensitive code.</p>
+      <p>The result: we shipped features fast but kept code maintainable enough that new team members could onboard and contribute within a week.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-v">Q11</span>
+      <div>
+        <div class="qa-q-text">How do you approach E2E testing for an AI feature? AI outputs are non-deterministic — how do you test that?</div>
+        <div class="qa-vi">Kiểm thử E2E cho AI feature như thế nào? Output AI không ổn định — làm sao test?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> Traditional assertion-based testing doesn't work for AI outputs — you can't assert that a translation is exactly a specific string. Instead, we test at three levels.</p>
+      <p><strong>Level 1 — Pipeline integration tests</strong>: We test that the pipeline completes correctly — the Kafka event is consumed, the Qdrant query executes, the LLM is called with a well-formed prompt (captured via mock), and the result is stored and pushed via WebSocket. We mock the LLM, so the test is deterministic. This tests the "plumbing."</p>
+      <p><strong>Level 2 — Output quality tests</strong>: We maintain a golden dataset of 50 emails with expected characteristics — "this email is in French, the translation should be in English and contain these 5 key terms." We run periodic batch evaluations against real LLM calls and score outputs using a rubric. Scores are tracked in Grafana — alerts fire if quality drops below threshold after a model upgrade.</p>
+      <p><strong>Level 3 — Shadow testing</strong>: When we introduce new prompt versions, we run them in shadow mode (same input, new prompt, result not shown to user) and compare acceptance rate between old and new. Only promote if statistically better.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-g">Q12</span>
+      <div>
+        <div class="qa-q-text">If you were to redesign Glohow from scratch today, what would you do differently?</div>
+        <div class="qa-vi">Nếu redesign Glohow từ đầu hôm nay, bạn sẽ làm gì khác đi?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> This question shows self-awareness, which is important for senior roles. A few things I'd reconsider:</p>
+      <p><strong>(1) Event schema registry from day one:</strong> We didn't start with a Kafka schema registry (like Confluent Schema Registry). As the number of topics grew, managing backward compatibility of event schemas became painful. I'd introduce Avro schemas and a registry from the first event.</p>
+      <p><strong>(2) CQRS for read-heavy endpoints:</strong> The project dashboard queries became complex joins as the product grew. I'd introduce a read model (CQRS pattern) — project read service with a denormalized PostgreSQL or MongoDB read store, updated via Kafka events. Simpler queries, better performance, decoupled from write path.</p>
+      <p><strong>(3) OpenTelemetry earlier:</strong> We added distributed tracing late. Debugging a slow AI pipeline request that spans Email Service → Kafka → AI Worker → Qdrant → LLM was painful without proper trace IDs. OpenTelemetry should be Day 1 infrastructure.</p>
+      <p><strong>(4) Embedding model versioning strategy:</strong> When we upgraded our embedding model, all existing Qdrant vectors were incompatible (different dimensions). We had to re-index everything. I'd design a migration strategy for embedding model upgrades upfront — dual-index with gradual cutover.</p>
+      <div class="tip"><p>📌 Showing you can critically evaluate your own work demonstrates technical maturity — this is what senior/lead roles look for.</p></div>
+    </div>
+  </div>
+
+</section>
+</div><!-- /wrap -->
+
+<footer>
+  <span>Thái Tiểu Lôi · thaitieuloi3107@gmail.com · 0977116790</span>
+  <span>Glohow System Architecture · Interview Document · 2025–2026</span>
+  <span>Technical Leader | Senior Developer · 10+ Years</span>
+</footer>
+
+</body>
+</html>
