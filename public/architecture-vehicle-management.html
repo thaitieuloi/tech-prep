@@ -9,9 +9,9 @@
 .en-hide { display: inline; }
 body.vi .en-hide { display: none; }
 .lang-dual { display: none; }
-body.vi .lang-dual { display: block; margin-top: 5px; }
-.lang-dual .lang-en { display: block; opacity: 0.6; font-size: 0.9em; margin-bottom: 4px; }
-.lang-dual .lang-vi { display: block; font-style: italic; color: #a1a1aa; border-top: 1px dotted rgba(255,255,255,0.15); padding-top: 6px; }
+body.vi .lang-dual { display: block; margin-top: 8px; }
+.lang-dual .lang-en { display: block; opacity: 0.65; font-size: 0.95em; margin-bottom: 6px; }
+.lang-dual .lang-vi { display: block; font-style: italic; color: #9ca3af; border-top: 1px dotted rgba(255,255,255,0.15); padding-top: 8px; font-size: 0.95em; }
 
 :root {
   --bg:        #070a10;
@@ -38,8 +38,8 @@ body {
   font-family: 'Sora', sans-serif;
   background: var(--bg);
   color: var(--text);
-  padding: 32px 24px 60px;
-  max-width: 1120px;
+  padding: 32px 40px 80px;
+  max-width: 1440px;
   margin: 0 auto;
   line-height: 1.6;
 }
@@ -52,24 +52,24 @@ body {
   border-bottom: 1px solid var(--border);
 }
 .page-header h1 {
-  font-size: 26px; font-weight: 800; color: var(--bright);
-  letter-spacing: -0.5px; margin-bottom: 8px;
+  font-size: 32px; font-weight: 800; color: var(--bright);
+  letter-spacing: -0.5px; margin-bottom: 10px;
 }
-.page-header .tagline { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
-.chip-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; }
+.page-header .tagline { font-size: 15px; color: var(--muted); margin-bottom: 16px; }
+.chip-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .chip {
-  font-size: 10px; font-weight: 600; padding: 3px 10px;
+  font-size: 12px; font-weight: 600; padding: 4px 14px;
   border-radius: 20px; border: 1px solid; letter-spacing: 0.4px;
 }
 
 /* ─── LANG TOGGLE ─────────────────────────── */
 .lang-bar {
   display: flex; justify-content: flex-end; align-items: center;
-  gap: 10px; margin-bottom: 18px;
+  gap: 12px; margin-bottom: 20px;
 }
-.lang-bar span { font-size: 10px; color: var(--muted); }
+.lang-bar span { font-size: 13px; color: var(--muted); font-weight: 600; }
 .lang-btn {
-  font-size: 10px; font-weight: 700; padding: 4px 12px;
+  font-size: 12.5px; font-weight: 700; padding: 6px 16px;
   border-radius: 6px; border: 1px solid var(--border);
   cursor: pointer; transition: all .2s; background: var(--bg2);
   color: var(--muted); letter-spacing: 0.5px;
@@ -85,9 +85,9 @@ body {
 }
 .conn-line { width: 1px; height: 20px; background: var(--border); }
 .conn-pill {
-  font-size: 9px; color: var(--muted); font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace;
   background: var(--bg); border: 1px solid var(--border);
-  padding: 2px 10px; border-radius: 20px; white-space: nowrap;
+  padding: 4px 12px; border-radius: 20px; white-space: nowrap;
 }
 
 .layer {
@@ -98,8 +98,8 @@ body {
 .layer:hover { box-shadow: 0 0 0 1px rgba(255,255,255,0.06); }
 
 .layer-head {
-  padding: 10px 16px;
-  display: flex; align-items: center; gap: 10px;
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 12px;
   cursor: pointer; user-select: none;
   border-bottom: 1px solid rgba(255,255,255,0.04);
   transition: background .2s;
@@ -107,26 +107,26 @@ body {
 .layer-head:hover { background: rgba(255,255,255,0.02); }
 
 .layer-badge {
-  font-size: 9px; font-weight: 800; padding: 2px 9px;
-  border-radius: 4px; letter-spacing: 0.8px;
+  font-size: 12px; font-weight: 800; padding: 4px 10px;
+  border-radius: 6px; letter-spacing: 0.8px;
   text-transform: uppercase; flex-shrink: 0; font-family: 'JetBrains Mono', monospace;
 }
 .layer-info { flex: 1; }
-.layer-name { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; }
-.layer-en-desc { font-size: 10px; margin-top: 2px; opacity: 0.55; }
-.layer-vi-desc { font-size: 10px; margin-top: 1px; opacity: 0; max-height: 0; overflow: hidden; transition: all .3s; font-style: italic; }
-body.vi .layer-vi-desc { opacity: 0.5; max-height: 40px; }
+.layer-name { font-size: 14.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; }
+.layer-en-desc { font-size: 13.5px; margin-top: 4px; opacity: 0.65; }
+.layer-vi-desc { font-size: 13px; margin-top: 2px; opacity: 0; max-height: 0; overflow: hidden; transition: all .3s; font-style: italic; }
+body.vi .layer-vi-desc { opacity: 0.6; max-height: 80px; }
 
-.layer-expand-icon { font-size: 11px; color: var(--muted); transition: transform .3s; flex-shrink: 0; }
+.layer-expand-icon { font-size: 14px; color: var(--muted); transition: transform .3s; flex-shrink: 0; }
 .layer.open .layer-expand-icon { transform: rotate(180deg); }
 
 .layer-body {
   max-height: 0; overflow: hidden;
-  transition: max-height .4s cubic-bezier(.4,0,.2,1), padding .3s;
-  padding: 0 12px;
-  display: flex; flex-wrap: wrap; gap: 8px;
+  transition: max-height .6s ease-in-out, padding .3s;
+  padding: 0 16px;
+  display: flex; flex-wrap: wrap; gap: 14px;
 }
-.layer.open .layer-body { max-height: 800px; padding: 12px; }
+.layer.open .layer-body { max-height: 5000px; padding: 20px; }
 
 /* ─── SERVICE CARD ────────────────────────── */
 .scard {
@@ -139,31 +139,31 @@ body.vi .layer-vi-desc { opacity: 0.5; max-height: 40px; }
 .scard:hover { border-color: rgba(255,255,255,0.14); transform: translateY(-1px); }
 .scard.active { border-color: rgba(255,255,255,0.2); }
 
-.scard-name { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.scard-name { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 .scard-tech {
-  font-size: 8.5px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
-  padding: 1px 6px; border-radius: 3px; display: inline-block;
-  margin-top: 3px; letter-spacing: 0.3px; align-self: flex-start;
+  font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+  padding: 3px 8px; border-radius: 4px; display: inline-block;
+  margin-top: 5px; letter-spacing: 0.3px; align-self: flex-start;
 }
-.scard-desc-en { font-size: 9.5px; line-height: 1.55; opacity: 0.55; margin-top: 4px; }
+.scard-desc-en { font-size: 13.5px; line-height: 1.6; opacity: 0.7; margin-top: 6px; }
 .scard-desc-vi {
-  font-size: 9px; line-height: 1.5; color: #6b7280;
-  font-style: italic; margin-top: 3px;
+  font-size: 13px; line-height: 1.6; color: #828ba2;
+  font-style: italic; margin-top: 4px;
   max-height: 0; overflow: hidden; opacity: 0;
   transition: all .3s;
 }
-body.vi .scard-desc-vi { max-height: 100px; opacity: 1; }
+body.vi .scard-desc-vi { max-height: 200px; opacity: 1; margin-top: 6px; }
 
 .scard-keywords {
-  display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px;
+  display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px;
   max-height: 0; overflow: hidden; opacity: 0;
   transition: all .35s;
 }
-.scard.active .scard-keywords { max-height: 100px; opacity: 1; }
+.scard.active .scard-keywords { max-height: 150px; opacity: 1; }
 
 .kw {
-  font-size: 8px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
-  padding: 1px 5px; border-radius: 3px;
+  font-size: 10px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+  padding: 2px 7px; border-radius: 4px;
   border: 1px solid rgba(255,255,255,0.08);
   letter-spacing: 0.2px;
 }
@@ -175,13 +175,13 @@ body.vi .scard-desc-vi { max-height: 100px; opacity: 1; }
 
 .scard-detail {
   max-height: 0; overflow: hidden; opacity: 0;
-  font-size: 9.5px; color: #64748b; line-height: 1.6;
+  font-size: 13px; color: #828ba2; line-height: 1.7;
   margin-top: 0; border-top: 0px solid var(--border);
-  transition: all .35s;
+  transition: all .5s ease-in-out;
 }
 .scard.active .scard-detail {
-  max-height: 200px; opacity: 1;
-  margin-top: 8px; padding-top: 8px;
+  max-height: 1000px; opacity: 1;
+  margin-top: 14px; padding-top: 14px;
   border-top: 1px solid var(--border);
 }
 
@@ -269,50 +269,50 @@ body.vi .scard-desc-vi { max-height: 100px; opacity: 1; }
 
 /* ─── CONCURRENCY SECTION ─────────────────── */
 .conc-section {
-  margin-top: 20px; border-radius: 14px;
-  border: 1px solid #92400e; background: #0d0902; padding: 18px;
+  margin-top: 24px; border-radius: 14px;
+  border: 1px solid #92400e; background: #0d0902; padding: 24px;
 }
-.section-hd { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-.section-sub-en { font-size: 10px; color: var(--muted); margin-bottom: 14px; line-height: 1.6; }
-.section-sub-vi { font-size: 10px; color: #4b5563; margin-bottom: 14px; font-style: italic; line-height: 1.6; display: none; }
+.section-hd { font-size: 15px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.section-sub-en { font-size: 13.5px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+.section-sub-vi { font-size: 13px; color: #6b7280; margin-bottom: 20px; font-style: italic; line-height: 1.6; display: none; }
 body.vi .section-sub-vi { display: block; }
 body.vi .section-sub-en { display: none; }
 
-.conc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+.conc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 20px; }
 .conc-card {
-  border-radius: 9px; padding: 12px;
+  border-radius: 12px; padding: 18px;
   border: 1px solid rgba(255,255,255,0.07);
   cursor: pointer; transition: all .2s;
 }
 .conc-card:hover { border-color: rgba(255,255,255,0.15); }
-.conc-title { font-size: 11px; font-weight: 700; margin-bottom: 5px; }
-.conc-body-en { font-size: 9.5px; line-height: 1.6; }
-.conc-body-vi { font-size: 9px; line-height: 1.6; font-style: italic; margin-top: 6px; color: #6b7280; display: none; }
+.conc-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.conc-body-en { font-size: 13.5px; line-height: 1.6; color: rgba(255,255,255,0.6); }
+.conc-body-vi { font-size: 13px; line-height: 1.6; font-style: italic; margin-top: 8px; color: #828ba2; display: none; }
 body.vi .conc-body-vi { display: block; }
 body.vi .conc-body-en { display: none; }
 
-.lat-bar { display: flex; border-radius: 8px; overflow: hidden; margin-bottom: 6px; }
-.lat-seg { flex: 1; padding: 10px 8px; text-align: center; }
-.lat-lbl { font-size: 8.5px; font-weight: 600; font-family: 'JetBrains Mono',monospace; opacity: .7; }
-.lat-val { font-size: 16px; font-weight: 800; margin-top: 2px; }
-.lat-note { text-align: center; font-size: 9px; color: var(--muted); }
+.lat-bar { display: flex; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+.lat-seg { flex: 1; padding: 14px 10px; text-align: center; }
+.lat-lbl { font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono',monospace; opacity: .8; }
+.lat-val { font-size: 20px; font-weight: 800; margin-top: 4px; }
+.lat-note { text-align: center; font-size: 11px; color: var(--muted); }
 
 /* ─── FLOW SECTION ────────────────────────── */
 .flow-section {
-  margin-top: 20px; border-radius: 14px;
-  border: 1px solid var(--border); background: var(--bg2); padding: 18px;
+  margin-top: 24px; border-radius: 14px;
+  border: 1px solid var(--border); background: var(--bg2); padding: 24px;
 }
-.flow-grid { display: grid; grid-template-columns:1fr 1fr; gap: 14px; }
-.flow-card { background: var(--bg); border-radius: 9px; padding: 13px; border-left: 3px solid; }
-.flow-title { font-size: 11px; font-weight: 700; margin-bottom: 9px; color: var(--bright); }
-.step { display:flex; gap:8px; margin-bottom:6px; align-items:flex-start; }
+.flow-grid { display: grid; grid-template-columns:1fr 1fr; gap: 20px; }
+.flow-card { background: var(--bg); border-radius: 12px; padding: 20px; border-left: 4px solid; }
+.flow-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--bright); }
+.step { display:flex; gap:12px; margin-bottom:12px; align-items:flex-start; }
 .step-n {
-  width:18px;height:18px;border-radius:50%;background:var(--bg3);
-  font-size:9px;font-weight:700;color:var(--muted);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+  width:24px;height:24px;border-radius:50%;background:var(--bg3);
+  font-size:12px;font-weight:700;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;
 }
-.step-t { font-size:10px; color:#94a3b8; line-height:1.5; }
-.step-t-vi { font-size:9.5px; color:#4b5563; font-style:italic; line-height:1.4; margin-top:2px; display:none; }
+.step-t { font-size:13.5px; color:#cbd5e1; line-height:1.6; }
+.step-t-vi { font-size:13px; color:#9ca3af; font-style:italic; line-height:1.6; margin-top:4px; display:none; }
 body.vi .step-t-vi { display: block; }
 body.vi .step-t    { display: none; }
 
@@ -323,11 +323,11 @@ body.vi .step-t    { display: none; }
 .qa-section.qa-r1 { border: 1px solid #1e3a8a; background: #050c1c; }
 .qa-section.qa-r2 { border: 1px solid #065f46; background: #030c07; }
 
-.qa-hd { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
-.qa-sub { font-size: 10px; color: var(--muted); margin-bottom: 16px; }
+.qa-hd { font-size: 15px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.qa-sub { font-size: 13.5px; color: var(--muted); margin-bottom: 24px; }
 
 .qa-card {
-  margin-bottom: 12px; border-radius: 10px;
+  margin-bottom: 16px; border-radius: 12px;
   border: 1px solid var(--border); overflow: hidden;
   cursor: pointer; transition: border-color .2s;
 }
@@ -336,42 +336,44 @@ body.vi .step-t    { display: none; }
 .qa-card.open { border-color: rgba(255,255,255,0.15); }
 
 .qa-q-row {
-  padding: 11px 14px; display:flex; align-items:flex-start; gap:10px;
+  padding: 16px 20px; display:flex; align-items:flex-start; gap:16px;
 }
 .qa-badge {
-  font-size: 9px; font-weight: 800; padding: 2px 9px; border-radius: 4px;
+  font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px;
   flex-shrink: 0; margin-top: 2px; font-family: 'JetBrains Mono',monospace;
   letter-spacing: 0.5px;
 }
 .qa-q-text { flex:1; }
-.qa-q-en { font-size: 12px; font-weight: 600; line-height: 1.5; color: var(--bright); display: block; }
-.qa-q-vi { font-size: 10.5px; font-weight: 400; font-style: italic; opacity: 0.5; margin-top: 3px; display: none; }
+.qa-q-en { font-size: 15.5px; font-weight: 600; line-height: 1.6; color: var(--bright); display: block; }
+.qa-q-vi { font-size: 14.5px; font-weight: 400; font-style: italic; opacity: 0.6; margin-top: 6px; display: none; }
 body.vi .qa-q-vi { display: block; }
-.qa-arrow { font-size: 11px; color: var(--muted); transition: transform .3s; flex-shrink:0; margin-top:3px; }
+.qa-arrow { font-size: 16px; color: var(--muted); transition: transform .3s; flex-shrink:0; margin-top:4px; }
 .qa-card.open .qa-arrow { transform: rotate(180deg); }
 
 .qa-ans {
   max-height: 0; overflow: hidden;
-  transition: max-height .45s cubic-bezier(.4,0,.2,1), padding .3s;
-  padding: 0 14px; border-top: 0px solid var(--border);
+  transition: max-height .8s ease-in-out, padding .3s, opacity .3s;
+  padding: 0 20px; border-top: 0px solid var(--border);
+  opacity: 0;
 }
 .qa-card.open .qa-ans {
-  max-height: 1200px; padding: 14px;
+  max-height: 5000px; padding: 20px;
   border-top: 1px solid var(--border);
+  opacity: 1;
 }
 
-.qa-ans-en { font-size: 10.5px; color: #94a3b8; line-height: 1.8; }
+.qa-ans-en { font-size: 14px; color: #cbd5e1; line-height: 1.8; }
 .qa-ans-vi {
-  font-size: 10px; color: #4b5563; font-style: italic;
-  line-height: 1.7; margin-top: 10px; padding-top: 10px;
+  font-size: 13.5px; color: #9ca3af; font-style: italic;
+  line-height: 1.8; margin-top: 16px; padding-top: 16px;
   border-top: 1px dashed var(--border); display: none;
 }
 body.vi .qa-ans-vi { display: block; }
 
 .qa-ans-en strong, .qa-ans-vi strong { color: var(--bright); font-style: normal; }
 .qa-ans-en code, .qa-ans-vi code {
-  font-family: 'JetBrains Mono',monospace; font-size: 9px;
-  background: var(--bg3); padding: 1px 5px; border-radius: 3px; color: #a5b4fc;
+  font-family: 'JetBrains Mono',monospace; font-size: 12.5px;
+  background: var(--bg3); padding: 3px 8px; border-radius: 6px; color: #a5b4fc;
 }
 .hl-blue   { color: #60a5fa !important; font-weight: 700; }
 .hl-green  { color: #34d399 !important; font-weight: 700; }
@@ -381,8 +383,8 @@ body.vi .qa-ans-vi { display: block; }
 .hl-cyan   { color: #22d3ee !important; font-weight: 700; }
 
 .tip {
-  margin-top: 10px; padding: 9px 12px; border-radius: 7px;
-  font-size: 10px; line-height: 1.6; border-left: 3px solid;
+  margin-top: 16px; padding: 14px 20px; border-radius: 10px;
+  font-size: 13.5px; line-height: 1.7; border-left: 4px solid;
   font-style: italic;
 }
 .tip-blue  { background: #0a1628; border-color: #3b82f6; color: #60a5fa; }
@@ -390,50 +392,102 @@ body.vi .qa-ans-vi { display: block; }
 .tip-amber { background: #120a00; border-color: #f59e0b; color: #fbbf24; }
 
 .code-block {
-  display: block; background: var(--bg3); padding: 11px;
-  border-radius: 7px; font-size: 9.5px; font-family: 'JetBrains Mono',monospace;
-  color: #c4b5fd; line-height: 2; margin: 8px 0;
-  border: 1px solid var(--border);
+  display: block; background: var(--bg3); padding: 16px;
+  border-radius: 10px; font-size: 12.5px; font-family: 'JetBrains Mono',monospace;
+  color: #c4b5fd; line-height: 2; margin: 16px 0;
+  border: 1px solid var(--border); overflow-x: auto;
 }
-.code-comment { color: #4a5578; }
+.code-comment { color: #64748b; }
 
-.sm-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 8px 0; }
-.sm-card { border-radius: 7px; padding: 9px; border: 1px solid rgba(255,255,255,0.06); }
-.sm-title { font-size: 10px; font-weight: 700; margin-bottom: 3px; }
-.sm-body  { font-size: 9px; color: #6b7280; line-height: 1.5; }
+.sm-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 14px 0; }
+.sm-card { border-radius: 10px; padding: 14px; border: 1px solid rgba(255,255,255,0.06); }
+.sm-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.sm-body  { font-size: 12px; color: #9ca3af; line-height: 1.6; }
 
-.tag-row { display:flex;flex-wrap:wrap;gap:5px;margin-top:12px; }
+.tag-row { display:flex;flex-wrap:wrap;gap:8px;margin-top:16px; }
 .tag {
-  font-size: 8.5px; padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; padding: 4px 12px; border-radius: 6px;
   background: var(--bg3); color: var(--muted);
   border: 1px solid var(--border); font-family: 'JetBrains Mono',monospace;
 }
 
 /* ─── FOOTER ──────────────────────────────── */
-.footer { text-align:center; margin-top:40px; font-size:10px; color:var(--muted); }
+.footer { text-align:center; margin-top:60px; font-size:13px; color:var(--muted); }
 
 /* ─── SCROLL TOP ──────────────────────────── */
 .scroll-top {
-  position: fixed; bottom: 24px; right: 24px;
-  width: 36px; height: 36px; border-radius: 50%;
+  position: fixed; bottom: 30px; right: 30px;
+  width: 44px; height: 44px; border-radius: 50%;
   background: var(--bg3); border: 1px solid var(--border);
   color: var(--muted); cursor: pointer; display:flex;
-  align-items:center;justify-content:center;font-size:14px;
+  align-items:center;justify-content:center;font-size:16px;
   transition: all .2s; z-index: 99;
 }
 .scroll-top:hover { background: #1e293b; color: var(--bright); }
 
 /* ─── EXPAND ALL BTN ──────────────────────── */
 .ctrl-bar {
-  display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px;
+  display:flex;justify-content:flex-end;gap:12px;margin-bottom:18px;
 }
 .ctrl-btn {
-  font-size: 9.5px; font-weight: 600; padding: 4px 12px;
+  font-size: 13px; font-weight: 700; padding: 6px 16px;
   border-radius: 6px; border: 1px solid var(--border);
   cursor: pointer; background: var(--bg2); color: var(--muted);
   transition: all .2s;
 }
 .ctrl-btn:hover { background: var(--bg3); color: var(--bright); }
+
+.flow-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #333;
+  margin-bottom: 30px;
+}
+.flow-container {
+  margin: 60px 0;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 12px;
+  color: #333;
+}
+.workflow-graph {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 15px;
+}
+.wf-box {
+  padding: 15px;
+  border-radius: 8px;
+  border: 2px solid #3b82f6;
+  background: #eff6ff;
+  font-weight: 700;
+  text-align: center;
+  width: 150px;
+}
+.microservices-container {
+  background: #e9e5ff;
+  border: 2px solid #8b5cf6;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.wf-arrow {
+  font-size: 24px;
+  color: #64748b;
+}
+.db-icon {
+  background: #bfdbfe;
+  border: 2px solid #2563eb;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
 </style>
 </head>
 <body>
@@ -476,12 +530,59 @@ body.vi .qa-ans-vi { display: block; }
   8. Data / Persistence            ← storage
   9. Infrastructure / Observability← platform foundation
 ══════════════════════════════════════════ -->
-<div class="arch" id="arch">
+<!-- ─── L1: CLIENT / IoT ─────────────────── -->
+<div class="layer lc-client" id="layer-client">
+  <div class="layer-head" onclick="toggleLayer('layer-client')">
+    <span class="layer-badge">L1</span>
+    <div class="layer-info">
+      <div class="layer-name" style="color:#60a5fa;">Client Layer — Mobile · Web · IoT Edge Devices</div>
+      <div class="layer-en-desc">User-facing apps · OBD edge device with store-and-forward · Real-time alert rendering · Offline-capable PWA</div>
+      <div class="layer-vi-desc">Ứng dụng người dùng · OBD có store-and-forward · Render alert real-time · PWA offline-capable</div>
+    </div>
+    <span class="layer-expand-icon">▾</span>
+  </div>
+  <div class="layer-body">
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">📱 Mobile App (Driver)</div>
+      <span class="scard-tech">React Native · Offline-first</span>
+      <div class="scard-desc-en">Real-time hazard alerts overlay on map · WebSocket persistent connection · Background location tracking · Offline-first with local SQLite cache</div>
+      <div class="scard-desc-vi">Cảnh báo nguy hiểm overlay trên map · WebSocket persistent · Background tracking · Offline-first với SQLite local</div>
+      <div class="scard-keywords"><span class="kw hot">Offline-first</span><span class="kw">WebSocket</span><span class="kw">Background Location</span><span class="kw">Push FCM/APNs</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Offline-first design: the app caches map tiles and hazard data locally. When connectivity drops (tunnel, dead zone), the driver still sees the last known hazard overlay — then syncs delta on reconnect.</span><div class="lang-dual"><span class="lang-en">Offline-first design: the app caches map tiles and hazard data locally. When connectivity drops (tunnel, dead zone), the driver still sees the last known hazard overlay — then syncs delta on reconnect.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Offline-first: app cache bản đồ/cảnh báo ở local. Khi mất sóng, tài xế vẫn thấy cảnh báo gần nhất — sau có mạng sẽ sync đồng bộ trở lại.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🖥️ Web Dashboard (Fleet Manager)</div>
+      <span class="scard-tech">React + MapboxGL + WebSocket</span>
+      <div class="scard-desc-en">Live fleet map · Vehicle health heatmap · Hazard density overlay · Report export · Role-gated views by tenant</div>
+      <div class="scard-desc-vi">Bản đồ đội xe trực tiếp · Heatmap sức khỏe xe · Overlay mật độ nguy hiểm · Xuất báo cáo · View phân quyền theo tenant</div>
+      <div class="scard-keywords"><span class="kw">MapboxGL</span><span class="kw">WebSocket SSE</span><span class="kw">Tenant-scoped</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">MapboxGL renders 100k+ vehicle markers using WebGL — pure DOM manipulation would crash the browser. Vector tiles from PostGIS serve only visible viewport, not the entire dataset.</span><div class="lang-dual"><span class="lang-en">MapboxGL renders 100k+ vehicle markers using WebGL — pure DOM manipulation would crash the browser. Vector tiles from PostGIS serve only visible viewport, not the entire dataset.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">MapboxGL dùng WebGL vẽ 100k+ xe — việc dùng DOM sẽ gây treo browser. Vector tiles từ PostGIS chỉ hiển thị khu vực màn hình chứ không tải toàn bộ.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🚗 IoT / OBD Device</div>
+      <span class="scard-tech">MQTT QoS 1/2 · SQLite buffer</span>
+      <div class="scard-desc-en">GPS + 3-axis accelerometer + gyroscope · 100ms sensor sampling · Local SQLite store-and-forward for connectivity gaps · X.509 device auth</div>
+      <div class="scard-desc-vi">GPS + gia tốc kế 3 trục + con quay hồi chuyển · Sample 100ms · SQLite buffer khi mất kết nối · Xác thực X.509</div>
+      <div class="scard-keywords"><span class="kw hot">Store-and-Forward</span><span class="kw">QoS 1/2</span><span class="kw">Dead Reckoning</span><span class="kw">IMU</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">QoS 2 = exactly-once delivery but high overhead. We use QoS 1 (at-least-once) with deduplication at the broker — better throughput with acceptable duplicate handling via Redis idempotency key.</span><div class="lang-dual"><span class="lang-en">QoS 2 = exactly-once delivery but high overhead. We use QoS 1 (at-least-once) with deduplication at the broker — better throughput with acceptable duplicate handling via Redis idempotency key.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">QoS 2 tốn rất nhiều overhead. Dùng QoS 1 kèm deduplication ở broker tăng throughput, xử lý trùng lặp nhẹ nhàng bằng Redis idempotency key.</span></div>"</div>
+    </div>
+    <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🔔 Notification Client</div>
+      <span class="scard-tech">FCM · APNs · Twilio</span>
+      <div class="scard-desc-en">Priority-tiered delivery: WebSocket (primary, &lt;50ms) → FCM/APNs push (secondary) → SMS via Twilio (critical fallback) · Dedup by alert_id</div>
+      <div class="scard-desc-vi">Giao thông ưu tiên: WebSocket (&lt;50ms) → FCM/APNs → SMS (fallback khẩn cấp) · Dedup theo alert_id</div>
+      <div class="scard-keywords"><span class="kw hot">Priority Tiers</span><span class="kw">FCM</span><span class="kw">Dedup</span><span class="kw">Idempotency</span></div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Three-tier delivery ensures alerts reach drivers even if the app is backgrounded. alert_id dedup prevents double-notification — the driver sees the hazard once, not three times.</span><div class="lang-dual"><span class="lang-en">Three-tier delivery ensures alerts reach drivers even if the app is backgrounded. alert_id dedup prevents double-notification — the driver sees the hazard once, not three times.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Delivery 3 tầng cam kết cảnh báo tới kể cả app đã tắt. Cơ chế Dedup alert_id giữ nguyên tốc độ, tài xế không bao giờ bị spam 3 báo cáo cho cùng 1 sự kiện.</span></div>"</div>
+    </div>
+  </div>
+</div>
 
-<!-- ─── L1: CDN / EDGE ──────────────────── -->
+
+<div class="conn"><div class="conn-line"></div><div class="conn-pill">Encrypted Client-to-Edge Transport</div><div class="conn-line"></div></div>
+
 <div class="layer lc-cdn" id="layer-cdn">
   <div class="layer-head" onclick="toggleLayer('layer-cdn')">
-    <span class="layer-badge">L1</span>
+    <span class="layer-badge">L2</span>
     <div class="layer-info">
       <div class="layer-name" style="color:#22d3ee;">CDN & Edge Layer — Cloudflare</div>
       <div class="layer-en-desc">Global edge network · Static asset caching · Anycast routing · DDoS absorption at PoP level</div>
@@ -535,10 +636,9 @@ body.vi .qa-ans-vi { display: block; }
 
 <div class="conn"><div class="conn-line"></div><div class="conn-pill">TLS 1.3 · Filtered + cached traffic passes through</div><div class="conn-line"></div></div>
 
-<!-- ─── L2: SECURITY ─────────────────────── -->
 <div class="layer lc-sec" id="layer-sec">
   <div class="layer-head" onclick="toggleLayer('layer-sec')">
-    <span class="layer-badge">L2</span>
+    <span class="layer-badge">L3</span>
     <div class="layer-info">
       <div class="layer-name" style="color:#f87171;">Security Layer — Zero Trust Architecture</div>
       <div class="layer-en-desc">Defense-in-depth · mTLS between services · Secret management · Audit logging · SIEM / threat detection</div>
@@ -592,10 +692,11 @@ body.vi .qa-ans-vi { display: block; }
 
 <div class="conn"><div class="conn-line"></div><div class="conn-pill">Authenticated · Authorized · Encrypted traffic only</div><div class="conn-line"></div></div>
 
-<!-- ─── L3: API GATEWAY ──────────────────── -->
+<div class="conn"><div class="conn-line"></div><div class="conn-pill">Authenticated/Authorized Traffic</div><div class="conn-line"></div></div>
+
 <div class="layer lc-gw" id="layer-gw">
   <div class="layer-head" onclick="toggleLayer('layer-gw')">
-    <span class="layer-badge">L3</span>
+    <span class="layer-badge">L4</span>
     <div class="layer-info">
       <div class="layer-name" style="color:#a78bfa;">API Gateway & Load Balancer Layer</div>
       <div class="layer-en-desc">Single entry point · JWT validation · Rate limiting · Service routing · SSL termination · Request tracing injection</div>
@@ -639,55 +740,9 @@ body.vi .qa-ans-vi { display: block; }
 
 <div class="conn"><div class="conn-line"></div><div class="conn-pill">HTTPS (REST) · WebSocket · MQTT over TLS 1.3</div><div class="conn-line"></div></div>
 
-<!-- ─── L4: CLIENT / IoT ─────────────────── -->
-<div class="layer lc-client" id="layer-client">
-  <div class="layer-head" onclick="toggleLayer('layer-client')">
-    <span class="layer-badge">L4</span>
-    <div class="layer-info">
-      <div class="layer-name" style="color:#60a5fa;">Client Layer — Mobile · Web · IoT Edge Devices</div>
-      <div class="layer-en-desc">User-facing apps · OBD edge device with store-and-forward · Real-time alert rendering · Offline-capable PWA</div>
-      <div class="layer-vi-desc">Ứng dụng người dùng · OBD có store-and-forward · Render alert real-time · PWA offline-capable</div>
-    </div>
-    <span class="layer-expand-icon">▾</span>
-  </div>
-  <div class="layer-body">
-    <div class="scard" onclick="toggleCard(this)">
-      <div class="scard-name">📱 Mobile App (Driver)</div>
-      <span class="scard-tech">React Native · Offline-first</span>
-      <div class="scard-desc-en">Real-time hazard alerts overlay on map · WebSocket persistent connection · Background location tracking · Offline-first with local SQLite cache</div>
-      <div class="scard-desc-vi">Cảnh báo nguy hiểm overlay trên map · WebSocket persistent · Background tracking · Offline-first với SQLite local</div>
-      <div class="scard-keywords"><span class="kw hot">Offline-first</span><span class="kw">WebSocket</span><span class="kw">Background Location</span><span class="kw">Push FCM/APNs</span></div>
-      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Offline-first design: the app caches map tiles and hazard data locally. When connectivity drops (tunnel, dead zone), the driver still sees the last known hazard overlay — then syncs delta on reconnect.</span><div class="lang-dual"><span class="lang-en">Offline-first design: the app caches map tiles and hazard data locally. When connectivity drops (tunnel, dead zone), the driver still sees the last known hazard overlay — then syncs delta on reconnect.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Offline-first: app cache bản đồ/cảnh báo ở local. Khi mất sóng, tài xế vẫn thấy cảnh báo gần nhất — sau có mạng sẽ sync đồng bộ trở lại.</span></div>"</div>
-    </div>
-    <div class="scard" onclick="toggleCard(this)">
-      <div class="scard-name">🖥️ Web Dashboard (Fleet Manager)</div>
-      <span class="scard-tech">React + MapboxGL + WebSocket</span>
-      <div class="scard-desc-en">Live fleet map · Vehicle health heatmap · Hazard density overlay · Report export · Role-gated views by tenant</div>
-      <div class="scard-desc-vi">Bản đồ đội xe trực tiếp · Heatmap sức khỏe xe · Overlay mật độ nguy hiểm · Xuất báo cáo · View phân quyền theo tenant</div>
-      <div class="scard-keywords"><span class="kw">MapboxGL</span><span class="kw">WebSocket SSE</span><span class="kw">Tenant-scoped</span></div>
-      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">MapboxGL renders 100k+ vehicle markers using WebGL — pure DOM manipulation would crash the browser. Vector tiles from PostGIS serve only visible viewport, not the entire dataset.</span><div class="lang-dual"><span class="lang-en">MapboxGL renders 100k+ vehicle markers using WebGL — pure DOM manipulation would crash the browser. Vector tiles from PostGIS serve only visible viewport, not the entire dataset.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">MapboxGL dùng WebGL vẽ 100k+ xe — việc dùng DOM sẽ gây treo browser. Vector tiles từ PostGIS chỉ hiển thị khu vực màn hình chứ không tải toàn bộ.</span></div>"</div>
-    </div>
-    <div class="scard" onclick="toggleCard(this)">
-      <div class="scard-name">🚗 IoT / OBD Device</div>
-      <span class="scard-tech">MQTT QoS 1/2 · SQLite buffer</span>
-      <div class="scard-desc-en">GPS + 3-axis accelerometer + gyroscope · 100ms sensor sampling · Local SQLite store-and-forward for connectivity gaps · X.509 device auth</div>
-      <div class="scard-desc-vi">GPS + gia tốc kế 3 trục + con quay hồi chuyển · Sample 100ms · SQLite buffer khi mất kết nối · Xác thực X.509</div>
-      <div class="scard-keywords"><span class="kw hot">Store-and-Forward</span><span class="kw">QoS 1/2</span><span class="kw">Dead Reckoning</span><span class="kw">IMU</span></div>
-      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">QoS 2 = exactly-once delivery but high overhead. We use QoS 1 (at-least-once) with deduplication at the broker — better throughput with acceptable duplicate handling via Redis idempotency key.</span><div class="lang-dual"><span class="lang-en">QoS 2 = exactly-once delivery but high overhead. We use QoS 1 (at-least-once) with deduplication at the broker — better throughput with acceptable duplicate handling via Redis idempotency key.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">QoS 2 tốn rất nhiều overhead. Dùng QoS 1 kèm deduplication ở broker tăng throughput, xử lý trùng lặp nhẹ nhàng bằng Redis idempotency key.</span></div>"</div>
-    </div>
-    <div class="scard" onclick="toggleCard(this)">
-      <div class="scard-name">🔔 Notification Client</div>
-      <span class="scard-tech">FCM · APNs · Twilio</span>
-      <div class="scard-desc-en">Priority-tiered delivery: WebSocket (primary, &lt;50ms) → FCM/APNs push (secondary) → SMS via Twilio (critical fallback) · Dedup by alert_id</div>
-      <div class="scard-desc-vi">Giao thông ưu tiên: WebSocket (&lt;50ms) → FCM/APNs → SMS (fallback khẩn cấp) · Dedup theo alert_id</div>
-      <div class="scard-keywords"><span class="kw hot">Priority Tiers</span><span class="kw">FCM</span><span class="kw">Dedup</span><span class="kw">Idempotency</span></div>
-      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Three-tier delivery ensures alerts reach drivers even if the app is backgrounded. alert_id dedup prevents double-notification — the driver sees the hazard once, not three times.</span><div class="lang-dual"><span class="lang-en">Three-tier delivery ensures alerts reach drivers even if the app is backgrounded. alert_id dedup prevents double-notification — the driver sees the hazard once, not three times.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Delivery 3 tầng cam kết cảnh báo tới kể cả app đã tắt. Cơ chế Dedup alert_id giữ nguyên tốc độ, tài xế không bao giờ bị spam 3 báo cáo cho cùng 1 sự kiện.</span></div>"</div>
-    </div>
-  </div>
-</div>
-
 <div class="conn"><div class="conn-line"></div><div class="conn-pill">MQTT (IoT) · Kafka events (internal async) · gRPC (sync service calls)</div><div class="conn-line"></div></div>
-<!-- ─── L5: MESSAGING ────────────────────── -->
+<div class="conn"><div class="conn-line"></div><div class="conn-pill">Gateway-to-Event Backbone</div><div class="conn-line"></div></div>
+
 <div class="layer lc-msg" id="layer-msg">
   <div class="layer-head" onclick="toggleLayer('layer-msg')">
     <span class="layer-badge">L5</span>
@@ -911,6 +966,17 @@ body.vi .qa-ans-vi { display: block; }
   </div>
   <div class="layer-body">
     <div class="scard" onclick="toggleCard(this)">
+      <div class="scard-name">🕸️ Service Mesh (mTLS)</div>
+      <span class="scard-tech">Istio · mTLS · SPIFFE</span>
+      <div class="scard-desc-en">Mutual TLS for all pod-to-pod communication · Zero trust network: every service proves its identity · SPIFFE/SPIRE workload identity · Circuit breaker built-in</div>
+      <div class="scard-desc-vi">mTLS cho toàn bộ giao tiếp pod-to-pod · Zero trust: mọi service phải xác minh danh tính · SPIFFE/SPIRE workload identity · Circuit breaker tích hợp</div>
+      <div class="scard-keywords">
+        <span class="kw hot">mTLS</span><span class="kw">SPIFFE</span><span class="kw">Zero Trust</span><span class="kw">Istio</span><span class="kw">Circuit Breaker</span>
+      </div>
+      <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">mTLS means a compromised internal service cannot impersonate another — it must present a valid certificate. Combined with SPIFFE workload identity, each pod has a cryptographic identity, not just a network IP.</span><div class="lang-dual"><span class="lang-en">mTLS means a compromised internal service cannot impersonate another — it must present a valid certificate. Combined with SPIFFE workload identity, each pod has a cryptographic identity, not just a network IP.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">mTLS đảm bảo một service bị hack không thể giả mạo service khác — nó phải có chứng chỉ. Kết hợp SPIFFE, mỗi pod có định danh mã hóa không chỉ IP mạng.</span></div>"</div>
+    </div>
+
+    <div class="scard" onclick="toggleCard(this)">
       <div class="scard-name">☸️ Kubernetes (K8s)</div>
       <span class="scard-tech">EKS/GKE · HPA · PDB</span>
       <div class="scard-desc-en">HPA on Kafka consumer lag metric (KEDA) · Pod Disruption Budgets prevent all replicas going down during rolling update · Node affinity for data-locality · Spot/Preemptible for ML inference nodes</div>
@@ -941,6 +1007,41 @@ body.vi .qa-ans-vi { display: block; }
       <div class="scard-desc-vi">Multi-AZ cho tất cả stateful service · PostgreSQL streaming replication (RPO &lt;5s) · Cassandra multi-DC LOCAL_QUORUM · Backup Velero hàng ngày · Chaos engineering hàng quý</div>
       <div class="scard-keywords"><span class="kw hot">RTO / RPO</span><span class="kw">Multi-AZ</span><span class="kw">LOCAL_QUORUM</span><span class="kw">Chaos Engineering</span><span class="kw">Velero</span></div>
       <div class="scard-detail"><strong>Interview (Phỏng vấn):</strong> "<span class="en-hide">Chaos engineering (quarterly GameDay) is how we validate our RTO claims. We literally kill an AZ in staging and measure: did the system recover within the promised RTO? If not, fix the gap before production finds it.</span><div class="lang-dual"><span class="lang-en">Chaos engineering (quarterly GameDay) is how we validate our RTO claims. We literally kill an AZ in staging and measure: did the system recover within the promised RTO? If not, fix the gap before production finds it.</span><span class="lang-vi pt-2 block mt-2 text-indigo-400 font-semibold" style="border-top:1px dotted rgba(255,255,255,0.15)">Tự tiêu diệt hệ thống qua Chaos Engineer mỗi đợt GameDay đem về kiểm chứng sâu sắc RTO của khối vận hành. Tự diệt Staging Server rồi ngồi xem hệ thống tự chữa bệnh, nếu không thì chắp lại khâu hổng ngay lúc đó.</span></div>"</div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ─── HIGH-LEVEL PIPELINE DIAGRAM ────────── -->
+<div class="flow-container">
+  <div class="flow-title" style="color: #333;">System Architecture View</div>
+  <div class="workflow-graph">
+    <div class="wf-box" style="background:#fef2f2; border-color:#ef4444;">Cloudflare CDN/WAF</div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box" style="background:#fff7ed; border-color:#f97316;">IAM & Security Layer</div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box" style="background:#f0f9ff; border-color:#0284c7;">API Gateway (Kong)</div>
+    <div class="wf-arrow">→</div>
+    
+    <div class="microservices-container" style="background:#f0fdf4; border-color:#22c55e;">
+      <strong style="color:#166534;">Microservices</strong>
+      <div class="wf-box" style="border-color:#22c55e;">Vehicle/Telemetry</div>
+      <div class="wf-box" style="border-color:#22c55e;">Notification</div>
+      <div class="wf-box" style="border-color:#22c55e;">Alert/ML Service</div>
+    </div>
+    
+    <div class="wf-arrow">→</div>
+    
+    <div class="microservices-container" style="background:#fffbeb; border-color:#eab308;">
+      <strong style="color:#854d0e;">Event Backbone</strong>
+      <div class="wf-box" style="border-color:#eab308;">Kafka Topic</div>
+    </div>
+    
+    <div class="wf-arrow">→</div>
+    
+    <div class="wf-lane" style="display:flex; flex-direction:column; gap:10px;">
+      <div class="db-icon" style="background:#fae8ff; border-color:#d946ef;">PostGIS/Cassandra</div>
+      <div class="db-icon" style="background:#fae8ff; border-color:#d946ef;">Redis Cache</div>
     </div>
   </div>
 </div>
