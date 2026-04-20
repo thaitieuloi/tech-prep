@@ -6,6 +6,8 @@
 <title>Vehicle Management System — Architecture</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700;800;900&family=Sora:wght@300;400;600;700;800&display=swap');
+
 .en-hide { display: inline; }
 body.vi .en-hide { display: none; }
 .lang-dual { display: none; }
@@ -14,52 +16,333 @@ body.vi .lang-dual { display: block; margin-top: 8px; }
 .lang-dual .lang-vi { display: block; font-style: italic; color: #9ca3af; border-top: 1px dotted rgba(255,255,255,0.15); padding-top: 8px; font-size: 0.95em; }
 
 :root {
-  --bg:        #070a10;
-  --bg2:       #0b0f1a;
-  --bg3:       #0f1525;
-  --border:    #1a2238;
-  --text:      #c9d4e8;
-  --muted:     #4a5578;
-  --bright:    #e8eeff;
+  --bg:        #05080f;
+  --surface:   #0c1220;
+  --surface2:  #111d2e;
+  --surface3:  #172033;
+  --border:    #1c2d42;
+  --border2:   #243547;
+  --cyan:      #00e5ff;
+  --cyan-dim:  rgba(0,229,255,.12);
+  --cyan-glow: rgba(0,229,255,.06);
+  --teal:      #00c9a7;
+  --amber:     #ffb340;
+  --violet:    #818cf8;
+  --rose:      #fb7185;
+  --green:     #34d399;
+  --text:      #cdd9e5;
+  --muted:     #4d6680;
+  --white:     #f0f6ff;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Outfit', sans-serif;
 
-  --cdn:       #06b6d4;   /* cyan    */
-  --sec:       #ef4444;   /* red     */
-  --gw:        #8b5cf6;   /* violet  */
-  --client:    #3b82f6;   /* blue    */
-  --svc:       #10b981;   /* emerald */
-  --ml:        #f59e0b;   /* amber   */
-  --data:      #a855f7;   /* purple  */
-  --infra:     #64748b;   /* slate   */
-  --msg:       #f97316;   /* orange  */
+  --cdn:       #06b6d4;
+  --sec:       #ef4444;
+  --gw:        #8b5cf6;
+  --client:    #3b82f6;
+  --svc:       #10b981;
+  --ml:        #f59e0b;
+  --data:      #a855f7;
+  --infra:     #64748b;
+  --msg:       #f97316;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── GLOWNAV UNIFIED STYLE ─── */
+.glownav {
+  background: #05080f;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0 40px;
+  height: 64px;
+}
+.glownav-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+.glownav-title {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.glownav-left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.page-switch {
+  display: flex;
+  background: rgba(255,255,255,0.03);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.page-switch-link {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 800;
+  color: #64748b;
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.5px;
+}
+.page-switch-link.active {
+  background: #00e5ff;
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+}
+.glownav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.glownav-item-wrap {
+  position: relative;
+}
+.glownav-item {
+  text-decoration: none;
+  padding: 0 16px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+.glownav-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: #00e5ff;
+}
+.glownav-text {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.glownav-item:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.02);
+}
+.glownav-item:hover .glownav-text {
+  text-shadow: 0 0 8px rgba(255,255,255,0.3);
+}
+
+/* ─── DROPDOWN ─── */
+.glownav-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  background: #0a0f1a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 8px 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.2s;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+}
+.glownav-item-wrap:hover .glownav-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.glownav-drop-item {
+  display: block;
+  padding: 10px 20px;
+  color: #94a3b8;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.glownav-drop-item:hover {
+  background: rgba(255,255,255,0.05);
+  color: #00e5ff;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Sora', sans-serif;
   background: var(--bg);
   color: var(--text);
-  padding: 32px 40px 80px;
-  max-width: 1440px;
-  margin: 0 auto;
-  line-height: 1.6;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: hidden;
 }
 
-/* ─── HEADER ─────────────────────────────── */
-.page-header {
-  text-align: center;
-  margin-bottom: 40px;
-  padding-bottom: 28px;
+/* ─── ANIMATED BG ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(0,229,255,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(0,201,167,.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── BACK BUTTON ─── */
+.back-btn {
+  position: fixed;
+  top: 16px;
+  left: 20px;
+  z-index: 2000;
+  background: #fff;
+  color: #000;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+.back-btn:hover { transform: scale(1.05); }
+
+/* ─── HERO ─── */
+.hero {
+  position: relative;
+  padding: 60px 48px 52px;
   border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  z-index: 1;
 }
-.page-header h1 {
-  font-size: 32px; font-weight: 800; color: var(--bright);
-  letter-spacing: -0.5px; margin-bottom: 10px;
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: end;
+  max-width: 1300px;
+  margin: 0 auto;
 }
-.page-header .tagline { font-size: 15px; color: var(--muted); margin-bottom: 16px; }
-.chip-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--cyan);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 28px; height: 1px;
+  background: var(--cyan);
+}
+.hero h1 {
+  font-family: var(--sans);
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.hero h1 span { color: var(--cyan); }
+.hero-sub {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+.hero-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+.badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 100px;
+  letter-spacing: .5px;
+}
+.badge-cyan  { background: var(--cyan-dim);  color: var(--cyan);   border: 1px solid rgba(0,229,255,.25); }
+.badge-teal  { background: rgba(0,201,167,.1); color: var(--teal);  border: 1px solid rgba(0,201,167,.25); }
+.badge-amber { background: rgba(255,179,64,.1); color: var(--amber); border: 1px solid rgba(255,179,64,.25); }
+.badge-violet{ background: rgba(129,140,248,.1); color: var(--violet); border: 1px solid rgba(129,140,248,.25); }
+.badge-green { background: rgba(52,211,153,.1); color: var(--green); border: 1px solid rgba(52,211,153,.25); }
+.badge-rose  { background: rgba(251,113,133,.1); color: var(--rose);  border: 1px solid rgba(251,113,133,.25); }
+
+.hero-meta {
+  text-align: right;
+}
+.hero-meta-name { font-size: 20px; font-weight: 800; color: var(--white); }
+.hero-meta-role { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ─── LAYOUT ─── */
+.wrap { max-width: 1300px; margin: 0 auto; padding: 0 48px; position: relative; z-index: 1; }
+.section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+.section:last-child { border-bottom: none; }
+
+/* ─── SECTION HEADER ─── */
+.sec-header { display: flex; align-items: center; gap: 18px; margin-bottom: 40px; }
+.sec-num { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px; }
+.sec-title { font-size: 30px; font-weight: 800; color: var(--white); letter-spacing: -1px; }
+.sec-title span { color: var(--cyan); }
+.sec-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ─── CARD ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.card-top-line {
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.line-cyan   { background: linear-gradient(90deg, var(--cyan), transparent); }
+.line-violet { background: linear-gradient(90deg, var(--violet), transparent); }
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.dot-cyan   { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
+.dot-violet { background: var(--violet); box-shadow: 0 0 6px var(--violet); }
+.card-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2.5px;
+  text-transform: uppercase; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.overview-text { color: #7a9ab5; font-size: 14px; line-height: 1.8; }
+.overview-text strong { color: var(--text); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-v { background: rgba(129,140,248,.08); color: var(--violet); border: 1px solid rgba(129,140,248,.2); }
+.chip-c { background: var(--cyan-dim);  color: var(--cyan);   border: 1px solid rgba(0,229,255,.2); }
+.chip-t { background: rgba(0,201,167,.08); color: var(--teal); border: 1px solid rgba(0,201,167,.2); }
+.chip-a { background: rgba(255,179,64,.08); color: var(--amber); border: 1px solid rgba(255,179,64,.2); }
+.chip-m { background: rgba(77,102,128,.1); color: var(--muted); border: 1px solid rgba(77,102,128,.2); }
 .chip {
-  font-size: 12px; font-weight: 600; padding: 4px 14px;
-  border-radius: 20px; border: 1px solid; letter-spacing: 0.4px;
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 100px;
 }
 
 /* ─── LANG TOGGLE ─────────────────────────── */
@@ -490,37 +773,174 @@ body.vi .qa-ans-vi { display: block; }
 }
 </style>
 </head>
-<nav style="padding: 15px 48px; border-bottom: 1px solid var(--border); display: flex; gap: 20px; background: var(--surface);">
-  <a href="architecture-vehicle-management.html" style="font-family: var(--mono); color: var(--white); text-decoration: none;">← Vehicle System</a>
-  <a href="architecture-project-management.html" style="font-family: var(--mono); color: var(--muted); text-decoration: none;">→ Project System</a>
-</nav>
 <body>
 
-<!-- ══ HEADER ══════════════════════════════ -->
-<div class="page-header">
-  <h1>🚗 Vehicle Management System — Architecture</h1>
-  <p class="tagline">Solution Architecture Design · Real-time GPS Tracking · Pothole & Obstacle Detection · Fleet Management</p>
-  <div class="chip-row">
-    <span class="chip" style="border-color:#06b6d4;color:#22d3ee;">CDN / Edge</span>
-    <span class="chip" style="border-color:#ef4444;color:#f87171;">Zero Trust Security</span>
-    <span class="chip" style="border-color:#8b5cf6;color:#a78bfa;">API Gateway</span>
-    <span class="chip" style="border-color:#10b981;color:#34d399;">Microservices</span>
-    <span class="chip" style="border-color:#f59e0b;color:#fbbf24;">ML / AI Detection</span>
-    <span class="chip" style="border-color:#a855f7;color:#c084fc;">Polyglot Persistence</span>
-    <span class="chip" style="border-color:#64748b;color:#94a3b8;">K8s · GitOps</span>
-  </div>
-</div>
+<a href="/" class="back-btn">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  Back to App
+</a>
 
-<!-- ══ CONTROLS ════════════════════════════ -->
-<div class="ctrl-bar">
-  <button class="ctrl-btn" onclick="expandAll()">⊞ Expand All</button>
-  <button class="ctrl-btn" onclick="collapseAll()">⊟ Collapse All</button>
-</div>
-<div class="lang-bar">
-  <span>Language / Ngôn ngữ:</span>
-  <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
-  <button class="lang-btn"        id="btn-vi" onclick="setLang('vi')">VI</button>
-</div>
+<!-- ═══════════════════════════════════ HERO ═══════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-eyebrow">IoT Architecture · Fleet Management · Pothole Detection</div>
+      <h1><span>Vehicle</span> Management</h1>
+      <div class="hero-sub">Enterprise IoT Platform · Solution Architecture Design · Real-time Fleet Tracking</div>
+      <div class="hero-badges">
+        <span class="badge badge-cyan">CDN / Edge</span>
+        <span class="badge badge-rose">Zero Trust Security</span>
+        <span class="badge badge-violet">API Gateway</span>
+        <span class="badge badge-green">Microservices</span>
+        <span class="badge badge-amber">ML / AI Detection</span>
+        <span class="badge badge-violet">Polyglot Persistence</span>
+        <span class="badge badge-teal">K8s · GitOps</span>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-name">Thái Tiểu Lôi</div>
+      <div class="hero-meta-role">TECHNICAL LEADER · SENIOR DEVELOPER<br>thaitieuloi3107@gmail.com · 0977116790</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════ NAV ═══════════════════════════════════ -->
+<nav class="glownav">
+  <div class="glownav-inner">
+    <div class="glownav-left">
+      <div class="glownav-title">System Architecture</div>
+      <div class="page-switch">
+        <a href="architecture-vehicle-management.html" class="page-switch-link active">VEHICLE</a>
+        <a href="architecture-project-management.html" class="page-switch-link">PROJECT</a>
+        <a href="architecture-hsc-management.html" class="page-switch-link">HSC</a>
+      </div>
+    </div>
+
+    <div class="glownav-links">
+      <div class="glownav-item-wrap">
+        <a href="#overview" class="glownav-item">
+          <span class="glownav-num">01</span>
+          <span class="glownav-text">Overview</span>
+        </a>
+      </div>
+
+      <div class="glownav-item-wrap">
+        <a href="#architecture" class="glownav-item">
+          <span class="glownav-num">02</span>
+          <span class="glownav-text">Layers</span>
+        </a>
+        <div class="glownav-dropdown">
+          <a href="#layer-client" class="glownav-drop-item"><span class="glownav-num">L1</span> Client/IoT</a>
+          <a href="#layer-cdn" class="glownav-drop-item"><span class="glownav-num">L2</span> Edge/CDN</a>
+          <a href="#layer-sec" class="glownav-drop-item"><span class="glownav-num">L3</span> Security</a>
+          <a href="#layer-gw" class="glownav-drop-item"><span class="glownav-num">L4</span> Gateway</a>
+          <a href="#layer-msg" class="glownav-drop-item"><span class="glownav-num">L5</span> Messaging</a>
+          <a href="#layer-svc" class="glownav-drop-item"><span class="glownav-num">L6</span> Services</a>
+          <a href="#layer-ml" class="glownav-drop-item"><span class="glownav-num">L7</span> AI/ML</a>
+          <a href="#layer-data" class="glownav-drop-item"><span class="glownav-num">L8</span> Persistence</a>
+          <a href="#layer-infra" class="glownav-drop-item"><span class="glownav-num">L9</span> Platform</a>
+        </div>
+      </div>
+
+      <div class="glownav-item-wrap">
+        <a href="#pipeline" class="glownav-item">
+          <span class="glownav-num">03</span>
+          <span class="glownav-text">Pipeline</span>
+        </a>
+      </div>
+
+      <div class="glownav-item-wrap">
+        <a href="#concurrency" class="glownav-item">
+          <span class="glownav-num">04</span>
+          <span class="glownav-text">Performance</span>
+        </a>
+        <div class="glownav-dropdown">
+          <a href="#perf-concurrency" class="glownav-drop-item"><span class="glownav-num">4.1</span> High Concurrency</a>
+          <a href="#perf-latency" class="glownav-drop-item"><span class="glownav-num">4.2</span> Latency Stack</a>
+        </div>
+      </div>
+
+      <div class="glownav-item-wrap">
+        <a href="#qa" class="glownav-item">
+          <span class="glownav-num">05</span>
+          <span class="glownav-text">Interview</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+<!-- ═══════════════════════════════════ SECTION 1 ═══════════════════════════════════ -->
+<section class="section" id="overview">
+  <div class="sec-header">
+    <span class="sec-num">01</span>
+    <h2 class="sec-title"><span>System</span> Overview</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-top-line line-cyan"></div>
+    <div class="card-label"><span class="dot dot-cyan"></span><span style="color:var(--cyan)">WHAT IS THE VEHICLE MANAGEMENT SYSTEM?</span></div>
+    <p class="overview-text">
+      The <strong>Vehicle Management System (VMS)</strong> is an <strong>Enterprise IoT Platform</strong> designed for large-scale fleet operations. It enables real-time tracking of thousands of vehicles while using <strong>Edge Computing and AI</strong> to detect road hazards like potholes and obstacles in real-time.
+    </p>
+    <p class="overview-text" style="margin-top:12px;">
+      Built on a <strong>microservices architecture</strong>, the system ingests high-velocity telemetry data via <strong>MQTT</strong> and <strong>Kafka</strong>. It utilizes <strong>Computer Vision</strong> at the edge (mobile/dashcam) and in the cloud for hazard detection. The architecture is designed for <strong>Zero Trust Security</strong>, global scalability via <strong>Cloudflare Edge</strong>, and high availability using <strong>Kubernetes</strong>.
+    </p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-top-line line-violet"></div>
+      <div class="card-label"><span class="dot dot-violet"></span><span style="color:var(--violet)">MODULE 1 — TELEMETRY & TRACKING</span></div>
+      <div class="chips" style="margin-bottom:14px;">
+        <span class="chip chip-v">GPS Tracking</span>
+        <span class="chip chip-v">Geofencing</span>
+        <span class="chip chip-v">OBD-II Data</span>
+        <span class="chip chip-m">MQTT Ingestion</span>
+      </div>
+      <p style="color:var(--muted);font-size:13px;line-height:1.7;">
+        Full-featured fleet monitoring: real-time position, vehicle health (CAN bus/OBD-II), 
+        geofence alerts, trip history, and driver behavior analysis (harsh braking/accelerating).
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-top-line line-cyan"></div>
+      <div class="card-label"><span class="dot dot-cyan"></span><span style="color:var(--cyan)">MODULE 2 — AI HAZARD DETECTION</span></div>
+      <div class="chips" style="margin-bottom:14px;">
+        <span class="chip chip-c">Pothole Detection</span>
+        <span class="chip chip-c">Obstacle Detection</span>
+        <span class="chip chip-t">Edge Inference</span>
+        <span class="chip chip-a">Real-time Alerts</span>
+      </div>
+      <p style="color:var(--muted);font-size:13px;line-height:1.7;">
+        AI-powered road safety: processing video streams to detect road damage and obstacles. 
+        Detects hazards at the edge for low-latency driver feedback and aggregates data for city-wide road health mapping.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SECTION 2 — ARCHITECTURE ═══════════════════════════════════ -->
+<section class="section" id="architecture">
+  <div class="sec-header">
+    <span class="sec-num">02</span>
+    <h2 class="sec-title">Architecture <span>Layers</span></h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="ctrl-bar">
+    <button class="ctrl-btn" onclick="expandAll()">⊞ Expand All</button>
+    <button class="ctrl-btn" onclick="collapseAll()">⊟ Collapse All</button>
+  </div>
+  <div class="lang-bar">
+    <span>Language / Ngôn ngữ:</span>
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn"        id="btn-vi" onclick="setLang('vi')">VI</button>
+  </div>
+
+  <div class="arch">
 
 <!-- ══ ARCHITECTURE LAYERS ═════════════════
   Best-practice top-down order (SA standard):
@@ -1015,6 +1435,16 @@ body.vi .qa-ans-vi { display: block; }
     </div>
   </div>
 </div>
+</div><!-- end arch -->
+</section>
+
+<!-- ═══════════════════════════════════ SECTION 3 — PIPELINE ═══════════════════════════════════ -->
+<section class="section" id="pipeline">
+  <div class="sec-header">
+    <span class="sec-num">03</span>
+    <h2 class="sec-title">System <span>Pipeline</span> View</h2>
+    <div class="sec-line"></div>
+  </div>
 
 <!-- ─── HIGH-LEVEL PIPELINE DIAGRAM ────────── -->
 <div class="flow-container">
@@ -1049,11 +1479,18 @@ body.vi .qa-ans-vi { display: block; }
     </div>
   </div>
 </div>
+</section>
 
-</div><!-- end arch -->
+<!-- ═══════════════════════════════════ SECTION 4 — CONCURRENCY ═══════════════════════════════════ -->
+<section class="section" id="concurrency">
+  <div class="sec-header">
+    <span class="sec-num">04</span>
+    <h2 class="sec-title">Performance & <span>Strategy</span></h2>
+    <div class="sec-line"></div>
+  </div>
 
 <!-- ══ HIGH CONCURRENCY SECTION ════════════ -->
-<div class="conc-section">
+<div class="conc-section" id="perf-concurrency">
   <div class="section-hd" style="color:#fbbf24;">⚡ High-Concurrency Hazard Scoring & Fast Alert Strategy</div>
   <div class="section-sub-en">Problem: Thousands of vehicles simultaneously report sensor data. The system must score severity, deduplicate, and push geo-targeted alerts within <strong style="color:#fbbf24;">&lt;500ms end-to-end</strong>.</div>
   <div class="section-sub-vi">Bài toán: Hàng nghìn xe đồng thời báo cáo. Hệ thống phải chấm điểm mức độ, loại trùng, và đẩy cảnh báo đúng địa lý trong vòng &lt;500ms.</div>
@@ -1089,7 +1526,7 @@ body.vi .qa-ans-vi { display: block; }
       <div class="conc-body-vi" style="color:#166534;">KEDA scale pod theo Kafka lag. Lag tăng → pod mới trong ~30s. Cassandra scale write tuyến tính. Không có master bottleneck ở đâu cả.</div>
     </div>
   </div>
-  <div class="lat-bar">
+  <div class="lat-bar" id="perf-latency">
     <div class="lat-seg" style="background:#1e3a5f;"><div class="lat-lbl" style="color:#93c5fd;">IoT → MQTT → Kafka</div><div class="lat-val" style="color:#60a5fa;">~50ms</div></div>
     <div class="lat-seg" style="background:#2e1065;"><div class="lat-lbl" style="color:#c4b5fd;">ML Inference</div><div class="lat-val" style="color:#a78bfa;">~100ms</div></div>
     <div class="lat-seg" style="background:#451a03;"><div class="lat-lbl" style="color:#fcd34d;">Dedup + Score</div><div class="lat-val" style="color:#fbbf24;">~10ms</div></div>
@@ -1102,6 +1539,15 @@ body.vi .qa-ans-vi { display: block; }
     <span class="tag">WebSocket registry</span><span class="tag">KEDA on Kafka lag</span><span class="tag">Redis TTL dedup</span>
   </div>
 </div>
+</section>
+
+<!-- ═══════════════════════════════════ SECTION 5 — Q&A ═══════════════════════════════════ -->
+<section class="section" id="qa">
+  <div class="sec-header">
+    <span class="sec-num">05</span>
+    <h2 class="sec-title">Interview <span>Q&A</span> Guide</h2>
+    <div class="sec-line"></div>
+  </div>
 
 <!-- ══ Q&A ROUND 1 ══════════════════════════ -->
 <div class="qa-section qa-r1">
@@ -1562,13 +2008,15 @@ body.vi .qa-ans-vi { display: block; }
   </div>
 
 </div>
+</section>
 
-<!-- ========================================== -->
+</div><!-- end wrap -->
 
-<div class="footer">
-  Architectural Diagram &amp; Interview Guide — Interactive Documentation<br>
-  Designed for System Design Interviews
-</div>
+<footer>
+  <span>Thái Tiểu Lôi · thaitieuloi3107@gmail.com · 0977116790</span>
+  <span>Vehicle Management System · Architecture · 2025–2026</span>
+  <span>Technical Leader | Senior Developer · 10+ Years</span>
+</footer>
 
 <div class="scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑</div>
 

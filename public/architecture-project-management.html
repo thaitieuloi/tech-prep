@@ -29,6 +29,139 @@
   --sans: 'Outfit', sans-serif;
 }
 
+/* ─── GLOWNAV UNIFIED STYLE ─── */
+.glownav {
+  background: #05080f;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0 40px;
+  height: 64px;
+}
+.glownav-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+.glownav-title {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.glownav-left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.page-switch {
+  display: flex;
+  background: rgba(255,255,255,0.03);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.page-switch-link {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 800;
+  color: #64748b;
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.5px;
+}
+.page-switch-link.active {
+  background: #00e5ff;
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+}
+.glownav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.glownav-item-wrap {
+  position: relative;
+}
+.glownav-item {
+  text-decoration: none;
+  padding: 0 16px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+.glownav-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: #00e5ff;
+}
+.glownav-text {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.glownav-item:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.02);
+}
+.glownav-item:hover .glownav-text {
+  text-shadow: 0 0 8px rgba(255,255,255,0.3);
+}
+
+/* ─── DROPDOWN ─── */
+.glownav-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  background: #0a0f1a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 8px 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.2s;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+}
+.glownav-item-wrap:hover .glownav-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.glownav-drop-item {
+  display: block;
+  padding: 10px 20px;
+  color: #94a3b8;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.glownav-drop-item:hover {
+  background: rgba(255,255,255,0.05);
+  color: #00e5ff;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
@@ -124,29 +257,26 @@ body::before {
 .hero-meta-name { font-size: 20px; font-weight: 800; color: var(--white); }
 .hero-meta-role { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
 
-/* ─── NAV ─── */
-.nav {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(5,8,15,.92);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.nav::-webkit-scrollbar { display: none; }
-.nav-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 0 24px; height: 48px;
+/* ─── BACK BUTTON ─── */
+.back-btn {
+  position: fixed;
+  top: 16px;
+  left: 20px;
+  z-index: 2000;
+  background: #fff;
+  color: #000;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
   text-decoration: none;
-  font-family: var(--mono); font-size: 11px; font-weight: 600;
-  letter-spacing: .5px; color: var(--muted);
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
-  transition: color .2s, border-color .2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
 }
-.nav-item:hover { color: var(--cyan); border-bottom-color: var(--cyan); }
-.nav-num { opacity: .5; font-size: 9px; }
+.back-btn:hover { transform: scale(1.05); }
 
 /* ─── LAYOUT ─── */
 .wrap { max-width: 1300px; margin: 0 auto; padding: 0 48px; position: relative; z-index: 1; }
@@ -394,6 +524,11 @@ footer {
 </head>
 <body>
 
+<a href="/" class="back-btn">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  Back to App
+</a>
+
 <!-- ═══════════════════════════════════ HERO ═══════════════════════════════════ -->
 <header class="hero">
   <div class="hero-grid">
@@ -418,14 +553,82 @@ footer {
 </header>
 
 <!-- ═══════════════════════════════════ NAV ═══════════════════════════════════ -->
-<nav class="nav">
-  <a class="nav-item" href="#overview"><span class="nav-num">01</span> Overview</a>
-  <a class="nav-item" href="#architecture"><span class="nav-num">02</span> System Architecture</a>
-  <a class="nav-item" href="#pm-module"><span class="nav-num">03</span> PM Module</a>
-  <a class="nav-item" href="#email-module"><span class="nav-num">04</span> Email + AI Module</a>
-  <a class="nav-item" href="#ai-pipeline"><span class="nav-num">05</span> AI Pipeline (RAG)</a>
-  <a class="nav-item" href="#bestpractice"><span class="nav-num">06</span> Best Practices</a>
-  <a class="nav-item" href="#qa"><span class="nav-num">07</span> Q&amp;A Interview</a>
+<nav class="glownav">
+  <div class="glownav-inner">
+    <div class="glownav-left">
+      <div class="glownav-title">System Architecture</div>
+      <div class="page-switch">
+        <a href="architecture-vehicle-management.html" class="page-switch-link">VEHICLE</a>
+        <a href="architecture-project-management.html" class="page-switch-link active">PROJECT</a>
+        <a href="architecture-hsc-management.html" class="page-switch-link">HSC</a>
+      </div>
+    </div>
+
+    <div class="glownav-links">
+      <div class="glownav-item-wrap">
+        <a href="#overview" class="glownav-item">
+          <span class="glownav-num">01</span>
+          <span class="glownav-text">Overview</span>
+        </a>
+      </div>
+
+      <div class="glownav-item-wrap">
+        <a href="#architecture" class="glownav-item">
+          <span class="glownav-num">02</span>
+          <span class="glownav-text">Architecture</span>
+        </a>
+        <div class="glownav-dropdown">
+          <a href="#topology" class="glownav-drop-item"><span class="glownav-num">2.1</span> Topology View</a>
+          <a href="#multi-tenant" class="glownav-drop-item"><span class="glownav-num">2.2</span> Multi-Tenancy</a>
+        </div>
+      </div>
+
+      <div class="glownav-item-wrap">
+        <a href="#pm-module" class="glownav-item">
+          <span class="glownav-num">03</span>
+          <span class="glownav-text">PM Module</span>
+        </a>
+        <div class="glownav-dropdown">
+          <a href="#pm-entities" class="glownav-drop-item"><span class="glownav-num">3.1</span> Data Entities</a>
+          <a href="#pm-ai" class="glownav-drop-item"><span class="glownav-num">3.2</span> AI Integration</a>
+          <a href="#pm-api" class="glownav-drop-item"><span class="glownav-num">3.3</span> API Design</a>
+        </div>
+      </div>
+
+      <div class="glownav-item-wrap">
+        <a href="#email-module" class="glownav-item">
+          <span class="glownav-num">04</span>
+          <span class="glownav-text">Email + AI</span>
+        </a>
+        <div class="glownav-dropdown">
+          <a href="#email-flow" class="glownav-drop-item"><span class="glownav-num">4.1</span> Processing Flow</a>
+          <a href="#email-translation" class="glownav-drop-item"><span class="glownav-num">4.2</span> AI Translation</a>
+          <a href="#email-features" class="glownav-drop-item"><span class="glownav-num">4.3</span> Smart Features</a>
+        </div>
+      </div>
+
+      <div class="glownav-item-wrap">
+        <a href="#ai-pipeline" class="glownav-item">
+          <span class="glownav-num">05</span>
+          <span class="glownav-text">RAG Pipeline</span>
+        </a>
+      </div>
+
+      <div class="glownav-item-wrap">
+        <a href="#bestpractice" class="glownav-item">
+          <span class="glownav-num">06</span>
+          <span class="glownav-text">Best Practices</span>
+        </a>
+      </div>
+
+      <div class="glownav-item-wrap">
+        <a href="#qa" class="glownav-item">
+          <span class="glownav-num">07</span>
+          <span class="glownav-text">Interview Guide</span>
+        </a>
+      </div>
+    </div>
+  </div>
 </nav>
 
 <!-- ═══════════════════════════════════ SECTION 1 ═══════════════════════════════════ -->
@@ -685,7 +888,7 @@ footer {
 <line x1="838" y1="112" x2="875" y2="286" stroke="#818cf8" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#av)"/>
 
 <!-- MULTI-TENANT ZONE -->
-<rect x="182" y="540" width="559" height="50" rx="8" fill="rgba(255,179,64,.04)" stroke="#ffb340" stroke-width="1" stroke-dasharray="4,3"/>
+<rect id="multi-tenant" x="182" y="540" width="559" height="50" rx="8" fill="rgba(255,179,64,.04)" stroke="#ffb340" stroke-width="1" stroke-dasharray="4,3"/>
 <text x="461" y="562" text-anchor="middle" fill="#ffb340" font-size="9" font-family="IBM Plex Mono" letter-spacing="2">MULTI-TENANT ISOLATION LAYER</text>
 <text x="461" y="578" text-anchor="middle" fill="#4d6680" font-size="10" font-family="Outfit">Schema-per-tenant PostgreSQL · Tenant-scoped Kafka topics · Namespaced Qdrant collections</text>
 
@@ -712,9 +915,7 @@ footer {
   </div>
 
   <div class="grid-2" style="margin-bottom:24px;">
-    <div class="card">
-      <div class="card-top-line line-violet"></div>
-      <div class="card-label"><span class="dot dot-violet"></span><span style="color:var(--violet)">DATA MODEL — CORE ENTITIES</span></div>
+    <div class="card" id="pm-entities">
       <div class="tbl-wrap" style="margin-top:8px;">
         <table>
           <thead><tr><th>Entity</th><th>Key Fields</th><th>Relations</th></tr></thead>
@@ -729,9 +930,7 @@ footer {
         </table>
       </div>
     </div>
-    <div class="card">
-      <div class="card-top-line line-violet"></div>
-      <div class="card-label"><span class="dot dot-violet"></span><span style="color:var(--violet)">AI INTEGRATION IN PM</span></div>
+    <div class="card" id="pm-ai">
       <div class="steps" style="margin-top:8px;">
         <div class="step">
           <div class="step-icon si-v">1</div>
@@ -759,9 +958,7 @@ footer {
   </div>
 
   <!-- PM API design -->
-  <div class="card">
-    <div class="card-top-line line-violet"></div>
-    <div class="card-label"><span class="dot dot-violet"></span><span style="color:var(--violet)">API DESIGN — PM SERVICE (OpenAPI + GraphQL)</span></div>
+  <div class="card" id="pm-api">
     <div class="tbl-wrap">
       <table>
         <thead><tr><th>API Type</th><th>Endpoint / Query</th><th>Purpose</th><th>Notes</th></tr></thead>
@@ -786,9 +983,7 @@ footer {
   </div>
 
   <!-- Email flow -->
-  <div class="card" style="margin-bottom:24px;">
-    <div class="card-top-line line-cyan"></div>
-    <div class="card-label"><span class="dot dot-cyan"></span><span style="color:var(--cyan)">EMAIL AI PROCESSING FLOW — END TO END</span></div>
+  <div class="card" id="email-flow" style="margin-bottom:24px;">
     <div class="pipe" style="margin:12px 0 20px;">
       <div class="pipe-box c"><div class="pipe-lbl">USER</div><div class="pipe-name">Opens Email</div></div>
       <span class="pipe-arr">→</span>
@@ -847,9 +1042,7 @@ footer {
 
   <!-- AI features grid -->
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
-    <div class="card" style="grid-column: span 3;">
-      <div class="card-top-line line-cyan"></div>
-      <div class="card-label" style="margin-bottom:14px;"><span class="dot dot-cyan"></span><span style="color:var(--cyan)">AI TRANSLATION — TRANSLATION MEMORY + GLOSSARY ARCHITECTURE</span></div>
+    <div class="card" id="email-translation" style="grid-column: span 3;">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
         <div>
           <div class="bp-icon">🗂️</div>
@@ -886,7 +1079,7 @@ footer {
         </div>
       </div>
     </div>
-    <div class="card">
+    <div class="card" id="email-features">
       <div class="card-top-line line-teal"></div>
       <div class="bp-icon">📋</div>
       <div class="bp-title">Smart Summary</div>
@@ -910,7 +1103,7 @@ footer {
   </div>
 
   <!-- RAG diagram -->
-  <div class="topology" style="margin-bottom:24px;">
+  <div class="topology" id="topology" style="margin-bottom:24px;">
     <div class="card-label" style="margin-bottom:20px;"><span class="dot dot-teal"></span><span style="color:var(--teal)">RAG PIPELINE DETAIL — RETRIEVAL AUGMENTED GENERATION</span></div>
     <div class="svg-scroll">
 <svg viewBox="0 0 1080 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:800px;">

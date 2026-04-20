@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSC — System Architecture & Interview Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700;800;900&display=swap');
+
+:root {
+  --bg:        #05080f;
+  --surface:   #0c1220;
+  --surface2:  #111d2e;
+  --surface3:  #172033;
+  --border:    #1c2d42;
+  --border2:   #243547;
+  --gold:      #f5a623;
+  --gold-dim:  rgba(245,166,35,.12);
+  --purple:    #7c3aed;
+  --purple-dim:rgba(124,58,237,.12);
+  --teal:      #00c9a7;
+  --amber:     #ffb340;
+  --violet:    #818cf8;
+  --rose:      #fb7185;
+  --green:     #34d399;
+  --text:      #cdd9e5;
+  --muted:     #4d6680;
+  --white:     #f0f6ff;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Outfit', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(245,166,35,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(124,58,237,.04) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ─── HERO ─── */
+.hero {
+  position: relative; padding: 60px 48px 52px;
+  border-bottom: 1px solid var(--border); overflow: hidden; z-index: 1;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 32px; align-items: end; max-width: 1300px; margin: 0 auto;
+}
+.hero-eyebrow {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 3px;
+  color: var(--gold); text-transform: uppercase; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+.hero h1 {
+  font-family: var(--sans); font-size: 56px; font-weight: 900;
+  line-height: 1.0; letter-spacing: -2px; color: var(--white); margin-bottom: 6px;
+}
+.hero h1 span { color: var(--gold); }
+.hero-sub { font-size: 16px; font-weight: 300; color: var(--muted); margin-bottom: 28px; }
+.hero-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+.badge {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  padding: 5px 14px; border-radius: 100px; letter-spacing: .5px;
+}
+.badge-gold   { background: var(--gold-dim);    color: var(--gold);   border: 1px solid rgba(245,166,35,.25); }
+.badge-purple { background: var(--purple-dim);  color: #a78bfa;       border: 1px solid rgba(124,58,237,.25); }
+.badge-teal   { background: rgba(0,201,167,.1); color: var(--teal);   border: 1px solid rgba(0,201,167,.25); }
+.badge-amber  { background: rgba(255,179,64,.1);color: var(--amber);  border: 1px solid rgba(255,179,64,.25); }
+.badge-green  { background: rgba(52,211,153,.1);color: var(--green);  border: 1px solid rgba(52,211,153,.25); }
+.badge-violet { background: rgba(129,140,248,.1);color:var(--violet); border: 1px solid rgba(129,140,248,.25);}
+.badge-rose   { background: rgba(251,113,133,.1);color:var(--rose);   border: 1px solid rgba(251,113,133,.25);}
+
+.hero-meta { text-align: right; }
+.hero-meta-name { font-size: 20px; font-weight: 800; color: var(--white); }
+.hero-meta-role { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ─── NAV ─── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(5,8,15,.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; overflow-x: auto; scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 24px; height: 48px; text-decoration: none;
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: .5px; color: var(--muted);
+  border-bottom: 2px solid transparent; white-space: nowrap;
+  transition: color .2s, border-color .2s;
+}
+.nav-item:hover { color: var(--gold); border-bottom-color: var(--gold); }
+.nav-num { opacity: .5; font-size: 9px; }
+
+/* ─── LAYOUT ─── */
+.wrap { max-width: 1300px; margin: 0 auto; padding: 0 48px; position: relative; z-index: 1; }
+.section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+.section:last-child { border-bottom: none; }
+
+/* ─── SECTION HEADER ─── */
+.sec-header { display: flex; align-items: center; gap: 18px; margin-bottom: 40px; }
+.sec-num { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px; }
+.sec-title { font-size: 30px; font-weight: 800; color: var(--white); letter-spacing: -1px; }
+.sec-title .g  { color: var(--gold); }
+.sec-title .p  { color: #a78bfa; }
+.sec-title .t  { color: var(--teal); }
+.sec-title .a  { color: var(--amber); }
+.sec-title .gr { color: var(--green); }
+.sec-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ─── CARD ─── */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px 32px;
+  position: relative; overflow: hidden;
+}
+.card-top-line { position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.line-gold   { background: linear-gradient(90deg, var(--gold), transparent); }
+.line-purple { background: linear-gradient(90deg, var(--purple), transparent); }
+.line-teal   { background: linear-gradient(90deg, var(--teal), transparent); }
+.line-amber  { background: linear-gradient(90deg, var(--amber), transparent); }
+.line-green  { background: linear-gradient(90deg, var(--green), transparent); }
+.line-rose   { background: linear-gradient(90deg, var(--rose), transparent); }
+.line-violet { background: linear-gradient(90deg, var(--violet), transparent); }
+
+.card-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2.5px;
+  text-transform: uppercase; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.dot-gold   { background: var(--gold);   box-shadow: 0 0 6px var(--gold); }
+.dot-purple { background: var(--purple); box-shadow: 0 0 6px var(--purple); }
+.dot-teal   { background: var(--teal);   box-shadow: 0 0 6px var(--teal); }
+.dot-amber  { background: var(--amber);  box-shadow: 0 0 6px var(--amber); }
+.dot-green  { background: var(--green);  box-shadow: 0 0 6px var(--green); }
+.dot-violet { background: var(--violet); }
+.dot-rose   { background: var(--rose); }
+
+/* ─── CHIPS ─── */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 100px;
+}
+.chip-g { background: var(--gold-dim);         color: var(--gold);   border: 1px solid rgba(245,166,35,.2); }
+.chip-p { background: var(--purple-dim);        color: #a78bfa;       border: 1px solid rgba(124,58,237,.2); }
+.chip-t { background: rgba(0,201,167,.08);      color: var(--teal);   border: 1px solid rgba(0,201,167,.2); }
+.chip-a { background: rgba(255,179,64,.08);     color: var(--amber);  border: 1px solid rgba(255,179,64,.2); }
+.chip-v { background: rgba(129,140,248,.08);    color: var(--violet); border: 1px solid rgba(129,140,248,.2); }
+.chip-gr{ background: rgba(52,211,153,.08);     color: var(--green);  border: 1px solid rgba(52,211,153,.2); }
+.chip-r { background: rgba(251,113,133,.08);    color: var(--rose);   border: 1px solid rgba(251,113,133,.2); }
+.chip-m { background: rgba(77,102,128,.1);      color: var(--muted);  border: 1px solid rgba(77,102,128,.2); }
+
+/* ─── GRID ─── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+@media(max-width:1024px){ .grid-4{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:768px) { .grid-2,.grid-3,.grid-4{ grid-template-columns:1fr; } }
+
+/* ─── STEPS ─── */
+.steps { display: flex; flex-direction: column; }
+.step { display: flex; gap: 20px; align-items: flex-start; position: relative; }
+.step:not(:last-child)::after {
+  content: ''; position: absolute; left: 17px; top: 42px;
+  width: 2px; height: calc(100% - 10px); background: var(--border2);
+}
+.step-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  flex-shrink: 0; position: relative; z-index: 1;
+}
+.si-g { background: var(--gold-dim);          color: var(--gold);   border: 1.5px solid rgba(245,166,35,.35); }
+.si-p { background: var(--purple-dim);         color: #a78bfa;       border: 1.5px solid rgba(124,58,237,.35); }
+.si-t { background: rgba(0,201,167,.1);        color: var(--teal);   border: 1.5px solid rgba(0,201,167,.35); }
+.si-a { background: rgba(255,179,64,.1);       color: var(--amber);  border: 1.5px solid rgba(255,179,64,.35); }
+.si-gr{ background: rgba(52,211,153,.1);       color: var(--green);  border: 1.5px solid rgba(52,211,153,.35); }
+
+.step-body  { padding: 4px 0 26px; flex: 1; }
+.step-title { font-weight: 700; color: var(--white); font-size: 15px; margin-bottom: 5px; }
+.step-desc  { color: #5a7a96; font-size: 13px; line-height: 1.7; }
+.step-desc strong { color: var(--text); }
+.step-desc code {
+  font-family: var(--mono); font-size: 11px;
+  background: rgba(0,0,0,.4); padding: 1px 6px; border-radius: 4px; color: var(--gold);
+}
+
+/* ─── TABLE ─── */
+.tbl-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  background: var(--surface2); font-family: var(--mono); font-size: 10px;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+  padding: 12px 18px; text-align: left; border-bottom: 1px solid var(--border2);
+}
+tbody td {
+  padding: 13px 18px; font-size: 13px; color: #7a9ab5;
+  border-bottom: 1px solid var(--border); vertical-align: top;
+}
+tbody td:first-child { color: var(--white); font-weight: 600; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(245,166,35,.02); }
+
+/* ─── TOPOLOGY ─── */
+.topology {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px; margin-bottom: 24px;
+}
+.svg-scroll { overflow-x: auto; border-radius: 10px; background: #030609; padding: 20px; }
+
+/* ─── PIPE ─── */
+.pipe {
+  display: flex; align-items: center; gap: 0;
+  overflow-x: auto; padding: 16px 0; scrollbar-width: none;
+}
+.pipe::-webkit-scrollbar { display: none; }
+.pipe-box {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 16px;
+  text-align: center; flex-shrink: 0; min-width: 110px;
+}
+.pipe-box.g  { border-color: rgba(245,166,35,.3); }
+.pipe-box.p  { border-color: rgba(124,58,237,.3); }
+.pipe-box.t  { border-color: rgba(0,201,167,.3); }
+.pipe-box.a  { border-color: rgba(255,179,64,.3); }
+.pipe-box.gr { border-color: rgba(52,211,153,.3); }
+.pipe-lbl  { font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 3px; }
+.pipe-name { font-size: 12px; font-weight: 700; color: var(--white); }
+.pipe-arr  { color: var(--muted); font-size: 16px; padding: 0 5px; flex-shrink: 0; }
+
+/* ─── Q&A ─── */
+.qa-category {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 3px;
+  text-transform: uppercase; margin: 36px 0 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.qa-cat-line { flex: 1; height: 1px; background: var(--border); }
+.qa-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 16px; overflow: hidden;
+  transition: border-color .2s;
+}
+.qa-item:hover { border-color: var(--border2); }
+.qa-q {
+  padding: 18px 22px; display: flex; align-items: flex-start;
+  gap: 14px; border-bottom: 1px solid var(--border);
+}
+.qa-tag {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 6px; flex-shrink: 0; margin-top: 1px;
+}
+.qt-g  { background: var(--gold-dim);          color: var(--gold); }
+.qt-p  { background: var(--purple-dim);         color: #a78bfa; }
+.qt-t  { background: rgba(0,201,167,.12);       color: var(--teal); }
+.qt-a  { background: rgba(255,179,64,.12);      color: var(--amber); }
+.qt-gr { background: rgba(52,211,153,.12);      color: var(--green); }
+
+.qa-q-text { font-weight: 700; font-size: 15px; color: var(--white); line-height: 1.5; }
+.qa-vi { font-size: 12px; color: var(--muted); margin-top: 3px; font-style: italic; }
+.qa-a  { padding: 20px 22px; background: var(--surface2); }
+.qa-a p { color: #6e8fa8; font-size: 13px; line-height: 1.85; margin-bottom: 12px; }
+.qa-a p:last-child { margin-bottom: 0; }
+.qa-a strong { color: var(--text); }
+.qa-a code {
+  font-family: var(--mono); font-size: 11px;
+  background: rgba(0,0,0,.35); padding: 1px 6px; border-radius: 4px; color: var(--gold);
+}
+.tip {
+  margin-top: 14px; background: rgba(0,201,167,.06);
+  border-left: 3px solid var(--teal); border-radius: 0 8px 8px 0; padding: 11px 16px;
+}
+.tip p { color: #5ecfb9 !important; font-size: 12px !important; margin: 0 !important; }
+.warn {
+  margin-top: 14px; background: rgba(255,179,64,.06);
+  border-left: 3px solid var(--amber); border-radius: 0 8px 8px 0; padding: 11px 16px;
+}
+.warn p { color: #d4975a !important; font-size: 12px !important; margin: 0 !important; }
+
+/* ─── BP CARDS ─── */
+.bp-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 22px; position: relative; overflow: hidden;
+}
+.bp-icon  { font-size: 22px; margin-bottom: 10px; }
+.bp-title { font-weight: 700; color: var(--white); font-size: 14px; margin-bottom: 8px; }
+.bp-text  { color: var(--muted); font-size: 12px; line-height: 1.7; }
+
+/* ─── BPMN FLOW ─── */
+.bpmn-flow {
+  display: flex; align-items: center; flex-wrap: nowrap;
+  overflow-x: auto; gap: 0; padding: 16px 0;
+  scrollbar-width: none;
+}
+.bpmn-flow::-webkit-scrollbar { display: none; }
+.bpmn-event {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+  border: 2px solid;
+}
+.bpmn-event.start { border-color: var(--green); background: rgba(52,211,153,.1); }
+.bpmn-event.end   { border-color: var(--rose);  background: rgba(251,113,133,.1); border-width: 4px; }
+.bpmn-task {
+  background: var(--surface2); border: 1.5px solid var(--border2);
+  border-radius: 8px; padding: 8px 14px; flex-shrink: 0; min-width: 110px;
+  text-align: center;
+}
+.bpmn-task.service { border-color: rgba(245,166,35,.4); }
+.bpmn-task.user    { border-color: rgba(124,58,237,.4); }
+.bpmn-task.auto    { border-color: rgba(0,201,167,.4); }
+.bpmn-task-type {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 1px;
+  color: var(--muted); margin-bottom: 3px;
+}
+.bpmn-task-name { font-size: 11px; font-weight: 700; color: var(--white); }
+.bpmn-gw {
+  width: 44px; height: 44px; transform: rotate(45deg);
+  background: var(--surface2); border: 1.5px solid var(--amber);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  margin: 0 4px;
+}
+.bpmn-gw-label {
+  transform: rotate(-45deg);
+  font-family: var(--mono); font-size: 14px; color: var(--amber);
+}
+.bpmn-arr { color: var(--muted); font-size: 16px; padding: 0 4px; flex-shrink: 0; }
+.bpmn-label {
+  font-family: var(--mono); font-size: 9px; color: var(--muted);
+  padding: 0 4px; flex-shrink: 0; letter-spacing: 1px;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  padding: 28px 48px; border-top: 1px solid var(--border);
+  font-family: var(--mono); font-size: 11px; color: var(--muted);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  position: relative; z-index: 1;
+}
+@media print {
+  .nav, footer { display: none; }
+  .card, .topology, .qa-item { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-eyebrow">System Architecture · Interview Document · 2021–2025</div>
+      <h1><span>HSC</span> Securities</h1>
+      <div class="hero-sub">Công ty Chứng khoán Hồ Chí Minh · Transaction &amp; Trading Platform · eKYC · Fund Management</div>
+      <div class="hero-badges">
+        <span class="badge badge-gold">Spring Boot · JHipster</span>
+        <span class="badge badge-purple">Camunda BPM</span>
+        <span class="badge badge-teal">Apache Kafka</span>
+        <span class="badge badge-amber">eKYC · Nộp/Rút tiền</span>
+        <span class="badge badge-green">10,000 TPS</span>
+        <span class="badge badge-violet">OpenAPI · NodeJS</span>
+        <span class="badge badge-rose">Azure · Jenkins</span>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-name">Thái Tiểu Lôi</div>
+      <div class="hero-meta-role">TECHNICAL LEADER · SENIOR DEVELOPER<br>thaitieuloi3107@gmail.com · 0977116790</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <a class="nav-item" href="#overview"><span class="nav-num">01</span> Overview</a>
+  <a class="nav-item" href="#architecture"><span class="nav-num">02</span> System Architecture</a>
+  <a class="nav-item" href="#ekyc"><span class="nav-num">03</span> eKYC Module</a>
+  <a class="nav-item" href="#transaction"><span class="nav-num">04</span> Nộp tiền / Rút tiền</a>
+  <a class="nav-item" href="#camunda"><span class="nav-num">05</span> Camunda Workflows</a>
+  <a class="nav-item" href="#performance"><span class="nav-num">06</span> Performance · 10K TPS</a>
+  <a class="nav-item" href="#bestpractice"><span class="nav-num">07</span> Best Practices</a>
+  <a class="nav-item" href="#qa"><span class="nav-num">08</span> Q&amp;A Interview</a>
+</nav>
+
+<div class="wrap">
+
+<!-- ═══ SECTION 1 — OVERVIEW ═══ -->
+<section class="section" id="overview">
+  <div class="sec-header">
+    <span class="sec-num">01</span>
+    <h2 class="sec-title"><span class="g">System</span> Overview</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-top-line line-gold"></div>
+    <div class="card-label"><span class="dot dot-gold"></span><span style="color:var(--gold)">WHAT IS HSC PLATFORM?</span></div>
+    <p style="color:#7a9ab5;font-size:14px;line-height:1.8;">
+      HSC (Công ty Chứng khoán Hồ Chí Minh) is one of Vietnam's leading securities companies.
+      The platform is an <strong style="color:var(--text);">enterprise-grade Transaction &amp; Trading system</strong> handling
+      eKYC customer onboarding, fund deposit (nộp tiền), fund withdrawal (rút tiền), and securities trading —
+      with complex approval workflows orchestrated by <strong style="color:var(--text);">Camunda BPM</strong>.
+    </p>
+    <p style="color:#7a9ab5;font-size:14px;line-height:1.8;margin-top:12px;">
+      Built on <strong style="color:var(--text);">Spring Boot + JHipster</strong> microservices, event-driven via
+      <strong style="color:var(--text);">Apache Kafka</strong>, with <strong style="color:var(--text);">Camunda</strong> orchestrating
+      business-critical approval flows. The system was optimized to handle
+      <strong style="color:var(--gold);">10,000 transactions/sec</strong> — a 12× throughput improvement led by the candidate.
+      Deployed on <strong style="color:var(--text);">Azure</strong> with Jenkins CI/CD.
+    </p>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-top-line line-gold"></div>
+      <div class="card-label"><span class="dot dot-gold"></span><span style="color:var(--gold)">CORE MODULES</span></div>
+      <div class="chips" style="margin-bottom:14px;">
+        <span class="chip chip-g">eKYC Onboarding</span>
+        <span class="chip chip-g">Nộp tiền (Deposit)</span>
+        <span class="chip chip-g">Rút tiền (Withdraw)</span>
+        <span class="chip chip-p">Camunda Workflow</span>
+        <span class="chip chip-t">Transaction Engine</span>
+        <span class="chip chip-a">Audit &amp; Compliance</span>
+      </div>
+      <p style="color:var(--muted);font-size:13px;line-height:1.7;">
+        Three business-critical flows, each orchestrated as a Camunda BPMN process:
+        eKYC handles customer identity verification; Deposit handles incoming fund processing
+        with bank reconciliation; Withdrawal handles fund release with multi-level approval.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-top-line line-purple"></div>
+      <div class="card-label"><span class="dot dot-purple"></span><span style="color:#a78bfa)">KEY ACHIEVEMENTS</span></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Metric</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>Transaction throughput</td><td><strong style="color:var(--gold);">10,000 TPS</strong> (12× improvement)</td></tr>
+            <tr><td>Camunda workflow</td><td>Processing time <strong style="color:var(--green);">↓ 50%</strong></td></tr>
+            <tr><td>Code quality</td><td>CI/CD gates, unit + E2E test coverage</td></tr>
+            <tr><td>Team leadership</td><td>Led full team: estimate, plan, deliver</td></tr>
+            <tr><td>Tech stack</td><td>Spring Boot, JHipster, Kafka, Camunda, NodeJS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech stack table -->
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>Layer</th><th>Technology</th><th>Role</th><th>Why chosen</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Backend Framework</td><td><span class="chip chip-g">Spring Boot</span> <span class="chip chip-g">JHipster</span></td><td>Core microservices</td><td>JHipster accelerates scaffold: generates security, Swagger, CI/CD config, entity CRUD — consistent across all services</td></tr>
+        <tr><td>BPM / Workflow</td><td><span class="chip chip-p">Camunda 7</span></td><td>eKYC, Deposit, Withdrawal orchestration</td><td>BPMN 2.0 visual flows, built-in audit history, human task management, external worker model for scaling</td></tr>
+        <tr><td>API Contract</td><td><span class="chip chip-v">OpenAPI / Swagger</span> <span class="chip chip-m">NodeJS BFF</span></td><td>REST API + backend-for-frontend</td><td>OpenAPI for inter-service contracts; NodeJS BFF aggregates data for frontend clients</td></tr>
+        <tr><td>Event Bus</td><td><span class="chip chip-a">Apache Kafka</span></td><td>Async processing, audit events, notifications</td><td>High-throughput durable event log; replays support recovery; decouples transaction from notification</td></tr>
+        <tr><td>Database</td><td><span class="chip chip-g">PostgreSQL</span></td><td>Primary transactional data</td><td>ACID guarantees critical for financial data; row-level locking, optimistic locking for concurrency</td></tr>
+        <tr><td>Cache</td><td><span class="chip chip-a">Redis</span></td><td>Session, transaction state, rate-limit</td><td>Sub-ms reads for high-frequency account balance checks; distributed lock for dedup</td></tr>
+        <tr><td>Search / Log</td><td><span class="chip chip-p">ELK Stack</span></td><td>Audit logs, operational search</td><td>Immutable audit trail via Elasticsearch; Kibana for compliance query dashboards</td></tr>
+        <tr><td>Metrics</td><td><span class="chip chip-t">Prometheus</span> <span class="chip chip-t">Grafana</span></td><td>Real-time TPS monitoring, alerting</td><td>Custom dashboards tracking TPS, error rate, Camunda process SLA, latency p99</td></tr>
+        <tr><td>Cloud / Infra</td><td><span class="chip chip-g">Azure</span> <span class="chip chip-m">Jenkins</span> <span class="chip chip-m">SVN / Git</span></td><td>Deployment, CI/CD, SCM</td><td>Azure enterprise compliance; Jenkins pipelines per microservice with quality gates</td></tr>
+        <tr><td>Testing</td><td><span class="chip chip-gr">JUnit</span> <span class="chip chip-gr">Mockito</span> <span class="chip chip-gr">E2E Test</span> <span class="chip chip-gr">JMeter</span></td><td>Unit, integration, load testing</td><td>JUnit/Mockito for service layer; JMeter for TPS load simulation; E2E for full workflow validation</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ SECTION 2 — ARCHITECTURE ═══ -->
+<section class="section" id="architecture">
+  <div class="sec-header">
+    <span class="sec-num">02</span>
+    <h2 class="sec-title">System <span class="g">Architecture</span> Diagram</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="topology">
+    <div class="card-label" style="margin-bottom:20px;">
+      <span class="dot dot-gold"></span>
+      <span style="color:var(--gold)">HIGH-LEVEL TOPOLOGY — HSC TRANSACTION &amp; TRADING PLATFORM</span>
+    </div>
+    <div class="svg-scroll">
+<svg viewBox="0 0 1100 660" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:900px;">
+<defs>
+  <marker id="ag" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#f5a623"/></marker>
+  <marker id="ap" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#7c3aed"/></marker>
+  <marker id="at" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00c9a7"/></marker>
+  <marker id="aa" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#ffb340"/></marker>
+  <marker id="agr" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#34d399"/></marker>
+  <marker id="am" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#2d4a63"/></marker>
+</defs>
+
+<rect x="8" y="8" width="1084" height="644" rx="16" fill="#030609" stroke="#1c2d42"/>
+
+<!-- Zone labels -->
+<text x="28" y="36" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono" letter-spacing="2.5">CLIENT</text>
+<text x="170" y="36" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono" letter-spacing="2.5">GATEWAY / AUTH</text>
+<text x="390" y="36" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono" letter-spacing="2.5">DOMAIN SERVICES</text>
+<text x="645" y="36" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono" letter-spacing="2.5">BPM / MESSAGING</text>
+<text x="878" y="36" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono" letter-spacing="2.5">DATA LAYER</text>
+
+<!-- Dividers -->
+<line x1="155" y1="46" x2="155" y2="640" stroke="#1c2d42" stroke-dasharray="5,4"/>
+<line x1="375" y1="46" x2="375" y2="640" stroke="#1c2d42" stroke-dasharray="5,4"/>
+<line x1="635" y1="46" x2="635" y2="640" stroke="#1c2d42" stroke-dasharray="5,4"/>
+<line x1="865" y1="46" x2="865" y2="640" stroke="#1c2d42" stroke-dasharray="5,4"/>
+
+<!-- CLIENT -->
+<rect x="20" y="58" width="122" height="50" rx="9" fill="#0c1a28" stroke="#f5a623" stroke-width="1.5"/>
+<text x="81" y="78" text-anchor="middle" fill="#f5a623" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">WEB CLIENT</text>
+<text x="81" y="97" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Portal / App</text>
+
+<rect x="20" y="124" width="122" height="50" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="81" y="144" text-anchor="middle" fill="#818cf8" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">BACKOFFICE</text>
+<text x="81" y="163" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Admin Portal</text>
+
+<!-- GATEWAY / AUTH -->
+<rect x="168" y="58" width="192" height="50" rx="9" fill="#0c1a28" stroke="#f5a623" stroke-width="1.5"/>
+<text x="264" y="78" text-anchor="middle" fill="#f5a623" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">API GATEWAY</text>
+<text x="264" y="97" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Spring Gateway</text>
+
+<rect x="168" y="124" width="192" height="50" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="264" y="144" text-anchor="middle" fill="#818cf8" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">AUTH SERVICE</text>
+<text x="264" y="163" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">OAuth2 / JWT</text>
+
+<rect x="168" y="190" width="192" height="50" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="264" y="210" text-anchor="middle" fill="#818cf8" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">BFF LAYER</text>
+<text x="264" y="229" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">NodeJS BFF</text>
+
+<!-- DOMAIN SERVICES -->
+<rect x="388" y="58" width="232" height="50" rx="9" fill="#0c1a28" stroke="#f5a623" stroke-width="1.5"/>
+<text x="504" y="78" text-anchor="middle" fill="#f5a623" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">IDENTITY</text>
+<text x="504" y="97" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">eKYC Service (JHipster)</text>
+
+<rect x="388" y="124" width="232" height="50" rx="9" fill="#0c1a28" stroke="#f5a623" stroke-width="1.5"/>
+<text x="504" y="144" text-anchor="middle" fill="#f5a623" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">FUND MANAGEMENT</text>
+<text x="504" y="163" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Deposit Service (JHipster)</text>
+
+<rect x="388" y="190" width="232" height="50" rx="9" fill="#0c1a28" stroke="#f5a623" stroke-width="1.5"/>
+<text x="504" y="210" text-anchor="middle" fill="#f5a623" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">FUND MANAGEMENT</text>
+<text x="504" y="229" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Withdrawal Service (JHipster)</text>
+
+<rect x="388" y="256" width="232" height="50" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="504" y="276" text-anchor="middle" fill="#818cf8" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">TRADING</text>
+<text x="504" y="295" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Transaction Service</text>
+
+<rect x="388" y="322" width="232" height="50" rx="9" fill="#0c1a28" stroke="#ffb340" stroke-width="1.5"/>
+<text x="504" y="342" text-anchor="middle" fill="#ffb340" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">NOTIFY</text>
+<text x="504" y="361" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Notification Service</text>
+
+<rect x="388" y="388" width="232" height="50" rx="9" fill="#0c1a28" stroke="#34d399" stroke-width="1.5"/>
+<text x="504" y="408" text-anchor="middle" fill="#34d399" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">COMPLIANCE</text>
+<text x="504" y="427" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Audit Service</text>
+
+<!-- BPM / MESSAGING -->
+<rect x="648" y="58" width="195" height="116" rx="9" fill="#0c1a28" stroke="#7c3aed" stroke-width="2"/>
+<text x="745" y="78" text-anchor="middle" fill="#7c3aed" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">WORKFLOW BPM</text>
+<text x="745" y="98" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Camunda Engine</text>
+<line x1="660" y1="108" x2="831" y2="108" stroke="#1c2d42" stroke-dasharray="3,3"/>
+<text x="745" y="122" text-anchor="middle" fill="#4d6680" font-size="9" font-family="IBM Plex Mono">BPMN PROCESSES</text>
+<text x="745" y="138" text-anchor="middle" fill="#64748b" font-size="10" font-family="Outfit">eKYC · Deposit · Withdraw</text>
+<text x="745" y="153" text-anchor="middle" fill="#4d6680" font-size="9" font-family="IBM Plex Mono">External Workers</text>
+<text x="745" y="167" text-anchor="middle" fill="#4d6680" font-size="9" font-family="IBM Plex Mono">User Tasks · Timer Events</text>
+
+<rect x="648" y="192" width="195" height="50" rx="9" fill="#0c1a28" stroke="#ffb340" stroke-width="2"/>
+<text x="745" y="212" text-anchor="middle" fill="#ffb340" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">EVENT BUS</text>
+<text x="745" y="231" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Apache Kafka</text>
+
+<rect x="648" y="258" width="195" height="50" rx="9" fill="#0c1a28" stroke="#64748b" stroke-width="1.5"/>
+<text x="745" y="278" text-anchor="middle" fill="#64748b" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">EXTERNAL BANK</text>
+<text x="745" y="297" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Bank / VNPay API</text>
+
+<rect x="648" y="324" width="195" height="50" rx="9" fill="#0c1a28" stroke="#64748b" stroke-width="1.5"/>
+<text x="745" y="344" text-anchor="middle" fill="#64748b" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">EXTERNAL KYC</text>
+<text x="745" y="363" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">OCR / Face Match API</text>
+
+<!-- DATA LAYER -->
+<rect x="878" y="58" width="196" height="50" rx="9" fill="#0c1a28" stroke="#f5a623" stroke-width="1.5"/>
+<text x="976" y="78" text-anchor="middle" fill="#f5a623" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">PRIMARY DB</text>
+<text x="976" y="97" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">PostgreSQL</text>
+
+<rect x="878" y="124" width="196" height="50" rx="9" fill="#0c1a28" stroke="#ffb340" stroke-width="1.5"/>
+<text x="976" y="144" text-anchor="middle" fill="#ffb340" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">CACHE / SESSION</text>
+<text x="976" y="163" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Redis</text>
+
+<rect x="878" y="190" width="196" height="50" rx="9" fill="#0c1a28" stroke="#34d399" stroke-width="1.5"/>
+<text x="976" y="210" text-anchor="middle" fill="#34d399" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">AUDIT LOG (IMMUTABLE)</text>
+<text x="976" y="229" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Elasticsearch</text>
+
+<rect x="878" y="256" width="196" height="50" rx="9" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<text x="976" y="276" text-anchor="middle" fill="#818cf8" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">OBSERVABILITY</text>
+<text x="976" y="295" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">ELK + Grafana</text>
+
+<rect x="878" y="322" width="196" height="50" rx="9" fill="#0c1a28" stroke="#f5a623" stroke-width="1.5"/>
+<text x="976" y="342" text-anchor="middle" fill="#f5a623" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">OBJECT STORAGE</text>
+<text x="976" y="361" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="700" font-family="Outfit">Azure Blob Storage</text>
+
+<!-- ARROWS -->
+<line x1="142" y1="83" x2="166" y2="83" stroke="#f5a623" stroke-width="1.5" marker-end="url(#ag)"/>
+<line x1="142" y1="149" x2="166" y2="149" stroke="#818cf8" stroke-width="1.5" marker-end="url(#ap)"/>
+<line x1="264" y1="108" x2="264" y2="122" stroke="#818cf8" stroke-width="1.5" marker-end="url(#ap)"/>
+<line x1="264" y1="174" x2="264" y2="188" stroke="#818cf8" stroke-width="1.5" marker-end="url(#ap)"/>
+<line x1="360" y1="76" x2="386" y2="76" stroke="#f5a623" stroke-width="1.5" marker-end="url(#ag)"/>
+<line x1="360" y1="90" x2="386" y2="142" stroke="#f5a623" stroke-width="1.5" marker-end="url(#ag)"/>
+<line x1="360" y1="90" x2="386" y2="208" stroke="#f5a623" stroke-width="1.5" marker-end="url(#ag)"/>
+<!-- Services → Camunda -->
+<line x1="620" y1="83" x2="646" y2="105" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#ap)"/>
+<line x1="620" y1="149" x2="646" y2="120" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#ap)"/>
+<line x1="620" y1="215" x2="646" y2="130" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#ap)"/>
+<!-- Services → Kafka -->
+<line x1="620" y1="275" x2="646" y2="215" stroke="#ffb340" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#aa)"/>
+<line x1="620" y1="149" x2="646" y2="210" stroke="#ffb340" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#aa)"/>
+<!-- Camunda → external KYC -->
+<line x1="745" y1="174" x2="745" y2="190" stroke="#ffb340" stroke-width="1.5" marker-end="url(#aa)"/>
+<line x1="745" y1="242" x2="745" y2="256" stroke="#64748b" stroke-width="1.5" marker-end="url(#am)"/>
+<line x1="745" y1="308" x2="745" y2="322" stroke="#64748b" stroke-width="1.5" marker-end="url(#am)"/>
+<!-- eKYC → OCR -->
+<line x1="620" y1="83" x2="646" y2="345" stroke="#64748b" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#am)"/>
+<!-- Kafka → Notification -->
+<line x1="745" y1="242" x2="620" y2="345" stroke="#ffb340" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#aa)"/>
+<!-- Services → PostgreSQL -->
+<line x1="620" y1="149" x2="876" y2="80" stroke="#1c2d42" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#am)"/>
+<!-- Services → Redis -->
+<line x1="620" y1="275" x2="876" y2="148" stroke="#1c2d42" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#am)"/>
+<!-- Audit → ES -->
+<line x1="620" y1="410" x2="876" y2="213" stroke="#34d399" stroke-width="1.5" marker-end="url(#agr)"/>
+<!-- Kafka → ELK -->
+<line x1="843" y1="217" x2="876" y2="272" stroke="#818cf8" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#ap)"/>
+
+<!-- LEGEND -->
+<text x="28" y="618" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono">SYNC</text>
+<line x1="60" y1="614" x2="100" y2="614" stroke="#f5a623" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="108" y="618" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono">CAMUNDA</text>
+<line x1="178" y1="614" x2="218" y2="614" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#ap)"/>
+<text x="226" y="618" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono">ASYNC/KAFKA</text>
+<line x1="316" y1="614" x2="356" y2="614" stroke="#ffb340" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#aa)"/>
+<text x="364" y="618" fill="#1c3a52" font-size="9" font-family="IBM Plex Mono">DATA/AUDIT</text>
+<line x1="444" y1="614" x2="484" y2="614" stroke="#34d399" stroke-width="1.5" marker-end="url(#agr)"/>
+</svg>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 3 — eKYC ═══ -->
+<section class="section" id="ekyc">
+  <div class="sec-header">
+    <span class="sec-num">03</span>
+    <h2 class="sec-title"><span class="g">eKYC</span> — Customer Onboarding Module</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-top-line line-gold"></div>
+    <div class="card-label"><span class="dot dot-gold"></span><span style="color:var(--gold)">eKYC CAMUNDA BPMN FLOW</span></div>
+    <div class="bpmn-flow">
+      <div class="bpmn-event start">🟢</div>
+      <span class="bpmn-arr">→</span>
+      <div class="bpmn-task service"><div class="bpmn-task-type">SERVICE TASK</div><div class="bpmn-task-name">Submit Application</div></div>
+      <span class="bpmn-arr">→</span>
+      <div class="bpmn-task service"><div class="bpmn-task-type">SERVICE TASK</div><div class="bpmn-task-name">OCR Document</div></div>
+      <span class="bpmn-arr">→</span>
+      <div class="bpmn-task service"><div class="bpmn-task-type">SERVICE TASK</div><div class="bpmn-task-name">Face Match</div></div>
+      <span class="bpmn-arr">→</span>
+      <div class="bpmn-gw"><div class="bpmn-gw-label">✕</div></div>
+      <span class="bpmn-arr">→</span>
+      <span class="bpmn-label">AUTO APPROVE</span>
+      <div class="bpmn-task auto"><div class="bpmn-task-type">SERVICE TASK</div><div class="bpmn-task-name">Activate Account</div></div>
+      <span class="bpmn-arr">→</span>
+      <div class="bpmn-event end">🔴</div>
+    </div>
+    <div style="color:var(--muted);font-size:12px;margin-top:8px;font-family:var(--mono);">
+      Gateway condition: score ≥ threshold → auto approve · score &lt; threshold → User Task (manual review by compliance officer)
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-top-line line-gold"></div>
+      <div class="card-label"><span class="dot dot-gold"></span><span style="color:var(--gold)">eKYC DATA MODEL</span></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Entity</th><th>Key Fields</th></tr></thead>
+          <tbody>
+            <tr><td>KycApplication</td><td>id, customerId, status, submittedAt, reviewedBy</td></tr>
+            <tr><td>KycDocument</td><td>id, applicationId, docType, blobUrl, ocrResult</td></tr>
+            <tr><td>KycVerification</td><td>id, applicationId, faceScore, docScore, provider</td></tr>
+            <tr><td>KycAuditLog</td><td>id, applicationId, action, actor, timestamp, detail</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-top-line line-gold"></div>
+      <div class="card-label"><span class="dot dot-gold"></span><span style="color:var(--gold)">eKYC PROCESSING STEPS</span></div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon si-g">01</div>
+          <div class="step-body">
+            <div class="step-title">Customer Submits Application</div>
+            <div class="step-desc">Portal uploads ID images + selfie. eKYC Service validates payload, stores metadata to PostgreSQL (status: <code>PENDING</code>), uploads images to <strong>Azure Blob Storage</strong>. Starts Camunda process instance.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-g">02</div>
+          <div class="step-body">
+            <div class="step-title">Camunda — OCR + Face Match (Service Tasks)</div>
+            <div class="step-desc">External Worker calls OCR API (extracts ID text). Calls Face Match API (liveness + ID photo vs selfie). Results persisted. Camunda Exclusive Gateway evaluates composite score.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-g">03</div>
+          <div class="step-body">
+            <div class="step-title">Manual Review (User Task) — if needed</div>
+            <div class="step-desc">Compliance officer receives User Task in Admin Portal. Reviews documents, approves/rejects. Camunda records full decision trail with timestamp and actor. <strong>Timer Boundary Event</strong>: auto-escalate if no action within 24h.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-g">04</div>
+          <div class="step-body">
+            <div class="step-title">Account Activation + Audit</div>
+            <div class="step-desc">On approval: Account Service activates customer. Kafka publishes <code>kyc.approved</code> → Notification Service sends SMS/email. Audit Service writes <strong>immutable record</strong> to Elasticsearch.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 4 — TRANSACTION ═══ -->
+<section class="section" id="transaction">
+  <div class="sec-header">
+    <span class="sec-num">04</span>
+    <h2 class="sec-title">Nộp tiền <span class="a">&amp;</span> Rút tiền — Fund Transaction Module</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <!-- ═ DEPOSIT BPMN DIAGRAM ═ -->
+  <div class="topology" style="margin-bottom:24px;">
+    <div class="card-label" style="margin-bottom:16px;">
+      <span class="dot dot-teal"></span>
+      <span style="color:var(--teal)">BPMN 2.0 — DEPOSIT PROCESS (NỘP TIỀN)</span>
+    </div>
+    <div class="svg-scroll">
+<svg viewBox="0 0 1080 310" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:860px;">
+<defs>
+  <marker id="bd-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#4d6680"/></marker>
+  <marker id="bdt-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00c9a7"/></marker>
+  <marker id="bdp-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#7c3aed"/></marker>
+  <marker id="bdr-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#fb7185"/></marker>
+  <!-- timer clock symbol -->
+  <symbol id="timer-icon" viewBox="0 0 16 16">
+    <circle cx="8" cy="8" r="6" fill="none" stroke="#ffb340" stroke-width="1.5"/>
+    <line x1="8" y1="4" x2="8" y2="8" stroke="#ffb340" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="8" y1="8" x2="11" y2="10" stroke="#ffb340" stroke-width="1.5" stroke-linecap="round"/>
+  </symbol>
+  <!-- error bolt symbol -->
+  <symbol id="error-icon" viewBox="0 0 16 16">
+    <polygon points="8,2 14,13 2,13" fill="none" stroke="#fb7185" stroke-width="1.5"/>
+    <text x="8" y="12" text-anchor="middle" font-size="8" fill="#fb7185">!</text>
+  </symbol>
+  <!-- service gear symbol -->
+  <symbol id="svc-icon" viewBox="0 0 16 16">
+    <circle cx="8" cy="8" r="3" fill="none" stroke="#4d6680" stroke-width="1.2"/>
+    <circle cx="8" cy="2" r="1.2" fill="#4d6680"/>
+    <circle cx="8" cy="14" r="1.2" fill="#4d6680"/>
+    <circle cx="2" cy="8" r="1.2" fill="#4d6680"/>
+    <circle cx="14" cy="8" r="1.2" fill="#4d6680"/>
+  </symbol>
+  <!-- user task symbol -->
+  <symbol id="user-icon" viewBox="0 0 16 16">
+    <circle cx="8" cy="5" r="3" fill="none" stroke="#818cf8" stroke-width="1.2"/>
+    <path d="M2 14 Q2 10 8 10 Q14 10 14 14" fill="none" stroke="#818cf8" stroke-width="1.2"/>
+  </symbol>
+  <!-- message icon -->
+  <symbol id="msg-icon" viewBox="0 0 16 16">
+    <rect x="1" y="3" width="14" height="10" rx="1" fill="none" stroke="#00c9a7" stroke-width="1.2"/>
+    <polyline points="1,3 8,9 15,3" fill="none" stroke="#00c9a7" stroke-width="1.2"/>
+  </symbol>
+</defs>
+
+<rect x="4" y="4" width="1072" height="302" rx="14" fill="#030609" stroke="#1c2d42"/>
+
+<!-- SWIMLANE LABELS -->
+<rect x="14" y="14" width="88" height="274" rx="8" fill="#0a1525" stroke="#1c2d42"/>
+<text transform="rotate(-90 58 151)" x="58" y="151" text-anchor="middle" fill="#4d6680" font-size="9" font-family="IBM Plex Mono" letter-spacing="1.5">CAMUNDA ENGINE</text>
+<line x1="102" y1="14" x2="102" y2="288" stroke="#1c2d42"/>
+
+<!-- POOL HEADER -->
+<rect x="102" y="14" width="966" height="28" rx="0" fill="#0d1e32" stroke="#1c2d42"/>
+<text x="585" y="32" text-anchor="middle" fill="#00c9a7" font-size="10" font-family="IBM Plex Mono" letter-spacing="2" font-weight="700">DEPOSIT PROCESS (NỘP TIỀN) — CAMUNDA BPMN 2.0</text>
+
+<!-- ── LANE 1: Main Flow ── -->
+<rect x="102" y="42" width="966" height="130" rx="0" fill="#030c18" stroke="#1c2d42"/>
+<text x="108" y="110" fill="#1c3a52" font-size="8" font-family="IBM Plex Mono" letter-spacing="1" transform="rotate(-90 108 108)">MAIN FLOW</text>
+<line x1="122" y1="42" x2="122" y2="172" stroke="#1c2d42"/>
+
+<!-- START EVENT — Message (receive deposit request) -->
+<circle cx="160" cy="107" r="18" fill="#030c18" stroke="#00c9a7" stroke-width="2"/>
+<use href="#msg-icon" x="152" y="99" width="16" height="16"/>
+<text x="160" y="138" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">START</text>
+<text x="160" y="148" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">Receive Request</text>
+
+<!-- → -->
+<line x1="178" y1="107" x2="210" y2="107" stroke="#4d6680" stroke-width="1.5" marker-end="url(#bd-arr)"/>
+
+<!-- SERVICE TASK: Validate Request -->
+<rect x="210" y="82" width="110" height="50" rx="8" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<use href="#svc-icon" x="214" y="84" width="12" height="12"/>
+<text x="265" y="105" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Validate</text>
+<text x="265" y="120" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Request</text>
+
+<!-- → -->
+<line x1="320" y1="107" x2="352" y2="107" stroke="#4d6680" stroke-width="1.5" marker-end="url(#bd-arr)"/>
+
+<!-- PARALLEL GATEWAY: split for concurrent checks -->
+<polygon points="372,87 392,107 372,127 352,107" fill="#0c1a28" stroke="#7c3aed" stroke-width="2"/>
+<text x="372" y="112" text-anchor="middle" fill="#a78bfa" font-size="14" font-weight="700">+</text>
+<text x="372" y="145" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">PARALLEL</text>
+<text x="372" y="155" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">SPLIT</text>
+
+<!-- → to Fraud Check (stays lane 1) -->
+<line x1="392" y1="107" x2="424" y2="107" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#bdp-arr)"/>
+<!-- ↓ to Balance Check (lane 2, drawn later) -->
+<line x1="372" y1="127" x2="372" y2="185" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#bdp-arr)"/>
+
+<!-- SERVICE TASK: Fraud Check -->
+<rect x="424" y="82" width="110" height="50" rx="8" fill="#0c1a28" stroke="#7c3aed" stroke-width="1.5"/>
+<use href="#svc-icon" x="428" y="84" width="12" height="12"/>
+<text x="479" y="105" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Fraud</text>
+<text x="479" y="120" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Check</text>
+
+<!-- → -->
+<line x1="534" y1="107" x2="566" y2="107" stroke="#4d6680" stroke-width="1.5" marker-end="url(#bdt-arr)"/>
+
+<!-- PARALLEL GATEWAY: join -->
+<polygon points="586,87 606,107 586,127 566,107" fill="#0c1a28" stroke="#7c3aed" stroke-width="2"/>
+<text x="586" y="112" text-anchor="middle" fill="#a78bfa" font-size="14" font-weight="700">+</text>
+<text x="586" y="145" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">JOIN</text>
+<!-- ↑ from balance check (lane 2) -->
+<line x1="479" y1="185" x2="586" y2="127" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#bdp-arr)"/>
+
+<!-- → -->
+<line x1="606" y1="107" x2="638" y2="107" stroke="#4d6680" stroke-width="1.5" marker-end="url(#bd-arr)"/>
+
+<!-- EXCLUSIVE GATEWAY: amount threshold -->
+<polygon points="658,87 678,107 658,127 638,107" fill="#0c1a28" stroke="#ffb340" stroke-width="2"/>
+<text x="658" y="112" text-anchor="middle" fill="#ffb340" font-size="14" font-weight="700">×</text>
+<text x="658" y="145" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">Amount</text>
+<text x="658" y="155" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">Check</text>
+
+<!-- → auto approve (small amount) -->
+<line x1="678" y1="107" x2="712" y2="107" stroke="#00c9a7" stroke-width="1.5" marker-end="url(#bdt-arr)"/>
+<text x="694" y="100" text-anchor="middle" fill="#00c9a7" font-size="8" font-family="IBM Plex Mono">&lt; limit</text>
+
+<!-- ↓ to manager approval (lane 2 user task, drawn later) -->
+<line x1="658" y1="127" x2="658" y2="205" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#bdt-arr)"/>
+<text x="668" y="170" fill="#818cf8" font-size="8" font-family="IBM Plex Mono">≥ limit</text>
+
+<!-- SERVICE TASK: Call Bank API — with Error Boundary -->
+<rect x="712" y="82" width="120" height="50" rx="8" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<use href="#svc-icon" x="716" y="84" width="12" height="12"/>
+<text x="772" y="105" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Call Bank</text>
+<text x="772" y="120" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">API (VNPay)</text>
+<!-- Error Boundary Event -->
+<circle cx="712" cy="132" r="10" fill="#030c18" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="2,1"/>
+<use href="#error-icon" x="706" y="126" width="12" height="12"/>
+<!-- error → compensation (goes down to lane 2) -->
+<line x1="712" y1="142" x2="712" y2="228" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#bdr-arr)"/>
+<text x="696" y="195" fill="#fb7185" font-size="8" font-family="IBM Plex Mono">bank fail</text>
+
+<!-- → -->
+<line x1="832" y1="107" x2="862" y2="107" stroke="#4d6680" stroke-width="1.5" marker-end="url(#bdt-arr)"/>
+
+<!-- SERVICE TASK: Update Ledger -->
+<rect x="862" y="82" width="110" height="50" rx="8" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<use href="#svc-icon" x="866" y="84" width="12" height="12"/>
+<text x="917" y="105" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Update</text>
+<text x="917" y="120" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Ledger</text>
+
+<!-- → END -->
+<line x1="972" y1="107" x2="1004" y2="107" stroke="#4d6680" stroke-width="1.5" marker-end="url(#bdt-arr)"/>
+
+<!-- END EVENT -->
+<circle cx="1030" cy="107" r="18" fill="#030c18" stroke="#34d399" stroke-width="3"/>
+<text x="1030" y="112" text-anchor="middle" fill="#34d399" font-size="16" font-weight="700">✓</text>
+<text x="1030" y="138" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">deposit</text>
+<text x="1030" y="148" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">completed</text>
+
+<!-- Kafka publish (intermediate event on boundary of Update Ledger) -->
+<circle cx="972" cy="82" r="9" fill="#030c18" stroke="#ffb340" stroke-width="1.5"/>
+<text x="972" y="86" text-anchor="middle" fill="#ffb340" font-size="10">⚡</text>
+<text x="972" y="72" text-anchor="middle" fill="#ffb340" font-size="7" font-family="IBM Plex Mono">Kafka:</text>
+<text x="972" y="63" text-anchor="middle" fill="#ffb340" font-size="7" font-family="IBM Plex Mono">deposit.completed</text>
+
+<!-- ── LANE 2: Sub-tasks ── -->
+<rect x="102" y="172" width="966" height="116" rx="0" fill="#040e1a" stroke="#1c2d42"/>
+<text x="108" y="240" fill="#1c3a52" font-size="8" font-family="IBM Plex Mono" letter-spacing="1" transform="rotate(-90 108 235)">EXCEPTIONS</text>
+<line x1="122" y1="172" x2="122" y2="288" stroke="#1c2d42"/>
+
+<!-- SERVICE TASK: Balance Check (lane 2) -->
+<rect x="318" y="185" width="110" height="50" rx="8" fill="#0c1a28" stroke="#7c3aed" stroke-width="1.5"/>
+<use href="#svc-icon" x="322" y="187" width="12" height="12"/>
+<text x="373" y="208" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Balance</text>
+<text x="373" y="223" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Check</text>
+<!-- connect parallel split down and to balance check -->
+<line x1="372" y1="185" x2="372" y2="185" stroke="#7c3aed" stroke-width="1.5"/>
+<line x1="373" y1="185" x2="373" y2="185" stroke="#7c3aed" stroke-width="1.5"/>
+<!-- → balance check to join (up) -->
+<line x1="428" y1="210" x2="586" y2="210" stroke="#7c3aed" stroke-width="1.5"/>
+<line x1="586" y1="210" x2="586" y2="127" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#bdp-arr)"/>
+
+<!-- USER TASK: Manager Approval (lane 2) — with Timer Boundary -->
+<rect x="608" y="205" width="120" height="50" rx="8" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<use href="#user-icon" x="612" y="207" width="12" height="12"/>
+<text x="668" y="228" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Manager</text>
+<text x="668" y="243" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Approval</text>
+<!-- Timer Boundary Event on Manager Approval -->
+<circle cx="608" cy="255" r="10" fill="#030c18" stroke="#ffb340" stroke-width="1.5" stroke-dasharray="2,1"/>
+<use href="#timer-icon" x="602" y="249" width="12" height="12"/>
+<text x="580" y="274" fill="#ffb340" font-size="7" font-family="IBM Plex Mono">4h timeout</text>
+<text x="580" y="283" fill="#ffb340" font-size="7" font-family="IBM Plex Mono">→ escalate</text>
+<!-- approved → re-join main flow at bank API -->
+<line x1="728" y1="230" x2="772" y2="230" stroke="#818cf8" stroke-width="1.5"/>
+<line x1="772" y1="230" x2="772" y2="132" stroke="#818cf8" stroke-width="1.5" marker-end="url(#bdt-arr)"/>
+<text x="742" y="222" fill="#818cf8" font-size="8" font-family="IBM Plex Mono">approved</text>
+
+<!-- SERVICE TASK: Compensation (lane 2, error path) -->
+<rect x="652" y="228" width="110" height="0" rx="8" fill="#0c1a28" stroke="#fb7185" stroke-width="0"/>
+
+<!-- Error compensation task -->
+<rect x="652" y="230" width="0" height="0" rx="8" fill="#0c1a28" stroke="#fb7185" stroke-width="0"/>
+
+<!-- Simplified: error boundary goes to FAIL end event -->
+<circle cx="712" cy="258" r="10" fill="#030c18" stroke="#fb7185" stroke-width="1.5"/>
+<text x="712" y="262" text-anchor="middle" fill="#fb7185" font-size="8">✕</text>
+<text x="712" y="278" text-anchor="middle" fill="#fb7185" font-size="7" font-family="IBM Plex Mono">FAIL END</text>
+<text x="712" y="287" text-anchor="middle" fill="#fb7185" font-size="7" font-family="IBM Plex Mono">deposit.failed</text>
+
+<!-- LEGEND -->
+<rect x="114" y="178" width="8" height="8" rx="1" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.2"/>
+<text x="126" y="186" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">Service Task</text>
+<rect x="200" y="178" width="8" height="8" rx="1" fill="#0c1a28" stroke="#818cf8" stroke-width="1.2"/>
+<text x="212" y="186" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">User Task</text>
+<polygon points="285,182 293,178 301,182 293,186" fill="#0c1a28" stroke="#ffb340" stroke-width="1.2"/>
+<text x="306" y="186" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">Excl. GW</text>
+<polygon points="370,182 378,178 386,182 378,186" fill="#0c1a28" stroke="#7c3aed" stroke-width="1.2"/>
+<text x="391" y="186" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">Parallel GW</text>
+<circle cx="468" cy="182" r="6" fill="#030c18" stroke="#ffb340" stroke-width="1.2" stroke-dasharray="2,1"/>
+<text x="478" y="186" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">Timer Boundary</text>
+<circle cx="560" cy="182" r="6" fill="#030c18" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="2,1"/>
+<text x="570" y="186" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">Error Boundary</text>
+</svg>
+    </div>
+  </div>
+
+  <!-- ═ WITHDRAWAL BPMN DIAGRAM ═ -->
+  <div class="topology" style="margin-bottom:24px;">
+    <div class="card-label" style="margin-bottom:16px;">
+      <span class="dot dot-rose"></span>
+      <span style="color:var(--rose)">BPMN 2.0 — WITHDRAWAL PROCESS (RÚT TIỀN)</span>
+    </div>
+    <div class="svg-scroll">
+<svg viewBox="0 0 1080 330" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:860px;">
+<defs>
+  <marker id="wd-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#4d6680"/></marker>
+  <marker id="wdt-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00c9a7"/></marker>
+  <marker id="wdp-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#818cf8"/></marker>
+  <marker id="wdr-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#fb7185"/></marker>
+  <marker id="wda-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#ffb340"/></marker>
+  <symbol id="w-timer" viewBox="0 0 16 16">
+    <circle cx="8" cy="8" r="6" fill="none" stroke="#ffb340" stroke-width="1.5"/>
+    <line x1="8" y1="4" x2="8" y2="8" stroke="#ffb340" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="8" y1="8" x2="11" y2="10" stroke="#ffb340" stroke-width="1.5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="w-error" viewBox="0 0 16 16">
+    <polygon points="8,2 14,13 2,13" fill="none" stroke="#fb7185" stroke-width="1.5"/>
+    <text x="8" y="12" text-anchor="middle" font-size="8" fill="#fb7185">!</text>
+  </symbol>
+  <symbol id="w-svc" viewBox="0 0 16 16">
+    <circle cx="8" cy="8" r="3" fill="none" stroke="#4d6680" stroke-width="1.2"/>
+    <circle cx="8" cy="2" r="1.2" fill="#4d6680"/><circle cx="8" cy="14" r="1.2" fill="#4d6680"/>
+    <circle cx="2" cy="8" r="1.2" fill="#4d6680"/><circle cx="14" cy="8" r="1.2" fill="#4d6680"/>
+  </symbol>
+  <symbol id="w-user" viewBox="0 0 16 16">
+    <circle cx="8" cy="5" r="3" fill="none" stroke="#818cf8" stroke-width="1.2"/>
+    <path d="M2 14 Q2 10 8 10 Q14 10 14 14" fill="none" stroke="#818cf8" stroke-width="1.2"/>
+  </symbol>
+  <symbol id="w-comp" viewBox="0 0 16 16">
+    <rect x="2" y="4" width="12" height="9" rx="1" fill="none" stroke="#fb7185" stroke-width="1.2"/>
+    <polyline points="6,4 4,1 12,1 10,4" fill="none" stroke="#fb7185" stroke-width="1.2"/>
+  </symbol>
+  <symbol id="w-msg" viewBox="0 0 16 16">
+    <rect x="1" y="3" width="14" height="10" rx="1" fill="none" stroke="#fb7185" stroke-width="1.2"/>
+    <polyline points="1,3 8,9 15,3" fill="none" stroke="#fb7185" stroke-width="1.2"/>
+  </symbol>
+</defs>
+
+<rect x="4" y="4" width="1072" height="322" rx="14" fill="#030609" stroke="#1c2d42"/>
+
+<!-- SWIMLANE -->
+<rect x="14" y="14" width="88" height="304" rx="8" fill="#0a1525" stroke="#1c2d42"/>
+<text transform="rotate(-90 58 166)" x="58" y="166" text-anchor="middle" fill="#4d6680" font-size="9" font-family="IBM Plex Mono" letter-spacing="1.5">CAMUNDA ENGINE</text>
+<line x1="102" y1="14" x2="102" y2="318" stroke="#1c2d42"/>
+
+<!-- POOL HEADER -->
+<rect x="102" y="14" width="966" height="28" rx="0" fill="#1a0d20" stroke="#1c2d42"/>
+<text x="585" y="32" text-anchor="middle" fill="#fb7185" font-size="10" font-family="IBM Plex Mono" letter-spacing="2" font-weight="700">WITHDRAWAL PROCESS (RÚT TIỀN) — CAMUNDA BPMN 2.0</text>
+
+<!-- ── LANE 1: Main Flow ── -->
+<rect x="102" y="42" width="966" height="140" rx="0" fill="#030c18" stroke="#1c2d42"/>
+<text x="108" y="115" fill="#1c3a52" font-size="8" font-family="IBM Plex Mono" letter-spacing="1" transform="rotate(-90 108 115)">MAIN FLOW</text>
+<line x1="122" y1="42" x2="122" y2="182" stroke="#1c2d42"/>
+
+<!-- START EVENT -->
+<circle cx="158" cy="112" r="18" fill="#030c18" stroke="#fb7185" stroke-width="2"/>
+<use href="#w-msg" x="150" y="104" width="16" height="16"/>
+<text x="158" y="143" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">START</text>
+<text x="158" y="153" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">Receive Request</text>
+
+<line x1="176" y1="112" x2="208" y2="112" stroke="#4d6680" stroke-width="1.5" marker-end="url(#wd-arr)"/>
+
+<!-- SERVICE TASK: Validate + Lock -->
+<rect x="208" y="87" width="115" height="50" rx="8" fill="#0c1a28" stroke="#fb7185" stroke-width="1.5"/>
+<use href="#w-svc" x="212" y="89" width="12" height="12"/>
+<text x="265" y="110" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Validate &amp;</text>
+<text x="265" y="125" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Acquire Lock</text>
+<text x="232" y="78" fill="#4d6680" font-size="7" font-family="IBM Plex Mono">Redis dist. lock</text>
+
+<line x1="323" y1="112" x2="353" y2="112" stroke="#4d6680" stroke-width="1.5" marker-end="url(#wd-arr)"/>
+
+<!-- EXCLUSIVE GW: Amount Tier -->
+<polygon points="373,92 393,112 373,132 353,112" fill="#0c1a28" stroke="#ffb340" stroke-width="2"/>
+<text x="373" y="117" text-anchor="middle" fill="#ffb340" font-size="14" font-weight="700">×</text>
+<text x="373" y="150" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">Amount</text>
+<text x="373" y="160" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">Tier</text>
+
+<!-- → auto (small) -->
+<line x1="393" y1="112" x2="425" y2="112" stroke="#00c9a7" stroke-width="1.5" marker-end="url(#wdt-arr)"/>
+<text x="408" y="104" fill="#00c9a7" font-size="7" font-family="IBM Plex Mono">&lt;50M</text>
+
+<!-- ↓ mid tier (lane 2) -->
+<line x1="373" y1="132" x2="373" y2="205" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#wdp-arr)"/>
+<text x="382" y="175" fill="#818cf8" font-size="7" font-family="IBM Plex Mono">50M–500M</text>
+
+<!-- → large tier, further left (goes to director task, lane 3) -->
+<line x1="393" y1="120" x2="420" y2="120" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="3,2"/>
+<line x1="420" y1="120" x2="420" y2="248" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#wdr-arr)"/>
+<text x="428" y="190" fill="#fb7185" font-size="7" font-family="IBM Plex Mono">&gt;500M</text>
+
+<!-- SERVICE TASK: Deduct Balance (auto path) -->
+<rect x="425" y="87" width="115" height="50" rx="8" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<use href="#w-svc" x="429" y="89" width="12" height="12"/>
+<text x="482" y="110" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Deduct</text>
+<text x="482" y="125" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Balance</text>
+
+<line x1="540" y1="112" x2="570" y2="112" stroke="#4d6680" stroke-width="1.5" marker-end="url(#wd-arr)"/>
+
+<!-- JOIN GW (all approval paths merge here) -->
+<polygon points="590,92 610,112 590,132 570,112" fill="#0c1a28" stroke="#ffb340" stroke-width="2"/>
+<text x="590" y="117" text-anchor="middle" fill="#ffb340" font-size="14" font-weight="700">×</text>
+<text x="590" y="150" text-anchor="middle" fill="#4d6680" font-size="8" font-family="IBM Plex Mono">JOIN</text>
+<!-- supervisor join arrow -->
+<line x1="530" y1="217" x2="590" y2="217" stroke="#818cf8" stroke-width="1.5"/>
+<line x1="590" y1="217" x2="590" y2="132" stroke="#818cf8" stroke-width="1.5" marker-end="url(#wdp-arr)"/>
+<!-- director join arrow -->
+<line x1="530" y1="263" x2="600" y2="263" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="3,2"/>
+<line x1="600" y1="263" x2="600" y2="132" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#wdr-arr)"/>
+
+<line x1="610" y1="112" x2="640" y2="112" stroke="#4d6680" stroke-width="1.5" marker-end="url(#wdt-arr)"/>
+
+<!-- SERVICE TASK: Bank Transfer — with Error Boundary -->
+<rect x="640" y="87" width="120" height="50" rx="8" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<use href="#w-svc" x="644" y="89" width="12" height="12"/>
+<text x="700" y="110" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Bank</text>
+<text x="700" y="125" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Transfer</text>
+<!-- Error Boundary -->
+<circle cx="640" cy="137" r="10" fill="#030c18" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="2,1"/>
+<use href="#w-error" x="634" y="131" width="12" height="12"/>
+<line x1="640" y1="147" x2="640" y2="236" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#wdr-arr)"/>
+<text x="624" y="196" fill="#fb7185" font-size="7" font-family="IBM Plex Mono">bank fail</text>
+
+<line x1="760" y1="112" x2="790" y2="112" stroke="#4d6680" stroke-width="1.5" marker-end="url(#wdt-arr)"/>
+
+<!-- SERVICE TASK: Publish Kafka + Audit -->
+<rect x="790" y="87" width="130" height="50" rx="8" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.5"/>
+<use href="#w-svc" x="794" y="89" width="12" height="12"/>
+<text x="855" y="106" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Publish Event</text>
+<text x="855" y="121" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">&amp; Write Audit</text>
+<!-- Kafka intermediate -->
+<circle cx="790" cy="87" r="9" fill="#030c18" stroke="#ffb340" stroke-width="1.5"/>
+<text x="790" y="91" text-anchor="middle" fill="#ffb340" font-size="10">⚡</text>
+<text x="760" y="70" fill="#ffb340" font-size="7" font-family="IBM Plex Mono">withdrawal.completed</text>
+
+<line x1="920" y1="112" x2="952" y2="112" stroke="#4d6680" stroke-width="1.5" marker-end="url(#wdt-arr)"/>
+
+<!-- END EVENT: Success -->
+<circle cx="978" cy="112" r="18" fill="#030c18" stroke="#34d399" stroke-width="3"/>
+<text x="978" y="117" text-anchor="middle" fill="#34d399" font-size="16" font-weight="700">✓</text>
+<text x="978" y="143" text-anchor="middle" fill="#4d6680" font-size="7" font-family="IBM Plex Mono">SUCCESS</text>
+
+<!-- ── LANE 2: Supervisor Approval ── -->
+<rect x="102" y="182" width="966" height="70" rx="0" fill="#080f20" stroke="#1c2d42"/>
+<line x1="122" y1="182" x2="122" y2="252" stroke="#1c2d42"/>
+<text x="128" y="222" fill="#1c3a52" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">SUPERVISOR</text>
+
+<!-- USER TASK: Supervisor Approval — with Timer Boundary -->
+<rect x="340" y="197" width="120" height="50" rx="8" fill="#0c1a28" stroke="#818cf8" stroke-width="1.5"/>
+<use href="#w-user" x="344" y="199" width="12" height="12"/>
+<text x="400" y="220" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Supervisor</text>
+<text x="400" y="235" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Approval</text>
+<!-- Timer Boundary -->
+<circle cx="460" cy="247" r="10" fill="#030c18" stroke="#ffb340" stroke-width="1.5" stroke-dasharray="2,1"/>
+<use href="#w-timer" x="454" y="241" width="12" height="12"/>
+<text x="476" y="244" fill="#ffb340" font-size="7" font-family="IBM Plex Mono">4h → escalate</text>
+<!-- approve → balance deduct (back to main lane, goes to balance deduct directly) -->
+<line x1="460" y1="222" x2="482" y2="222" stroke="#818cf8" stroke-width="1.5"/>
+<line x1="482" y1="222" x2="482" y2="137" stroke="#818cf8" stroke-width="1.5" marker-end="url(#wdp-arr)"/>
+<text x="488" y="185" fill="#818cf8" font-size="7" font-family="IBM Plex Mono">approved</text>
+
+<!-- ── LANE 3: Director Approval + Compensation ── -->
+<rect x="102" y="252" width="966" height="66" rx="0" fill="#06080f" stroke="#1c2d42"/>
+<line x1="122" y1="252" x2="122" y2="318" stroke="#1c2d42"/>
+<text x="128" y="294" fill="#1c3a52" font-size="8" font-family="IBM Plex Mono" letter-spacing="1">DIRECTOR / COMPENSATION</text>
+
+<!-- USER TASK: Director Approval — with Timer -->
+<rect x="340" y="258" width="120" height="50" rx="8" fill="#0c1a28" stroke="#fb7185" stroke-width="1.5"/>
+<use href="#w-user" x="344" y="260" width="12" height="12"/>
+<text x="400" y="281" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Director</text>
+<text x="400" y="296" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Approval</text>
+<!-- Timer Boundary -->
+<circle cx="460" cy="308" r="10" fill="#030c18" stroke="#ffb340" stroke-width="1.5" stroke-dasharray="2,1"/>
+<use href="#w-timer" x="454" y="302" width="12" height="12"/>
+<text x="476" y="311" fill="#ffb340" font-size="7" font-family="IBM Plex Mono">8h → reject</text>
+<!-- approve → join -->
+<line x1="460" y1="283" x2="530" y2="283" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="3,2"/>
+<line x1="530" y1="283" x2="530" y2="263" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="3,2"/>
+<text x="468" y="275" fill="#fb7185" font-size="7" font-family="IBM Plex Mono">approved</text>
+
+<!-- COMPENSATION TASK (error path) -->
+<rect x="580" y="258" width="130" height="50" rx="8" fill="#0c1a28" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="3,2"/>
+<use href="#w-comp" x="584" y="260" width="12" height="12"/>
+<text x="645" y="281" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Compensate</text>
+<text x="645" y="296" text-anchor="middle" fill="#cdd9e5" font-size="10" font-family="Outfit" font-weight="700">Refund Balance</text>
+<text x="645" y="308" text-anchor="middle" fill="#fb7185" font-size="8" font-family="IBM Plex Mono">withdrawal.failed</text>
+
+<!-- compensation → fail end -->
+<line x1="710" y1="283" x2="750" y2="283" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#wdr-arr)"/>
+
+<!-- FAIL END EVENT -->
+<circle cx="770" cy="283" r="14" fill="#030c18" stroke="#fb7185" stroke-width="3"/>
+<text x="770" y="288" text-anchor="middle" fill="#fb7185" font-size="12" font-weight="700">✕</text>
+<text x="770" y="305" text-anchor="middle" fill="#fb7185" font-size="7" font-family="IBM Plex Mono">FAIL END</text>
+
+<!-- LEGEND -->
+<rect x="820" y="262" width="8" height="8" rx="1" fill="#0c1a28" stroke="#00c9a7" stroke-width="1.2"/>
+<text x="832" y="270" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">Service Task</text>
+<rect x="820" y="278" width="8" height="8" rx="1" fill="#0c1a28" stroke="#818cf8" stroke-width="1.2"/>
+<text x="832" y="286" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">User Task</text>
+<rect x="820" y="294" width="8" height="8" rx="1" fill="#0c1a28" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="3,2"/>
+<text x="832" y="302" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">Compensation Task</text>
+<polygon points="928,266 936,262 944,266 936,270" fill="#0c1a28" stroke="#ffb340" stroke-width="1.2"/>
+<text x="948" y="270" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">Excl. Gateway</text>
+<circle cx="928" cy="282" r="5" fill="#030c18" stroke="#ffb340" stroke-width="1.2" stroke-dasharray="2,1"/>
+<text x="936" y="286" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">Timer Boundary</text>
+<circle cx="928" cy="298" r="5" fill="#030c18" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="2,1"/>
+<text x="936" y="302" fill="#2a4a62" font-size="8" font-family="IBM Plex Mono">Error Boundary</text>
+</svg>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px; background: var(--surface2); border-color: var(--border2);">
+    <div class="card-top-line" style="background: linear-gradient(90deg, var(--amber), var(--rose), transparent);"></div>
+    <div class="card-label"><span class="dot dot-amber"></span><span style="color:var(--amber)">BPMN ELEMENTS USED — NOTATION GUIDE</span></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:4px;">
+      <div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--teal);margin-bottom:8px;letter-spacing:1px;">SERVICE TASKS</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+          Validate Request<br>Fraud Check<br>Balance Check<br>Call Bank API<br>Update Ledger<br>Deduct Balance<br>Publish Kafka Event
+        </div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:10px;color:#a78bfa;margin-bottom:8px;letter-spacing:1px;">USER TASKS</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+          Manager Approval<br>(Deposit ≥ limit)<br><br>Supervisor Approval<br>(Withdraw 50M–500M)<br><br>Director Approval<br>(Withdraw &gt;500M)
+        </div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--amber);margin-bottom:8px;letter-spacing:1px;">GATEWAYS</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+          <strong style="color:var(--text);">Exclusive (×)</strong><br>Amount threshold routing<br><br>
+          <strong style="color:var(--text);">Parallel (+)</strong><br>Concurrent fraud check<br>+ balance validation
+        </div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--rose);margin-bottom:8px;letter-spacing:1px;">BOUNDARY EVENTS</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+          <strong style="color:var(--text);">Timer ⏱</strong><br>Deposit: 4h → escalate<br>Withdraw sup: 4h → escalate<br>Withdraw dir: 8h → reject<br><br>
+          <strong style="color:var(--text);">Error ⚡</strong><br>Bank API fail → compensation
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="grid-2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-top-line line-teal"></div>
+      <div class="card-label"><span class="dot dot-teal"></span><span style="color:var(--teal)">DEPOSIT (NỘP TIỀN) — CAMUNDA FLOW</span></div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon si-t">01</div>
+          <div class="step-body">
+            <div class="step-title">Customer Initiates Deposit</div>
+            <div class="step-desc">Customer submits deposit request via portal. Deposit Service validates: account status ACTIVE, daily limit not exceeded. Persists request (status: <code>PENDING</code>). Starts Camunda <code>deposit-process</code>.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-t">02</div>
+          <div class="step-body">
+            <div class="step-title">Camunda — Risk Check Gateway</div>
+            <div class="step-desc">Exclusive Gateway: amount &lt; threshold → auto-approve path. Amount ≥ threshold → User Task (manager approval). <strong>Parallel Gateway</strong>: concurrent fraud check + balance validation run simultaneously.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-t">03</div>
+          <div class="step-body">
+            <div class="step-title">Bank API Call + Ledger Update</div>
+            <div class="step-desc">Service Task calls Bank/VNPay API. On success: ledger updated with <strong>optimistic locking</strong> (version field) to prevent concurrent conflicts. Kafka publishes <code>deposit.completed</code>.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-t">04</div>
+          <div class="step-body">
+            <div class="step-title">Notification + Audit Trail</div>
+            <div class="step-desc">Notification Service sends SMS/email confirmation. Audit Service writes immutable record to Elasticsearch. Grafana dashboard updates real-time TPS counter.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-top-line line-rose"></div>
+      <div class="card-label"><span class="dot dot-rose"></span><span style="color:var(--rose)">WITHDRAWAL (RÚT TIỀN) — CAMUNDA FLOW</span></div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon si-g">01</div>
+          <div class="step-body">
+            <div class="step-title">Withdrawal Request + Validation</div>
+            <div class="step-desc">Customer submits withdrawal. Withdrawal Service validates: available balance ≥ requested amount, account not frozen, daily withdrawal limit OK. Redis distributed lock acquired (prevent duplicate submissions).</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-g">02</div>
+          <div class="step-body">
+            <div class="step-title">Camunda — Multi-Level Approval Gateway</div>
+            <div class="step-desc">Amount &lt; 50M VND → auto-approve. 50M–500M → supervisor User Task. &gt;500M → director User Task. <strong>Timer Boundary Event</strong>: if not acted in 4h → escalate to next level automatically.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-g">03</div>
+          <div class="step-body">
+            <div class="step-title">Fund Release + Bank Transfer</div>
+            <div class="step-desc">On final approval: balance deducted (optimistic lock). Bank transfer initiated via API. SAGA compensating transaction registered — if bank API fails, <code>withdrawal.failed</code> event triggers balance refund.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-g">04</div>
+          <div class="step-body">
+            <div class="step-title">Completion + Compliance Record</div>
+            <div class="step-desc">Kafka publishes <code>withdrawal.completed</code>. Customer notified. Audit Service writes compliance-grade immutable log with: actor, amount, timestamp, approval chain, bank reference. Camunda stores full process history.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAGA Pattern -->
+  <div class="card">
+    <div class="card-top-line line-amber"></div>
+    <div class="card-label"><span class="dot dot-amber"></span><span style="color:var(--amber)">SAGA PATTERN — DISTRIBUTED TRANSACTION HANDLING</span></div>
+    <div class="pipe">
+      <div class="pipe-box g"><div class="pipe-lbl">STEP 1</div><div class="pipe-name">Debit External Account</div></div>
+      <span class="pipe-arr">→</span>
+      <div class="pipe-box g"><div class="pipe-lbl">STEP 2</div><div class="pipe-name">Credit Internal Ledger</div></div>
+      <span class="pipe-arr">→</span>
+      <div class="pipe-box g"><div class="pipe-lbl">STEP 3</div><div class="pipe-name">Update Balance</div></div>
+      <span class="pipe-arr">→</span>
+      <div class="pipe-box g"><div class="pipe-lbl">STEP 4</div><div class="pipe-name">Notify Customer</div></div>
+      <span class="pipe-arr">→</span>
+      <div class="pipe-box gr"><div class="pipe-lbl">DONE</div><div class="pipe-name">Audit Record</div></div>
+    </div>
+    <p style="color:var(--muted);font-size:13px;margin-top:14px;">
+      Each step publishes a Kafka event on success. On failure at any step → compensating transaction event fired (e.g., Step 2 fails → <code>credit.failed</code> → triggers <code>refund.external.account</code>).
+      All services are <strong style="color:var(--text);">idempotent</strong> — unique transaction IDs prevent double-processing on Kafka redelivery.
+      <strong style="color:var(--text);">Outbox pattern</strong> ensures Kafka events are published atomically with DB writes (no event lost on crash).
+    </p>
+  </div>
+</section>
+
+<!-- ═══ SECTION 5 — CAMUNDA ═══ -->
+<section class="section" id="camunda">
+  <div class="sec-header">
+    <span class="sec-num">05</span>
+    <h2 class="sec-title"><span class="p">Camunda</span> BPM — Workflow Design</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-top-line line-purple"></div>
+      <div class="card-label"><span class="dot dot-purple"></span><span style="color:#a78bfa)">CAMUNDA COMPONENTS USED</span></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>BPMN Element</th><th>Used For</th><th>Where</th></tr></thead>
+          <tbody>
+            <tr><td>Service Task</td><td>Auto calls: OCR, Face Match, Bank API, Ledger update</td><td>All 3 flows</td></tr>
+            <tr><td>User Task</td><td>Manual review: compliance officer, manager, director</td><td>eKYC, Withdraw</td></tr>
+            <tr><td>Exclusive Gateway</td><td>Route by score/amount threshold → auto or manual path</td><td>All 3 flows</td></tr>
+            <tr><td>Parallel Gateway</td><td>Concurrent fraud check + balance validation</td><td>Deposit</td></tr>
+            <tr><td>Timer Boundary Event</td><td>Auto-escalate if no human action within defined time</td><td>eKYC, Withdraw</td></tr>
+            <tr><td>Error Boundary Event</td><td>Catch Bank API failures → trigger compensation</td><td>Deposit, Withdraw</td></tr>
+            <tr><td>External Worker</td><td>Stateless Spring Boot pods poll Camunda task queue</td><td>All 3 flows</td></tr>
+            <tr><td>Process History</td><td>Full immutable audit trail per process instance</td><td>All 3 flows</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-top-line line-purple"></div>
+      <div class="card-label"><span class="dot dot-purple"></span><span style="color:#a78bfa)">WHY CAMUNDA — KEY BENEFITS AT HSC</span></div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon si-p">✓</div>
+          <div class="step-body">
+            <div class="step-title">50% Processing Time Reduction</div>
+            <div class="step-desc">Replaced manual hand-off emails and phone calls between departments with automated Camunda Service Tasks + User Tasks. Approval SLA enforced via Timer Events — no more tasks sitting unnoticed for days.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-p">✓</div>
+          <div class="step-body">
+            <div class="step-title">Regulatory Audit Trail</div>
+            <div class="step-desc">Camunda natively records every state transition with actor + timestamp. Satisfies SSC (State Securities Commission) audit requirements — every KYC decision and withdrawal approval fully traceable without custom logging code.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-p">✓</div>
+          <div class="step-body">
+            <div class="step-title">Business Rule Changes Without Deployment</div>
+            <div class="step-desc">When approval thresholds change (e.g., auto-approve limit raised from 10M → 50M VND), business team updates the BPMN diagram. No code deployment needed. DMN (Decision Model Notation) tables handle threshold configuration.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon si-p">✓</div>
+          <div class="step-body">
+            <div class="step-title">Scalable External Worker Model</div>
+            <div class="step-desc">Camunda External Workers are stateless Spring Boot pods — independently scalable. During peak periods, we scale OCR workers horizontally without touching the Camunda engine. Workers poll for tasks; engine manages orchestration.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 6 — PERFORMANCE ═══ -->
+<section class="section" id="performance">
+  <div class="sec-header">
+    <span class="sec-num">06</span>
+    <h2 class="sec-title">Performance Optimization — <span class="gr">10,000 TPS</span></h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-top-line line-green"></div>
+    <div class="card-label"><span class="dot dot-green"></span><span style="color:var(--green)">OPTIMIZATION JOURNEY — ~800 TPS → 10,000 TPS</span></div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon si-gr">01</div>
+        <div class="step-body">
+          <div class="step-title">Database — Index + Query Optimization</div>
+          <div class="step-desc">JMeter load tests + PostgreSQL <code>EXPLAIN ANALYZE</code> revealed N+1 queries and sequential scans on high-cardinality columns. Added composite indexes on <code>(account_id, created_at)</code>, <code>(status, processed_at)</code>. Switched reporting queries to <strong>read replicas</strong>. Rewrote N+1 patterns to batch JPA queries. Result: DB query p99 dropped from 800ms → 40ms.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon si-gr">02</div>
+        <div class="step-body">
+          <div class="step-title">Caching Layer — Redis</div>
+          <div class="step-desc">Account balance reads were hitting PostgreSQL on every transaction validation — highly frequent, low mutation rate. Introduced <strong>Redis cache</strong> with write-through strategy keyed by <code>account:{id}:balance</code>. Cache invalidated on any balance-changing event. Also cached static reference data (bank codes, product configs). Cache hit rate reached 85%, removing 85% of read load from PostgreSQL.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon si-gr">03</div>
+        <div class="step-body">
+          <div class="step-title">Async Offloading — Kafka</div>
+          <div class="step-desc">Non-critical operations (send SMS notification, write audit log, update analytics) were blocking the synchronous transaction path. Moved all to <strong>Kafka async consumers</strong>. Transaction Service now only does: validate → lock → update ledger → publish event → return. Notification and audit happen async. This removed ~200ms from every transaction's critical path.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon si-gr">04</div>
+        <div class="step-body">
+          <div class="step-title">Concurrency — Optimistic Locking + Connection Pool</div>
+          <div class="step-desc">Original pessimistic DB locks caused thread contention under concurrent load. Switched to <strong>optimistic locking</strong> (JPA <code>@Version</code> field on Account entity) — allows concurrent reads, retries only on conflict (rare in practice). Tuned <strong>HikariCP</strong> connection pool: max pool size calibrated to PostgreSQL's <code>max_connections</code> / number of pods. Eliminated connection exhaustion that caused cascading timeouts.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon si-gr">05</div>
+        <div class="step-body">
+          <div class="step-title">JVM Tuning + Horizontal Scaling</div>
+          <div class="step-desc">Profiling revealed excessive GC pauses causing latency spikes. Tuned <strong>G1GC</strong>: set <code>-XX:MaxGCPauseMillis=50</code>, calibrated heap size based on JMeter steady-state memory usage. Deployed Transaction Service as horizontally scaled pods on Azure — load balanced by Spring Gateway. Final result: <strong>10,000 TPS sustained</strong> with p99 latency under 200ms.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-4">
+    <div class="bp-card"><div class="card-top-line line-green"></div>
+      <div class="bp-icon">🗄️</div>
+      <div class="bp-title">DB Indexes</div>
+      <div class="bp-text">Composite indexes on hot columns. Read replicas for reporting. Eliminated N+1. Query p99: 800ms → 40ms.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-amber"></div>
+      <div class="bp-icon">⚡</div>
+      <div class="bp-title">Redis Cache</div>
+      <div class="bp-text">Write-through cache for account balances. 85% cache hit rate. Removed 85% of read load from PostgreSQL.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-teal"></div>
+      <div class="bp-icon">📨</div>
+      <div class="bp-title">Kafka Async</div>
+      <div class="bp-text">Audit, notification offloaded async. Removed ~200ms from every transaction's critical path.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-gold"></div>
+      <div class="bp-icon">🔒</div>
+      <div class="bp-title">Optimistic Lock</div>
+      <div class="bp-text">JPA @Version field replaced pessimistic DB locks. Eliminated contention under concurrent load.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 7 — BEST PRACTICES ═══ -->
+<section class="section" id="bestpractice">
+  <div class="sec-header">
+    <span class="sec-num">07</span>
+    <h2 class="sec-title">System Design <span class="gr">Best Practices</span></h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="grid-4">
+    <div class="bp-card"><div class="card-top-line line-gold"></div>
+      <div class="bp-icon">🏗️</div>
+      <div class="bp-title">Microservices via JHipster</div>
+      <div class="bp-text">JHipster generates consistent service scaffolding: Spring Security, Swagger, Liquibase migrations, CI config. Each service owns its domain and DB schema. No shared databases between services.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-purple"></div>
+      <div class="bp-icon">🔄</div>
+      <div class="bp-title">Camunda Externalized Workflow</div>
+      <div class="bp-text">Business flows in BPMN, not code. Hot-reload process definitions. Built-in audit, retry, escalation. Business team can adjust approval thresholds via DMN tables without code deployment.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-amber"></div>
+      <div class="bp-icon">⚡</div>
+      <div class="bp-title">SAGA Pattern</div>
+      <div class="bp-text">Choreography-based SAGA via Kafka for distributed transactions. No 2PC. Each service publishes events; compensating transactions handle rollback. Idempotency keys prevent double-processing.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-green"></div>
+      <div class="bp-icon">🔐</div>
+      <div class="bp-title">Security by Design</div>
+      <div class="bp-text">JWT with short TTL. Input sanitization (SQL injection, XSS). PII fields masked in logs. Immutable audit logs for SSC compliance. Role-based access: customers cannot access each other's data.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-teal"></div>
+      <div class="bp-icon">📊</div>
+      <div class="bp-title">Full Observability</div>
+      <div class="bp-text">Correlation IDs across all services. Grafana dashboards: real-time TPS, Camunda process SLA, error rates. ELK for compliance audit queries. Alerts on TPS drop or error rate spike.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-rose"></div>
+      <div class="bp-icon">🧪</div>
+      <div class="bp-title">Test Pyramid</div>
+      <div class="bp-text">JUnit + Mockito for unit tests. Integration tests for service boundaries. E2E tests for full BPMN workflow validation. JMeter for TPS load simulation. SonarQube quality gates in CI.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-gold"></div>
+      <div class="bp-icon">📦</div>
+      <div class="bp-title">Outbox Pattern</div>
+      <div class="bp-text">Kafka events published atomically with DB writes via outbox table. Prevents event loss on service crash. Ensures "at-least-once" delivery with idempotent consumers.</div>
+    </div>
+    <div class="bp-card"><div class="card-top-line line-violet"></div>
+      <div class="bp-icon">🚀</div>
+      <div class="bp-title">CI/CD via Jenkins</div>
+      <div class="bp-text">Jenkins pipeline per microservice: build → unit test → SonarQube → integration test → deploy to Azure. Automated rollback on health check failure. Blue-green deployments for zero-downtime releases.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 8 — Q&A ═══ -->
+<section class="section" id="qa">
+  <div class="sec-header">
+    <span class="sec-num">08</span>
+    <h2 class="sec-title">Interview <span class="gr">Q&amp;A</span></h2>
+    <div class="sec-line"></div>
+  </div>
+  <p style="color:var(--muted);margin-bottom:8px;font-size:13px;">
+    12 câu hỏi phỏng vấn thường gặp — System Design, Camunda, Performance, Security, Leadership.
+  </p>
+
+  <!-- SYSTEM DESIGN -->
+  <div class="qa-category">
+    <span class="dot dot-gold"></span>
+    <span style="color:var(--gold)">SYSTEM DESIGN &amp; ARCHITECTURE</span>
+    <div class="qa-cat-line"></div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-g">Q1</span>
+      <div>
+        <div class="qa-q-text">Walk me through the overall architecture of the HSC platform. How do eKYC, Deposit, and Withdrawal relate to each other?</div>
+        <div class="qa-vi">Mô tả kiến trúc tổng thể của HSC. eKYC, Nộp tiền, Rút tiền liên quan nhau như thế nào?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> HSC is a microservices platform where each business domain — eKYC, Deposit, and Withdrawal — is an independent Spring Boot service generated via JHipster. They share infrastructure (Kafka, PostgreSQL, Redis) but own separate DB schemas and APIs. The three domains are sequentially dependent from a business perspective: a customer must pass eKYC before they can deposit, and must have a positive balance before withdrawing — but each service enforces this independently via status checks, not shared DB joins.</p>
+      <p>The unifying layer is <strong>Camunda BPM</strong>, which orchestrates the workflow within each domain. When a customer submits a deposit, Deposit Service starts a Camunda process instance — Camunda drives the flow through risk check, approval, and bank API call. The services communicate business events asynchronously via <strong>Kafka</strong> (e.g., <code>kyc.approved</code> → Account Service activates; <code>deposit.completed</code> → Notification sends confirmation). This event-driven design means each service is fully autonomous and independently deployable.</p>
+      <div class="tip"><p>📌 Key point: Camunda handles "what happens next in this business flow." Kafka handles "tell other services something happened." They serve different purposes and complement each other.</p></div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-g">Q2</span>
+      <div>
+        <div class="qa-q-text">Why did you use JHipster? What concrete value did it bring to the team?</div>
+        <div class="qa-vi">Tại sao dùng JHipster? Nó mang lại giá trị gì cụ thể cho team?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> JHipster is a development platform that generates production-ready Spring Boot microservices with opinionated scaffolding. At HSC the team needed to ship multiple microservices quickly while maintaining consistency across them. JHipster gave us: <strong>(1) Standardized project structure</strong> — every service follows the same package layout, configuration pattern, and build script. Onboarding a new developer means they immediately understand any service. <strong>(2) Built-in security</strong> — OAuth2/JWT configuration, Spring Security setup generated correctly from day one. <strong>(3) Swagger/OpenAPI</strong> — every entity endpoint auto-documented. <strong>(4) Liquibase DB migrations</strong> — schema changes tracked and versioned. <strong>(5) CI/CD config</strong> — Jenkins pipeline file generated and ready.</p>
+      <p>The real value is <strong>not having to debate and decide these setup choices for each new service</strong>. The team focused on business logic instead of boilerplate configuration. Estimated saving: 2–3 days per new microservice for initial setup and documentation.</p>
+      <div class="warn"><p>⚠️ Tradeoff: JHipster generates significant boilerplate — for very simple services it can feel over-engineered. We evaluated this case-by-case. Services with complex business logic (eKYC, Transaction) justified the full JHipster stack. Lightweight services (Notification) were simpler custom Spring Boot.</p></div>
+    </div>
+  </div>
+
+  <!-- CAMUNDA -->
+  <div class="qa-category">
+    <span class="dot dot-purple"></span>
+    <span style="color:#a78bfa">CAMUNDA BPM &amp; WORKFLOW</span>
+    <div class="qa-cat-line"></div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-p">Q3</span>
+      <div>
+        <div class="qa-q-text">Why Camunda for workflow orchestration? Could you have done the same with code (state machines)?</div>
+        <div class="qa-vi">Tại sao chọn Camunda? Không thể dùng state machine trong code sao?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> Yes, we could implement state machines in code — but Camunda offers critical advantages for a regulated financial system that a hand-coded state machine cannot easily replicate.</p>
+      <p><strong>(1) Regulatory auditability:</strong> Camunda natively records every state transition with actor, timestamp, and input. SSC (State Securities Commission) requires a full traceable audit trail for every KYC decision and withdrawal approval. With Camunda this comes for free. With a custom state machine, we'd need to build and maintain this audit infrastructure separately — complex and error-prone.</p>
+      <p><strong>(2) Business visibility:</strong> Compliance officers and managers can see exactly which Camunda process step a KYC application or withdrawal is at, in real-time via Camunda Cockpit — without reading code or querying databases. This was a concrete operational requirement at HSC.</p>
+      <p><strong>(3) Business rule changes without deployment:</strong> When the approval threshold changed (auto-approve limit raised), the business analyst updated the BPMN diagram and DMN table. No code deployment. With a state machine, this is a code change + deployment + risk.</p>
+      <p><strong>(4) Built-in resilience:</strong> Timer Boundary Events for escalation, Error Boundary Events for bank API failures, retry policies — all configured in BPMN without writing infrastructure code. The 50% processing time reduction came directly from replacing manual inter-department email hand-offs with automated Camunda task routing.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-p">Q4</span>
+      <div>
+        <div class="qa-q-text">How did you design the Camunda External Worker model? Why not use embedded engine?</div>
+        <div class="qa-vi">Thiết kế Camunda External Worker như thế nào? Tại sao không dùng embedded engine?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> We used <strong>Camunda's External Worker pattern</strong>: the Camunda Engine runs as a separate service; our domain services (eKYC Worker, Transaction Worker) are stateless Spring Boot workers that poll the Camunda REST API for tasks, execute the business logic, then report completion back to Camunda.</p>
+      <p>Why not embedded engine? <strong>(1) Independent scaling:</strong> During peak KYC onboarding campaigns, we can scale OCR workers horizontally (more pods) without touching or redeploying the Camunda engine. With embedded engine, the engine scales with the service — wasteful and coupled. <strong>(2) Fault isolation:</strong> If a worker crashes mid-execution, the task remains in Camunda's queue — another worker picks it up on restart. Camunda manages retries automatically. <strong>(3) Technology flexibility:</strong> Workers can be any technology — our main workers are Java, but we could add a Python worker for AI processing if needed. <strong>(4) Centralized monitoring:</strong> One Camunda Cockpit gives visibility across all process types and all worker instances — impossible with multiple embedded engines.</p>
+      <div class="tip"><p>📌 The external worker model is the production-recommended pattern for Camunda in microservices — it treats Camunda as the orchestration backbone, not an application dependency.</p></div>
+    </div>
+  </div>
+
+  <!-- PERFORMANCE -->
+  <div class="qa-category">
+    <span class="dot dot-green"></span>
+    <span style="color:var(--green)">PERFORMANCE &amp; SCALABILITY</span>
+    <div class="qa-cat-line"></div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-gr">Q5</span>
+      <div>
+        <div class="qa-q-text">How did you lead the team to achieve 10,000 TPS? What was your approach?</div>
+        <div class="qa-vi">Bạn dẫn dắt team đạt 10,000 TPS như thế nào? Approach của bạn là gì?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> The starting point was ~800 TPS with high p99 latency spikes. My approach was <strong>measure first, optimize second</strong> — never guess at bottlenecks. We set up JMeter load tests to reproduce the problem deterministically, and used Grafana + Prometheus to identify which service and which operation was the bottleneck.</p>
+      <p>The optimization came in layers: <strong>Database first</strong> — <code>EXPLAIN ANALYZE</code> revealed missing composite indexes and N+1 query patterns. Adding indexes and rewriting queries gave the biggest single gain (DB p99: 800ms → 40ms). <strong>Caching second</strong> — account balance reads were DB-heavy. Redis write-through cache removed 85% of read load. <strong>Async offloading third</strong> — non-critical operations (SMS, audit log) were blocking the transaction path. Moving to Kafka async removed ~200ms per transaction. <strong>Concurrency last</strong> — optimistic locking replaced pessimistic DB locks, and HikariCP pool tuning eliminated connection exhaustion.</p>
+      <p>As technical leader, I didn't do all the optimization myself — I identified the bottleneck layers, assigned ownership to team members, and ran weekly performance review sessions reviewing JMeter results against the previous baseline. The team saw measurable progress each sprint, which maintained motivation on what was a multi-sprint effort.</p>
+      <div class="tip"><p>📌 Final: 10,000 TPS sustained, p99 &lt; 200ms. Tools: JMeter (load), Grafana/Prometheus (metrics), PostgreSQL EXPLAIN (DB), JVM profiler (GC).</p></div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-gr">Q6</span>
+      <div>
+        <div class="qa-q-text">How do you handle distributed transactions across microservices? What pattern did you use?</div>
+        <div class="qa-vi">Xử lý distributed transaction như thế nào? Dùng pattern gì?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> We use the <strong>SAGA pattern (choreography-based)</strong> via Kafka. We explicitly avoided Two-Phase Commit (2PC) — it's fragile, doesn't scale, and holds DB locks across services. With SAGA: each step in a transaction publishes a Kafka event on success; downstream services react to that event. If any step fails, a compensating transaction event is published to undo previous steps.</p>
+      <p>For deposit: <code>DebitExternalAccount</code> → <code>CreditInternalLedger</code> → <code>UpdateBalance</code> → <code>NotifyCustomer</code>. If <code>CreditInternalLedger</code> fails → <code>credit.failed</code> event → triggers <code>RefundExternalAccount</code>. Every step is <strong>idempotent</strong>: services use unique transaction IDs and check for duplicate processing before acting. The <strong>Outbox Pattern</strong> ensures Kafka events are published atomically with DB writes — we write the event to an outbox table in the same DB transaction, then a background relay publishes to Kafka. This prevents the "DB committed but Kafka publish crashed" scenario.</p>
+      <div class="warn"><p>⚠️ SAGA tradeoff: eventual consistency, not immediate. Between step 2 and step 3, the system is briefly inconsistent. For HSC's use cases (deposit processing is already async by nature), this was acceptable. For true atomic needs, we used DB-level transactions within a single service boundary.</p></div>
+    </div>
+  </div>
+
+  <!-- SECURITY -->
+  <div class="qa-category">
+    <span class="dot dot-rose"></span>
+    <span style="color:var(--rose)">SECURITY &amp; COMPLIANCE</span>
+    <div class="qa-cat-line"></div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-a">Q7</span>
+      <div>
+        <div class="qa-q-text">How did you design the eKYC system to be both secure and compliant with regulations?</div>
+        <div class="qa-vi">Thiết kế eKYC system bảo mật và tuân thủ quy định như thế nào?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> Security in eKYC operates at three layers. <strong>Data security:</strong> Customer identity documents (ID images, selfies) are never stored in our application DB — only metadata and verification results. Raw images go directly to Azure Blob Storage with server-side encryption, accessed only via pre-signed URLs with short TTL. Calls to external OCR/Face Match APIs use mutual TLS. PII fields are masked in application logs (log4j2 masking patterns).</p>
+      <p><strong>Access control:</strong> Only compliance officers (specific role in JWT claims) can access eKYC applications in the Admin Portal. Spring Security method-level <code>@PreAuthorize</code> enforces this at the service layer — even if someone bypasses the UI. Customers can only see their own application status, never others' data.</p>
+      <p><strong>Compliance:</strong> Camunda provides an immutable process history — every state transition (who reviewed, what decision, when) is recorded and cannot be modified. This directly satisfies SSC audit requirements. Additionally, the Audit Service writes a compliance-grade record to Elasticsearch with the full approval chain, which is indexed and queryable for regulatory inspection. All records have retention policies aligned with Vietnamese financial regulations.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-a">Q8</span>
+      <div>
+        <div class="qa-q-text">How did you prevent SQL injection and XSS? What secure coding practices did you enforce?</div>
+        <div class="qa-vi">Ngăn SQL injection và XSS như thế nào? Enforce secure coding ra sao?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> <strong>SQL Injection:</strong> Completely prevented by using JPA/Hibernate with parameterized queries exclusively throughout the codebase. No string concatenation in queries anywhere. This was enforced as a SonarQube custom rule — any raw SQL string concatenation would fail the CI quality gate. JHipster's generated code uses Spring Data JPA by default, so developers had to actively fight against the framework to introduce a SQL injection vulnerability.</p>
+      <p><strong>XSS:</strong> All user-supplied input is HTML-escaped before persistence using a custom sanitization filter applied at the controller input binding level. API responses always use <code>Content-Type: application/json</code> — not HTML — reducing XSS attack surface. For the Admin Portal frontend, React's default JSX escaping provides additional protection.</p>
+      <p><strong>General secure coding:</strong> Spring Security CSRF protection enabled on all state-changing endpoints. JWT tokens with 15-minute access TTL and single-use refresh rotation. Dependency vulnerability scanning (OWASP Dependency Check) integrated in Jenkins pipeline — builds fail if high-severity CVEs are detected in dependencies. Code reviews had a security checklist: reviewers specifically checked for injection, authentication bypass, and insecure direct object reference patterns.</p>
+    </div>
+  </div>
+
+  <!-- LEADERSHIP -->
+  <div class="qa-category">
+    <span class="dot dot-violet"></span>
+    <span style="color:var(--violet)">TECHNICAL LEADERSHIP</span>
+    <div class="qa-cat-line"></div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-p">Q9</span>
+      <div>
+        <div class="qa-q-text">As Technical Leader at HSC, how did you estimate and plan complex projects involving multiple services?</div>
+        <div class="qa-vi">Với vai trò Tech Lead tại HSC, bạn estimate và plan project phức tạp liên quan nhiều service như thế nào?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> My estimation approach starts with <strong>breaking down work into dependency layers</strong>. For a feature like Camunda-based withdrawal: first identify the dependency tree — Camunda process design → External Worker implementation → Bank API integration → Notification → Audit. Each layer can be estimated independently and has a clear interface contract (BPMN process, OpenAPI spec) that allows parallel development once the contract is agreed.</p>
+      <p>I used <strong>three-point estimation</strong> (optimistic / realistic / pessimistic) for uncertain items, especially new technology integrations. For Camunda integration, we did a 3-day spike first — the spike output (working prototype + lessons learned) made the actual estimation much more accurate. Without the spike, we would have under-estimated by 40%.</p>
+      <p>I worked with leaders to negotiate scope trade-offs: the first sprint delivered a working Camunda flow with auto-approve only (no manual review). Manual review User Tasks came in sprint 2. This incremental delivery let us get feedback on the core flow early and reduced risk of building something wrong. <strong>Technical documentation</strong> — sequence diagrams, API contracts, DB schema — was produced before coding started, as a forcing function for teams to agree on interfaces before writing code.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-p">Q10</span>
+      <div>
+        <div class="qa-q-text">How did you establish and enforce code quality standards for the team?</div>
+        <div class="qa-vi">Bạn thiết lập và enforce code quality như thế nào cho team?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> Code quality at HSC was enforced through <strong>systemic constraints, not just social agreement</strong>. The most impactful change was integrating <strong>SonarQube quality gates</strong> into Jenkins CI — a PR cannot be merged if: code coverage drops below threshold, new critical/blocker issues are introduced, or duplicated code exceeds limit. This made quality a technical requirement, not a style preference.</p>
+      <p><strong>Code review process:</strong> Every PR required at least one review from a senior developer. I created a code review checklist covering: business logic correctness, security patterns (no SQL concatenation, input sanitization), test coverage for new paths, and adherence to the team's architecture decisions. I personally reviewed PRs touching cross-service contracts or Camunda process definitions — these were the highest-risk change areas.</p>
+      <p><strong>Tech debt management:</strong> We tracked debt items in Jira like features — with impact assessment. Each sprint allocated 15–20% capacity for refactoring. This was non-negotiable even under deadline pressure — I had standing agreement with product management that this capacity existed. The investment paid off: when we needed to optimize for 10,000 TPS, the codebase was clean enough to refactor confidently without fear of hidden side effects.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-gr">Q11</span>
+      <div>
+        <div class="qa-q-text">How did you handle the integration with external Bank/VNPay APIs? What failure scenarios did you plan for?</div>
+        <div class="qa-vi">Integrate với Bank/VNPay API như thế nào? Xử lý failure scenarios ra sao?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> External Bank/VNPay API integration is a high-risk integration because failures directly impact customer money. We designed for failure from the start. <strong>Resilience4j</strong> wraps every external API call: timeout (30s hard limit), retry (2 retries with exponential backoff for transient errors), and circuit breaker (opens if failure rate &gt;50% over 10 calls — prevents cascading failures when the bank is down).</p>
+      <p><strong>Idempotency:</strong> Every API call includes a unique idempotency key (our transaction ID). If we retry due to a timeout and the first call actually succeeded, the bank API returns the original response instead of processing again. This prevents double-charging customers — critical for financial correctness.</p>
+      <p><strong>Camunda Error Boundary Event:</strong> Bank API failures trigger a Camunda Error Boundary Event on the Service Task. The BPMN defines the error handling path — in deposit, a bank failure means status → FAILED and a compensating notification to the customer. In withdrawal, a failure after funds were released triggers SAGA compensation (refund event). The Camunda process history records exactly which step failed and why — invaluable for customer dispute resolution.</p>
+      <div class="tip"><p>📌 We also implemented a manual reconciliation process (daily batch job) that compares our internal ledger against the bank statement — catches any discrepancy that slipped through all automated checks.</p></div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-q">
+      <span class="qa-tag qt-gr">Q12</span>
+      <div>
+        <div class="qa-q-text">If you were to redesign HSC from scratch today, what would you do differently?</div>
+        <div class="qa-vi">Nếu redesign HSC từ đầu hôm nay, bạn sẽ làm gì khác đi?</div>
+      </div>
+    </div>
+    <div class="qa-a">
+      <p><strong>Answer:</strong> A few things I'd reconsider with the benefit of hindsight:</p>
+      <p><strong>(1) Camunda 8 (Zeebe) instead of Camunda 7:</strong> We used Camunda 7 with its embedded/shared engine. Camunda 8 (Zeebe) is built for horizontal scaling from the ground up — the engine itself scales. For 10,000 TPS with complex workflows, Zeebe's event-sourced engine would have been a better fit architecturally, even though the migration path from Camunda 7 is non-trivial.</p>
+      <p><strong>(2) Event schema registry from day one:</strong> As Kafka topics grew, managing backward-compatible schema evolution became painful. I'd introduce Avro schemas + Confluent Schema Registry from the first topic. This enforces schema contracts between producers and consumers, preventing silent breaking changes.</p>
+      <p><strong>(3) OpenTelemetry distributed tracing earlier:</strong> Debugging a slow transaction that spans Gateway → Deposit Service → Camunda Worker → Bank API → Kafka → Audit was painful without end-to-end trace IDs. We added tracing late. It should be Day 1 infrastructure — instrument once, gain visibility everywhere.</p>
+      <p><strong>(4) CQRS for reporting/analytics:</strong> Transaction Service became burdened with both write (process transactions) and read (management reports, analytics) workloads. I'd introduce a separate read model — updated via Kafka events, optimized for query patterns — to keep the write path clean and high-performance.</p>
+    </div>
+  </div>
+
+</section>
+</div>
+
+<footer>
+  <span>Thái Tiểu Lôi · thaitieuloi3107@gmail.com · 0977116790</span>
+  <span>HSC Securities — System Architecture · Interview Document · 2021–2025</span>
+  <span>Technical Leader | Senior Developer · 10+ Years</span>
+</footer>
+
+</body>
+</html>
