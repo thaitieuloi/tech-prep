@@ -467,6 +467,46 @@ export default function InterviewPrepPage() {
               </div>
             </div>
           </QuestionBlock>
+
+          <QuestionBlock 
+            qNum="STR"
+            qEn="As an Architecture/Tech Lead, what are your systematic strategies to improve system performance?"
+            qVi="Với vai trò là Tech Lead, anh có những chiến lược hệ thống nào để cải thiện hiệu năng?"
+            isMustKnow
+          >
+            <ul className="space-y-4 text-slate-700">
+              <ListItem>
+                <div>
+                  <p><Highlight type="key">Measurement First:</Highlight> Establish <Highlight type="tech">Prometheus/Grafana</Highlight> dashboards and use <Highlight type="tech">JFR/async-profiler</Highlight> to identify bottlenecks. You cannot optimize what you don't measure.</p>
+                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Đo lường trước tiên: Thiết lập dashboard và dùng các công cụ profiling để tìm điểm nghẽn. Không tối ưu dựa trên phỏng đoán.</p>
+                </div>
+              </ListItem>
+              <ListItem>
+                <div>
+                  <p><Highlight type="key">Database Scaling Strategy:</Highlight> Implement <Highlight type="tech">Read Replicas</Highlight> for query offloading and <Highlight type="tech">Sharding</Highlight> (horizontal partitioning) for massive write volumes.</p>
+                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Chiến lược scale DB: Triển khai Read Replicas để chia tải truy vấn và Sharding (phân vùng dữ liệu) để xử lý lượng ghi khổng lồ.</p>
+                </div>
+              </ListItem>
+              <ListItem>
+                <div>
+                  <p><Highlight type="key">Advanced Caching:</Highlight> Multi-level caching (L1 In-memory, L2 <Highlight type="tech">Redis</Highlight>) and <Highlight type="soft">Global CDN</Highlight> for static assets and edge-caching.</p>
+                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Cache nâng cao: Áp dụng cache đa tầng và dùng CDN để giảm tải cho server gốc, tăng tốc độ truy cập từ xa.</p>
+                </div>
+              </ListItem>
+              <ListItem>
+                <div>
+                  <p><Highlight type="key">Architectural Decoupling:</Highlight> Move to <Highlight type="tech">Event-driven</Highlight> (Kafka) for async processing. Use <Highlight type="tech">Virtual Threads</Highlight> (Java 21) or non-blocking IO to maximize resource utilization.</p>
+                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Tách rời kiến trúc: Chuyển sang mô hình hướng sự kiện (Kafka). Sử dụng Virtual Threads hoặc non-blocking IO để tối ưu hóa tài nguyên server.</p>
+                </div>
+              </ListItem>
+              <ListItem>
+                <div>
+                  <p><Highlight type="key">Infrastructure & Load Balancing:</Highlight> Efficient <Highlight type="num">Load Balancing</Highlight> (L4/L7) and auto-scaling based on CPU/Memory/Traffic thresholds.</p>
+                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Hạ tầng & Load Balancing: Sử dụng cân bằng tải thông minh và tự động mở rộng (Auto-scaling) dựa trên các ngưỡng metric thực tế.</p>
+                </div>
+              </ListItem>
+            </ul>
+          </QuestionBlock>
         </section>
 
         {/* Section 5: Data Engineering */}
