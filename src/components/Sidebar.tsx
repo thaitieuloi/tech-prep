@@ -18,7 +18,9 @@ import {
   Activity,
   BrainCircuit,
   ShieldCheck,
-  Binary
+  Binary,
+  PenTool,
+  Target
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -75,6 +77,22 @@ export function Sidebar({ categories, selectedCategory }: SidebarProps) {
           >
             <Server className="w-5 h-5" />
             System Architecture
+          </Link>
+
+          <Link
+            to="/draw-system"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          >
+            <PenTool className="w-5 h-5" />
+            Canvas Architect
+          </Link>
+
+          <Link
+            to="/interview-prep"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-indigo-600 bg-indigo-50/50 hover:bg-indigo-50 font-bold border border-indigo-100 shadow-sm"
+          >
+            <Target className="w-5 h-5" />
+            Interview Preparation
           </Link>
           
           <div className="pt-4 pb-2">
