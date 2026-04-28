@@ -94,6 +94,22 @@ export function Sidebar({ categories, selectedCategory }: SidebarProps) {
             <Target className="w-5 h-5" />
             Interview Preparation
           </Link>
+
+          <Link
+            to="/auth-pipeline"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          >
+            <GitBranch className="w-5 h-5" />
+            Auth Pipeline Job
+          </Link>
+
+          <Link
+            to="/de-interview"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          >
+            <BrainCircuit className="w-5 h-5" />
+            DE Interview Ques
+          </Link>
           
           <div className="pt-4 pb-2">
             <p className="px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">

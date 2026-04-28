@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuthPipelineJob — Flink Architecture · Interview Prep</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Barlow:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --bg: #080c14;
+  --bg2: #0d1321;
+  --surface: #111827;
+  --surface2: #1a2438;
+  --border: #1e2d45;
+  --border2: #263a56;
+
+  --blue:   #38bdf8;
+  --cyan:   #06b6d4;
+  --green:  #34d399;
+  --amber:  #f59e0b;
+  --red:    #f87171;
+  --purple: #a78bfa;
+  --orange: #fb923c;
+  --pink:   #f472b6;
+
+  --txt1: #e2e8f0;
+  --txt2: #94a3b8;
+  --txt3: #475569;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Barlow', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--txt1);
+  font-family: var(--sans);
+  min-height: 100vh;
+}
+
+/* ─── grid bg ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(56,189,248,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none; z-index: 0;
+}
+
+/* ─── layout ─── */
+.wrap { position: relative; z-index: 1; max-width: 1480px; margin: 0 auto; padding: 36px 28px 100px; }
+
+/* ─── nav tabs ─── */
+.nav {
+  display: flex; gap: 4px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+.nav-btn {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px;
+  text-transform: uppercase; padding: 9px 18px;
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--txt3); cursor: pointer; transition: all .2s;
+  margin-bottom: -1px;
+}
+.nav-btn:hover { color: var(--txt2); }
+.nav-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+.tab { display: none; }
+.tab.active { display: block; }
+
+/* ─── header ─── */
+.header { margin-bottom: 40px; }
+.badge {
+  display: inline-block;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2.5px;
+  background: rgba(56,189,248,.1); border: 1px solid rgba(56,189,248,.3);
+  color: var(--blue); padding: 4px 12px; border-radius: 3px; margin-bottom: 12px;
+}
+h1 { font-size: 38px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; }
+h1 em { color: var(--blue); font-style: normal; }
+.sub { font-family: var(--mono); font-size: 12px; color: var(--txt3); margin-top: 6px; }
+
+/* ─── legend ─── */
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 20px; }
+.leg { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 10px; color: var(--txt2); }
+.leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* ─── SVG diagram ─── */
+.diagram-scroll { overflow-x: auto; padding-bottom: 8px; }
+.diagram-svg { display: block; min-width: 1100px; }
+
+/* SVG node styles */
+.nd-kafka   { fill: rgba(245,158,11,.09);  stroke: rgba(245,158,11,.55);  stroke-width: 1.5; rx: 8; }
+.nd-flink   { fill: rgba(56,189,248,.09);  stroke: rgba(56,189,248,.55);  stroke-width: 1.5; rx: 8; }
+.nd-window  { fill: rgba(167,139,250,.09); stroke: rgba(167,139,250,.55); stroke-width: 1.5; rx: 8; }
+.nd-os      { fill: rgba(52,211,153,.09);  stroke: rgba(52,211,153,.55);  stroke-width: 1.5; rx: 8; }
+.nd-dlq     { fill: rgba(248,113,113,.09); stroke: rgba(248,113,113,.55); stroke-width: 1.5; rx: 8; }
+.nd-alert   { fill: rgba(251,146,60,.09);  stroke: rgba(251,146,60,.55);  stroke-width: 1.5; rx: 8; }
+.nd-entry   { fill: rgba(56,189,248,.06);  stroke: rgba(56,189,248,.3);   stroke-width: 1; rx: 8; stroke-dasharray: 5 3; }
+
+/* SVG arrow */
+.arr      { fill: none; stroke: rgba(56,189,248,.6); stroke-width: 1.8; marker-end: url(#arr); }
+.arr-dlq  { fill: none; stroke: rgba(248,113,113,.7); stroke-width: 1.5; stroke-dasharray: 5 3; marker-end: url(#arr-dlq); }
+.arr-side { fill: none; stroke: rgba(248,113,113,.5); stroke-width: 1.4; stroke-dasharray: 4 3; marker-end: url(#arr-dlq); }
+.arr-ret  { fill: none; stroke: rgba(56,189,248,.35); stroke-width: 1.4; stroke-dasharray: 6 3; marker-end: url(#arr); }
+
+/* SVG text */
+text { font-family: 'IBM Plex Mono', monospace; dominant-baseline: middle; }
+.t-title  { font-size: 12px; font-weight: 700; fill: #e2e8f0; }
+.t-class  { font-size: 9.5px; fill: #64748b; }
+.t-op     { font-size: 9px;   fill: #94a3b8; }
+.t-detail { font-size: 9px;   fill: #7dd3fc; }
+.t-detail2{ font-size: 9px;   fill: #86efac; }
+.t-detail3{ font-size: 9px;   fill: #d8b4fe; }
+.t-detail4{ font-size: 9px;   fill: #fca5a5; }
+.t-detail5{ font-size: 9px;   fill: #fcd34d; }
+.t-arrow  { font-size: 9px;   fill: #38bdf8; font-family: 'IBM Plex Mono', monospace; }
+.t-arrdlq { font-size: 8.5px; fill: #f87171; font-family: 'IBM Plex Mono', monospace; }
+.t-section{ font-size: 10px;  fill: #475569; letter-spacing: 3px; font-weight: 600; }
+.t-fn     { font-size: 11px;  fill: #38bdf8; font-weight: 600; }
+.t-muted  { font-size: 9px;   fill: #475569; }
+.t-amber  { font-size: 9px;   fill: #f59e0b; }
+
+/* phase box */
+.phase-box { fill: none; stroke: var(--border2); stroke-width: 1; rx: 10; stroke-dasharray: 6 3; }
+
+/* hover interactivity */
+.nd-group { cursor: pointer; transition: filter .2s; }
+.nd-group:hover rect { filter: brightness(1.25); }
+
+/* ─── details panel ─── */
+.panel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.panel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px;
+  transition: border-color .2s, box-shadow .2s;
+  animation: fadeUp .4s ease both;
+}
+.panel-card:hover { border-color: var(--border2); box-shadow: 0 4px 24px rgba(0,0,0,.3); }
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(10px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.card-head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.card-icon { font-size: 20px; }
+.card-title { font-size: 14px; font-weight: 700; }
+.card-class { font-family: var(--mono); font-size: 10px; color: var(--txt3); margin-top: 2px; }
+
+.card-body { font-size: 12px; color: var(--txt2); line-height: 1.8; }
+.card-body code {
+  font-family: var(--mono); font-size: 10px;
+  background: rgba(255,255,255,.05); border-radius: 3px;
+  padding: 1px 5px; color: var(--blue);
+}
+.card-body .c-green  { color: var(--green);  background: rgba(52,211,153,.08); }
+.card-body .c-amber  { color: var(--amber);  background: rgba(245,158,11,.08); }
+.card-body .c-purple { color: var(--purple); background: rgba(167,139,250,.08); }
+.card-body .c-red    { color: var(--red);    background: rgba(248,113,113,.08); }
+.card-body .c-orange { color: var(--orange); background: rgba(251,146,60,.08); }
+
+.card-body ul { list-style: none; padding: 0; }
+.card-body ul li { padding: 2px 0; }
+.card-body ul li::before { content: '▸ '; color: var(--txt3); font-size: 10px; }
+
+.card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.ctag {
+  font-family: var(--mono); font-size: 9px; padding: 2px 7px; border-radius: 3px;
+  font-weight: 600; letter-spacing: .5px;
+}
+.ctag-blue   { background: rgba(56,189,248,.12); color: var(--blue); }
+.ctag-amber  { background: rgba(245,158,11,.12); color: var(--amber); }
+.ctag-green  { background: rgba(52,211,153,.12); color: var(--green); }
+.ctag-red    { background: rgba(248,113,113,.12); color: var(--red); }
+.ctag-purple { background: rgba(167,139,250,.12); color: var(--purple); }
+.ctag-orange { background: rgba(251,146,60,.12); color: var(--orange); }
+
+/* ─── interview notes ─── */
+.interview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 20px;
+}
+.interview-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 22px;
+}
+.interview-card h3 {
+  font-size: 13px; font-weight: 700; letter-spacing: .5px;
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.iq { font-size: 12px; color: var(--amber); font-family: var(--mono); margin-bottom: 4px; margin-top: 10px; }
+.ia { font-size: 12px; color: var(--txt2); line-height: 1.7; margin-left: 8px; }
+.ia code { font-family: var(--mono); font-size: 10px; background: rgba(255,255,255,.05); padding: 1px 4px; border-radius: 2px; color: var(--blue); }
+
+/* flow comparison */
+.compare-row { display: flex; gap: 16px; margin-top: 12px; }
+.compare-box {
+  flex: 1; background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 12px 14px;
+}
+.compare-box h4 { font-size: 11px; font-weight: 700; margin-bottom: 8px; }
+.compare-box ul { list-style: none; font-size: 11px; color: var(--txt2); line-height: 1.8; }
+.compare-box ul li::before { content: '• '; color: var(--txt3); }
+
+/* topics table */
+.topics-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11px; margin-top: 12px; }
+.topics-table th { text-align: left; color: var(--txt3); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 6px 10px; border-bottom: 1px solid var(--border); }
+.topics-table td { padding: 7px 10px; border-bottom: 1px solid rgba(30,45,69,.5); color: var(--txt2); }
+.topics-table tr:hover td { background: rgba(255,255,255,.02); }
+
+/* section title */
+.sec-title {
+  font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--txt3); margin: 32px 0 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">APACHE FLINK 1.17 · EVENT-TIME STREAMING</div>
+    <h1>Auth<em>Pipeline</em>Job</h1>
+    <div class="sub">com.secuwall.flink.job · Security Analytics · OCSF Auth Pipeline · Interview Prep v2</div>
+    <div class="legend">
+      <div class="leg"><div class="leg-dot" style="background:#f59e0b"></div>Kafka I/O</div>
+      <div class="leg"><div class="leg-dot" style="background:#38bdf8"></div>Flink Operator / ProcessFunction</div>
+      <div class="leg"><div class="leg-dot" style="background:#a78bfa"></div>Window (Aggregate + Emit)</div>
+      <div class="leg"><div class="leg-dot" style="background:#34d399"></div>OpenSearch Sink</div>
+      <div class="leg"><div class="leg-dot" style="background:#f87171"></div>DLQ / Side Output</div>
+      <div class="leg"><div class="leg-dot" style="background:#fb923c"></div>Alert Sink</div>
+      <div class="leg"><div class="leg-dot" style="background:#38bdf8;opacity:.4"></div>─ ─ Return / Fan-out</div>
+      <div class="leg"><div class="leg-dot" style="background:#f87171;opacity:.4"></div>─ ─ Side Output DLQ</div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav">
+    <button class="nav-btn active" onclick="switchTab('diagram')">① Diagram</button>
+    <button class="nav-btn" onclick="switchTab('detail')">② Chi tiết Components</button>
+    <button class="nav-btn" onclick="switchTab('interview')">③ Interview Notes</button>
+    <button class="nav-btn" onclick="switchTab('topics')">④ Topics & Config</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB 1: DIAGRAM
+  ═══════════════════════════════════════════════════ -->
+  <div id="tab-diagram" class="tab active">
+    <div class="diagram-scroll">
+    <svg class="diagram-svg" viewBox="0 0 1380 1460" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Arrow markers -->
+        <marker id="arr" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+          <polygon points="0 0, 9 3.5, 0 7" fill="rgba(56,189,248,.8)"/>
+        </marker>
+        <marker id="arr-dlq" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="rgba(248,113,113,.8)"/>
+        </marker>
+        <marker id="arr-grn" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="rgba(52,211,153,.8)"/>
+        </marker>
+        <marker id="arr-amb" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="rgba(245,158,11,.8)"/>
+        </marker>
+        <!-- Glow filter -->
+        <filter id="glow-blue" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- ══════════════════════════════════
+           PHASE BACKGROUND BOXES
+      ══════════════════════════════════ -->
+      <!-- Phase 1 box -->
+      <rect x="20" y="130" width="1340" height="590" rx="12" fill="rgba(56,189,248,.02)" stroke="rgba(56,189,248,.12)" stroke-width="1" stroke-dasharray="8 4"/>
+      <text x="38" y="150" class="t-fn">buildNormalizationPipeline( env, config )</text>
+      <text x="38" y="165" class="t-muted">→ returns DataStream&lt;OcsfAuthentication&gt; (timestampedStream)</text>
+
+      <!-- Phase 2 box -->
+      <rect x="20" y="760" width="1340" height="660" rx="12" fill="rgba(167,139,250,.02)" stroke="rgba(167,139,250,.12)" stroke-width="1" stroke-dasharray="8 4"/>
+      <text x="38" y="780" class="t-fn" fill="#a78bfa">buildAnalyticsTopology( normalizedStream, config )</text>
+      <text x="38" y="795" class="t-muted">→ void · 2 parallel branches</text>
+
+      <!-- ══════════════════════════════════
+           MAIN ENTRY: main()
+      ══════════════════════════════════ -->
+      <g class="nd-group" id="n-main">
+        <rect x="530" y="20" width="320" height="90" rx="8" fill="rgba(56,189,248,.06)" stroke="rgba(56,189,248,.3)" stroke-width="1.5"/>
+        <text x="690" y="48" class="t-title" text-anchor="middle">main( String[] args )</text>
+        <text x="690" y="64" class="t-class" text-anchor="middle">AuthPipelineJob · entry point</text>
+        <text x="690" y="79" class="t-op" text-anchor="middle">JobConfig.fromArgs(args) · env.enableCheckpointing()</text>
+        <text x="690" y="94" class="t-op" text-anchor="middle">env.execute("Security Analytics: OCSF Auth Pipeline")</text>
+      </g>
+
+      <!-- main → phase1 arrow -->
+      <line x1="690" y1="110" x2="690" y2="173" class="arr"/>
+      <text x="695" y="143" class="t-arrow">calls</text>
+
+      <!-- ══════════════════════════════════
+           PHASE 1
+      ══════════════════════════════════ -->
+
+      <!-- 1A: KafkaSource -->
+      <g class="nd-group" id="n-kafka-src">
+        <rect x="490" y="180" width="400" height="110" rx="8" class="nd-kafka"/>
+        <text x="510" y="202" class="t-title" fill="#f59e0b">① KafkaSource&lt;String&gt;</text>
+        <text x="510" y="218" class="t-class">KafkaSource.builder() · OP: "Kafka Source: Raw Logs"</text>
+        <rect x="510" y="226" width="8" height="8" rx="1" fill="#f59e0b" opacity=".6"/>
+        <text x="522" y="233" class="t-detail5">setTopics( TOPIC_RAW_PREFIX + orgId )  →  logs.raw.{orgId}</text>
+        <rect x="510" y="239" width="8" height="8" rx="1" fill="#f59e0b" opacity=".6"/>
+        <text x="522" y="246" class="t-detail5">setGroupId( GROUP_ID_PREFIX + orgId )  →  auth-pipeline-group-{orgId}</text>
+        <rect x="510" y="252" width="8" height="8" rx="1" fill="#f59e0b" opacity=".6"/>
+        <text x="522" y="259" class="t-detail5">setStartingOffsets( OffsetsInitializer.earliest() )</text>
+        <rect x="510" y="265" width="8" height="8" rx="1" fill="#f59e0b" opacity=".6"/>
+        <text x="522" y="272" class="t-detail5">setValueOnlyDeserializer( SimpleStringSchema )</text>
+        <text x="510" y="284" class="t-muted">env.fromSource( rawSource, WatermarkStrategy.noWatermarks(), ... )</text>
+      </g>
+
+      <!-- KafkaSource → NormalizationProcessFunction -->
+      <line x1="690" y1="290" x2="690" y2="338" class="arr"/>
+      <text x="695" y="316" class="t-arrow">DataStream&lt;String&gt;</text>
+
+      <!-- 1B: NormalizationProcessFunction -->
+      <g class="nd-group" id="n-norm">
+        <rect x="420" y="345" width="540" height="140" rx="8" class="nd-flink"/>
+        <text x="440" y="367" class="t-title">② NormalizationProcessFunction</text>
+        <text x="440" y="383" class="t-class">extends ProcessFunction&lt;String, OcsfAuthentication&gt;  ·  OP: "Process: Raw JSON to OCSF"</text>
+        <text x="440" y="400" class="t-op">open( params )  →  registry = NormalizerRegistry.withDefaults()</text>
+        <text x="440" y="415" class="t-op">processElement( rawJson, ctx, out ):</text>
+        <text x="455" y="430" class="t-detail">JsonNode node = MAPPER.readTree(rawJson)</text>
+        <text x="455" y="445" class="t-detail">sourceType = "cloudtrail" if (eventVersion || userIdentity) else "wazuh"</text>
+        <text x="455" y="460" class="t-detail">Normalizer n = registry.getNormalizer(sourceType)  →  n.normalize(rawJson, orgId)</text>
+        <text x="455" y="475" class="t-detail4">null / exception  →  ctx.output( PARSE_ERROR_DLQ_TAG, rawJson )</text>
+      </g>
+
+      <!-- Parse Error side output (LEFT) -->
+      <path d="M420,400 Q320,400 320,490" class="arr-side"/>
+      <text x="330" y="380" class="t-arrdlq">getSideOutput</text>
+      <text x="318" y="393" class="t-arrdlq">PARSE_ERROR_DLQ_TAG</text>
+
+      <g class="nd-group" id="n-dlq-parse">
+        <rect x="190" y="495" width="260" height="75" rx="8" class="nd-dlq"/>
+        <text x="210" y="515" class="t-title" fill="#f87171">Parse Error DLQ</text>
+        <text x="210" y="531" class="t-class">OutputTag&lt;String&gt;("dlq-parse-errors")</text>
+        <text x="210" y="547" class="t-op">printToErr()  ·  OP: "Sink: Parse Error DLQ"</text>
+        <text x="210" y="562" class="t-detail4">PARSE_ERROR_DLQ_TAG (static field)</text>
+      </g>
+
+      <!-- Norm → WatermarkAssigner -->
+      <line x1="690" y1="485" x2="690" y2="533" class="arr"/>
+      <text x="695" y="511" class="t-arrow">SingleOutputStreamOperator&lt;OcsfAuthentication&gt;</text>
+
+      <!-- 1C: WatermarkAssigner -->
+      <g class="nd-group" id="n-wm">
+        <rect x="420" y="540" width="540" height="115" rx="8" class="nd-flink"/>
+        <text x="440" y="562" class="t-title">③ assignTimestampsAndWatermarks()</text>
+        <text x="440" y="578" class="t-class">OcsfTimestampAssigner  ·  OP: "Assign Watermarks"</text>
+        <text x="440" y="594" class="t-op">WatermarkStrategy.forBoundedOutOfOrderness( Duration.ofSeconds(allowedLatenessSec) )</text>
+        <text x="440" y="609" class="t-op">  .withTimestampAssigner( new OcsfTimestampAssigner() )</text>
+        <text x="440" y="625" class="t-detail">extractTimestamp():  Instant.parse( event.getTime() ).toEpochMilli()</text>
+        <text x="440" y="641" class="t-detail4">fallback on parse error  →  recordTimestamp</text>
+      </g>
+
+      <!-- WM → FAN-OUT label -->
+      <line x1="690" y1="655" x2="690" y2="693" class="arr"/>
+      <text x="695" y="676" class="t-arrow">timestampedStream</text>
+
+      <!-- FAN-OUT box -->
+      <rect x="540" y="698" width="300" height="32" rx="6" fill="rgba(56,189,248,.07)" stroke="rgba(56,189,248,.25)" stroke-width="1"/>
+      <text x="690" y="718" class="t-op" text-anchor="middle" fill="#7dd3fc">FANOUT  →  3 simultaneous sinks</text>
+
+      <!-- FAN-OUT → Sink Normalized -->
+      <path d="M580,730 Q300,730 300,775" fill="none" stroke="rgba(245,158,11,.6)" stroke-width="1.6" marker-end="url(#arr-amb)"/>
+      <text x="380" y="748" class="t-amber">addSink()</text>
+
+      <!-- FAN-OUT → Sink OpenSearch -->
+      <path d="M800,730 Q1020,730 1020,775" fill="none" stroke="rgba(52,211,153,.6)" stroke-width="1.6" marker-end="url(#arr-grn)"/>
+      <text x="850" y="748" class="t-detail2">sinkTo()</text>
+
+      <!-- FAN-OUT → return (to Phase 2) -->
+      <line x1="690" y1="730" x2="690" y2="775" class="arr-ret"/>
+      <text x="695" y="755" class="t-muted">return</text>
+
+      <!-- SINK: Normalized Kafka -->
+      <g class="nd-group" id="n-sink-norm">
+        <rect x="140" y="780" width="320" height="90" rx="8" class="nd-kafka"/>
+        <text x="160" y="802" class="t-title" fill="#f59e0b">SINK: DynamicKafkaSink (Normalized)</text>
+        <text x="160" y="818" class="t-class">NormalizedTopicSelector  ·  sinkId: "normalized-logs"</text>
+        <text x="160" y="834" class="t-detail5">getTopic()  →  TOPIC_NORMALIZED_PREFIX + orgId</text>
+        <text x="160" y="850" class="t-detail5">logs.normalized.{orgId}</text>
+        <text x="160" y="863" class="t-op">OP: "Sink: Kafka Normalized"</text>
+      </g>
+
+      <!-- SINK: OpenSearch -->
+      <g class="nd-group" id="n-sink-os">
+        <rect x="860" y="780" width="340" height="115" rx="8" class="nd-os"/>
+        <text x="880" y="802" class="t-title" fill="#34d399">SINK: OpensearchSink</text>
+        <text x="880" y="818" class="t-class">OcsfOpensearchEmitter  ·  DeliveryGuarantee.AT_LEAST_ONCE</text>
+        <text x="880" y="834" class="t-op">OP: "Sink: OpenSearch OCSF"</text>
+        <text x="880" y="850" class="t-detail2">index  =  INDEX_OCSF_AUTH_PREFIX + orgId + "-000001"</text>
+        <text x="880" y="866" class="t-detail2">docId  =  sha256(orgId + "|" + time + "|" + ip)</text>
+        <text x="880" y="882" class="t-detail2">guard  :  Instant.parse(time)  →  drop if invalid</text>
+        <text x="880" y="895" class="t-detail4">MAPPER.writeValueAsBytes(element)  →  XContentType.JSON</text>
+      </g>
+
+      <!-- ══════════════════════════════════
+           PHASE 2 ENTRY
+      ══════════════════════════════════ -->
+      <g class="nd-group" id="n-entry">
+        <rect x="540" y="780" width="300" height="50" rx="8" class="nd-entry"/>
+        <text x="690" y="803" class="t-title" text-anchor="middle">normalizedStream</text>
+        <text x="690" y="820" class="t-class" text-anchor="middle">DataStream&lt;OcsfAuthentication&gt;  (timestampedStream)</text>
+      </g>
+
+      <!-- entry → branch split line -->
+      <line x1="690" y1="830" x2="690" y2="868" class="arr"/>
+
+      <!-- horizontal split bar -->
+      <line x1="310" y1="868" x2="1060" y2="868" stroke="rgba(56,189,248,.3)" stroke-width="1.5"/>
+      <!-- branch A down -->
+      <line x1="380" y1="868" x2="380" y2="898" class="arr"/>
+      <!-- branch B down -->
+      <line x1="990" y1="868" x2="990" y2="898" class="arr"/>
+
+      <!-- branch labels -->
+      <text x="280" y="860" class="t-arrow">BRANCH A</text>
+      <text x="900" y="860" class="t-arrow">BRANCH B</text>
+
+      <!-- ── BRANCH A: METRICS ── -->
+
+      <!-- A1: keyBy + TumblingWindow -->
+      <g class="nd-group" id="n-win-metrics">
+        <rect x="130" y="903" width="500" height="170" rx="8" class="nd-window"/>
+        <text x="150" y="925" class="t-title" fill="#a78bfa">④A keyBy() + TumblingEventTimeWindows</text>
+        <text x="150" y="941" class="t-class">KeySelector: OrgIdKeySelector  ·  OP: "Window: Auth Metrics Aggregation (Tumbling)"</text>
+        <text x="150" y="957" class="t-detail3">getKey( event )  →  event.getMetadata().getOrgId()</text>
+        <text x="150" y="973" class="t-detail3">window( TumblingEventTimeWindows.of( Time.minutes(metricsWindowMin) ) )</text>
+        <text x="150" y="989" class="t-detail3">allowedLateness( Time.seconds(allowedLatenessSec) )</text>
+        <text x="150" y="1005" class="t-detail4">sideOutputLateData( LATE_EVENT_DLQ_TAG )  →  "dlq-late-events"</text>
+        <text x="150" y="1021" class="t-op">AGGREGATE:  AuthCountAggregator</text>
+        <text x="165" y="1037" class="t-detail3">createAccumulator() → long[]{0,0}  ·  add(): statusId==1? acc[0]++ : acc[1]++</text>
+        <text x="165" y="1053" class="t-detail3">merge(a,b) → {a[0]+b[0], a[1]+b[1]}  ·  getResult() → long[]</text>
+        <text x="150" y="1069" class="t-op">EMIT:  AuthWindowEmitter  →  AuthWindowSummary(orgId, start, end, success, fail)</text>
+      </g>
+
+      <!-- A: windowedSummary → Metrics Sink -->
+      <line x1="380" y1="1073" x2="380" y2="1118" class="arr"/>
+
+      <g class="nd-group" id="n-sink-metrics">
+        <rect x="130" y="1123" width="500" height="70" rx="8" class="nd-kafka"/>
+        <text x="150" y="1145" class="t-title" fill="#f59e0b">SINK: DynamicKafkaSink (Metrics)</text>
+        <text x="150" y="1161" class="t-class">MetricsTopicSelector  ·  sinkId: "metrics"  ·  OP: "Sink: Kafka Metrics"</text>
+        <text x="150" y="1177" class="t-detail5">getTopic()  →  TOPIC_METRICS_PREFIX + orgId  →  metrics.auth.{orgId}</text>
+      </g>
+
+      <!-- A: side output late from windowedSummary -->
+      <path d="M130,1000 Q60,1000 60,1100 Q60,1240 130,1240" class="arr-side"/>
+      <text x="20" y="1090" class="t-arrdlq" transform="rotate(-90,20,1090)">LATE_EVENT_DLQ_TAG</text>
+
+      <!-- ── BRANCH B: BRUTE FORCE ── -->
+
+      <!-- B1: FailureFilter -->
+      <g class="nd-group" id="n-filter">
+        <rect x="740" y="903" width="500" height="65" rx="8" class="nd-flink"/>
+        <text x="760" y="925" class="t-title">④B filter()  →  FailureFilter</text>
+        <text x="760" y="941" class="t-class">FilterFunction&lt;OcsfAuthentication&gt;  ·  OP: "Filter: Auth Failures"</text>
+        <text x="760" y="957" class="t-detail">filter( event )  →  return event.getStatusId() == 2  // FAILED auth only</text>
+      </g>
+
+      <!-- Filter → SessionWindow -->
+      <line x1="990" y1="968" x2="990" y2="998" class="arr"/>
+      <text x="995" y="985" class="t-arrow">filtered failures</text>
+
+      <!-- B2: keyBy + SessionWindow -->
+      <g class="nd-group" id="n-win-brute">
+        <rect x="740" y="1003" width="500" height="175" rx="8" class="nd-window"/>
+        <text x="760" y="1025" class="t-title" fill="#a78bfa">⑤B keyBy() + EventTimeSessionWindows</text>
+        <text x="760" y="1041" class="t-class">KeySelector: OrgIpKeySelector  ·  OP: "Window: Brute Force Detection (Session)"</text>
+        <text x="760" y="1057" class="t-detail3">getKey( event )  →  Tuple2( orgId, srcEndpoint.ip )  // "unknown_ip" if null</text>
+        <text x="760" y="1073" class="t-detail3">window( EventTimeSessionWindows.withGap( Time.minutes(sessionGapMin) ) )</text>
+        <text x="760" y="1089" class="t-detail3">allowedLateness( Time.seconds(allowedLatenessSec) )</text>
+        <text x="760" y="1105" class="t-detail4">sideOutputLateData( LATE_EVENT_DLQ_TAG )</text>
+        <text x="760" y="1121" class="t-op">AGGREGATE:  FailureCountAggregator</text>
+        <text x="775" y="1137" class="t-detail3">createAccumulator() → 0L  ·  add() → acc + 1L  ·  merge() → a + b</text>
+        <text x="760" y="1153" class="t-op">EMIT:  BruteForceEmitter( threshold )</text>
+        <text x="775" y="1169" class="t-detail3">if ( failureCount &gt;= threshold )  →  out.collect( BruteForceAlert(orgId, ip, start, end, count) )</text>
+      </g>
+
+      <!-- B: BruteForce → Alert Sink -->
+      <line x1="990" y1="1178" x2="990" y2="1218" class="arr"/>
+
+      <g class="nd-group" id="n-sink-alerts">
+        <rect x="740" y="1223" width="500" height="70" rx="8" class="nd-alert"/>
+        <text x="760" y="1245" class="t-title" fill="#fb923c">SINK: DynamicKafkaSink (Alerts)</text>
+        <text x="760" y="1261" class="t-class">AlertsTopicSelector  ·  sinkId: "alerts"  ·  OP: "Sink: Kafka Alerts"</text>
+        <text x="760" y="1277" class="t-detail5" fill="#fcd34d">getTopic()  →  TOPIC_ALERTS_PREFIX + orgId  →  alerts.{orgId}</text>
+      </g>
+
+      <!-- B: side output late from brute force -->
+      <path d="M1240,1090 Q1310,1090 1310,1200 Q1310,1280 1240,1280" class="arr-side"/>
+      <text x="1325" y="1180" class="t-arrdlq" transform="rotate(90,1325,1180)">LATE_EVENT_DLQ_TAG</text>
+
+      <!-- ── UNION → LATE DLQ ── -->
+      <!-- union label -->
+      <text x="530" y="1265" class="t-arrdlq" text-anchor="middle">.union()  →  merge both LATE_EVENT_DLQ_TAG streams</text>
+
+      <!-- left DLQ line to union point -->
+      <path d="M380,1193 L380,1310 L690,1310" class="arr-dlq"/>
+      <!-- right DLQ line to union point -->
+      <path d="M990,1293 L990,1310 L700,1310" class="arr-dlq"/>
+
+      <!-- union → Late DLQ Sink -->
+      <line x1="690" y1="1310" x2="690" y2="1340" class="arr-dlq"/>
+
+      <g class="nd-group" id="n-sink-dlq">
+        <rect x="460" y="1345" width="460" height="90" rx="8" class="nd-dlq"/>
+        <text x="480" y="1367" class="t-title" fill="#f87171">SINK: DynamicKafkaSink (Late DLQ)</text>
+        <text x="480" y="1383" class="t-class">LateDataDlqTopicSelector  ·  sinkId: "late-dlq"</text>
+        <text x="480" y="1399" class="t-op">OP: "Sink: Kafka Late Data DLQ"</text>
+        <text x="480" y="1415" class="t-detail4">getTopic()  →  TOPIC_DLQ_LATE_PREFIX + orgId  →  dlq.normalized.{orgId}</text>
+        <text x="480" y="1428" class="t-detail4">Type: OcsfAuthentication  (events arrived after watermark)</text>
+      </g>
+
+      <!-- ══ SECTION LABELS ══ -->
+      <text x="130" y="900" class="t-section">A — METRICS BRANCH</text>
+      <text x="740" y="900" class="t-section">B — BRUTE FORCE DETECTION BRANCH</text>
+
+    </svg>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB 2: DETAIL CARDS
+  ═══════════════════════════════════════════════════ -->
+  <div id="tab-detail" class="tab">
+    <div class="sec-title">Normalization Pipeline — buildNormalizationPipeline()</div>
+    <div class="panel-grid">
+
+      <div class="panel-card" style="animation-delay:.05s">
+        <div class="card-head">
+          <div class="card-icon">⚡</div>
+          <div><div class="card-title" style="color:#f59e0b">KafkaSource&lt;String&gt;</div>
+          <div class="card-class">org.apache.flink.connector.kafka.source.KafkaSource</div></div>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li>Bootstrap: <code>getKafkaBrokers()</code> → <code>kafka:29092</code></li>
+            <li>Topic: <code>logs.raw.{orgId}</code> (TOPIC_RAW_PREFIX)</li>
+            <li>GroupId: <code>auth-pipeline-group-{orgId}</code></li>
+            <li>Offset: <code class="c-amber">OffsetsInitializer.earliest()</code></li>
+            <li>Schema: <code>SimpleStringSchema</code> (UTF-8 string)</li>
+            <li>Watermark: <code>WatermarkStrategy.noWatermarks()</code> — watermarks gán ở bước sau</li>
+            <li>Khởi tạo: <code>env.fromSource(rawSource, ...)</code></li>
+          </ul>
+        </div>
+        <div class="card-tags"><span class="ctag ctag-amber">KAFKA SOURCE</span><span class="ctag ctag-blue">STRING ONLY</span></div>
+      </div>
+
+      <div class="panel-card" style="animation-delay:.1s">
+        <div class="card-head">
+          <div class="card-icon">⚙</div>
+          <div><div class="card-title">NormalizationProcessFunction</div>
+          <div class="card-class">extends ProcessFunction&lt;String, OcsfAuthentication&gt;</div></div>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><b>open():</b> khởi tạo <code>NormalizerRegistry.withDefaults()</code> (transient — không serialize)</li>
+            <li><b>processElement():</b> parse JSON bằng <code>MAPPER.readTree(rawJson)</code></li>
+            <li>Detect source: <code>cloudtrail</code> nếu có <code>eventVersion</code>/<code>userIdentity</code>, ngược lại <code>wazuh</code></li>
+            <li><code>registry.getNormalizer(sourceType).normalize(rawJson, orgId)</code> → <code>OcsfAuthentication</code></li>
+            <li>null result → <code class="c-red">ctx.output(PARSE_ERROR_DLQ_TAG, ...)</code></li>
+            <li>Exception → <code class="c-red">ctx.output(PARSE_ERROR_DLQ_TAG, rawJson)</code></li>
+          </ul>
+          <br><b>Side output:</b> <code class="c-red">PARSE_ERROR_DLQ_TAG</code> → <code>OutputTag&lt;String&gt;("dlq-parse-errors")</code>
+        </div>
+        <div class="card-tags"><span class="ctag ctag-blue">PROCESS FUNCTION</span><span class="ctag ctag-red">SIDE OUTPUT</span></div>
+      </div>
+
+      <div class="panel-card" style="animation-delay:.15s">
+        <div class="card-head">
+          <div class="card-icon">🕐</div>
+          <div><div class="card-title">OcsfTimestampAssigner</div>
+          <div class="card-class">SerializableTimestampAssigner&lt;OcsfAuthentication&gt;</div></div>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li>Strategy: <code>forBoundedOutOfOrderness(Duration.ofSeconds(allowedLatenessSec))</code></li>
+            <li><b>extractTimestamp():</b> <code>Instant.parse(event.getTime()).toEpochMilli()</code></li>
+            <li>Fallback: nếu parse lỗi → dùng <code>recordTimestamp</code></li>
+            <li>Default lateness: <code>30 seconds</code></li>
+          </ul>
+          <br><b>Kết quả:</b> <code>timestampedStream</code> — stream có event time và watermarks
+        </div>
+        <div class="card-tags"><span class="ctag ctag-blue">EVENT TIME</span><span class="ctag ctag-blue">WATERMARK</span></div>
+      </div>
+
+      <div class="panel-card" style="animation-delay:.2s">
+        <div class="card-head">
+          <div class="card-icon">🔍</div>
+          <div><div class="card-title" style="color:#34d399">OcsfOpensearchEmitter</div>
+          <div class="card-class">OpensearchEmitter&lt;OcsfAuthentication&gt;</div></div>
+        </div>
+        <div class="card-body">
+          <ul>
+            <li><b>emit():</b> nhận event, tạo <code class="c-green">IndexRequest</code></li>
+            <li>Index: <code class="c-green">ocsf-auth-{orgId}-000001</code></li>
+            <li>DocId: <code class="c-green">sha256(orgId + "|" + time + "|" + ip)</code> — idempotent</li>
+            <li><b>Guard:</b> <code>Instant.parse(element.getTime())</code> → drop nếu timestamp không hợp lệ (tránh bulk failure)</li>
+            <li>Serialize: <code>MAPPER.writeValueAsBytes(element)</code> → <code>XContentType.JSON</code></li>
+            <li>URL parse: <code>new URL(config.getOpenSearchUrl())</code> → host, port, protocol</li>
+          </ul>
+        </div>
+        <div class="card-tags"><span class="ctag ctag-green">AT_LEAST_ONCE</span><span class="ctag ctag-green">SHA256 DEDUP</span></div>
+      </div>
+
+    </div>
+
+    <div class="sec-title">Analytics Topology — buildAnalyticsTopology()</div>
+    <div class="panel-grid">
+
+      <div class="panel-card" style="animation-delay:.05s">
+        <div class="card-head">
+          <div class="card-icon">🪟</div>
+          <div><div class="card-title" style="color:#a78bfa">AuthCountAggregator + AuthWindowEmitter</div>
+          <div class="card-class">AggregateFunction&lt;OcsfAuth, long[], long[]&gt; + ProcessWindowFunction</div></div>
+        </div>
+        <div class="card-body">
+          <b>KeySelector:</b> <code class="c-purple">OrgIdKeySelector</code> → <code>event.getMetadata().getOrgId()</code><br>
+          <b>Window:</b> <code class="c-purple">TumblingEventTimeWindows.of(Time.minutes(5))</code><br><br>
+          <b>AggregateFunction:</b>
+          <ul>
+            <li><code>createAccumulator()</code> → <code>long[]{0L, 0L}</code></li>
+            <li><code>add()</code>: <code>statusId==1</code> → acc[0]++ (success), else acc[1]++ (fail)</li>
+            <li><code>merge(a,b)</code> → <code>{a[0]+b[0], a[1]+b[1]}</code></li>
+          </ul>
+          <b>ProcessWindowFunction:</b>
+          <ul>
+            <li><code>process(orgId, ctx, elements, out)</code></li>
+            <li>→ <code>AuthWindowSummary(orgId, window.start, window.end, success, fail)</code></li>
+          </ul>
+        </div>
+        <div class="card-tags"><span class="ctag ctag-purple">TUMBLING WINDOW</span><span class="ctag ctag-purple">AGGREGATE + EMIT</span></div>
+      </div>
+
+      <div class="panel-card" style="animation-delay:.1s">
+        <div class="card-head">
+          <div class="card-icon">🚨</div>
+          <div><div class="card-title" style="color:#fb923c">FailureFilter + BruteForceEmitter</div>
+          <div class="card-class">FilterFunction + AggregateFunction + ProcessWindowFunction</div></div>
+        </div>
+        <div class="card-body">
+          <b>Filter:</b> <code>event.getStatusId() == 2</code> (chỉ giữ failed auth)<br><br>
+          <b>KeySelector:</b> <code class="c-orange">OrgIpKeySelector</code> → <code>Tuple2(orgId, ip)</code><br>
+          <b>Window:</b> <code class="c-orange">EventTimeSessionWindows.withGap(Time.minutes(2))</code><br><br>
+          <b>FailureCountAggregator:</b>
+          <ul>
+            <li><code>createAccumulator()</code> → <code>0L</code></li>
+            <li><code>add()</code> → <code>acc + 1L</code></li>
+            <li><code>merge()</code> → <code>a + b</code></li>
+          </ul>
+          <b>BruteForceEmitter(threshold):</b>
+          <ul>
+            <li>if <code>failureCount &gt;= threshold (default: 10)</code></li>
+            <li>→ <code>BruteForceAlert(orgId, ip, start, end, count)</code></li>
+          </ul>
+        </div>
+        <div class="card-tags"><span class="ctag ctag-orange">SESSION WINDOW</span><span class="ctag ctag-red">THRESHOLD GUARD</span></div>
+      </div>
+
+      <div class="panel-card" style="animation-delay:.15s">
+        <div class="card-head">
+          <div class="card-icon">🗄</div>
+          <div><div class="card-title" style="color:#f87171">Late Data DLQ — union()</div>
+          <div class="card-class">OutputTag&lt;OcsfAuthentication&gt;("dlq-late-events")</div></div>
+        </div>
+        <div class="card-body">
+          Cả 2 window đều output late events ra cùng 1 <code class="c-red">LATE_EVENT_DLQ_TAG</code><br><br>
+          <code class="c-red">windowedSummary.getSideOutput(LATE_EVENT_DLQ_TAG)</code><br>
+          <code class="c-red">&nbsp;&nbsp;.union(bruteForceAlerts.getSideOutput(LATE_EVENT_DLQ_TAG))</code><br>
+          <code class="c-red">&nbsp;&nbsp;.addSink(new DynamicKafkaSink(...))</code><br><br>
+          <ul>
+            <li>Topic: <code class="c-red">dlq.normalized.{orgId}</code></li>
+            <li>SinkId: <code class="c-red">"late-dlq"</code></li>
+            <li>Dùng <code>.union()</code> để merge 2 side output stream cùng type</li>
+          </ul>
+        </div>
+        <div class="card-tags"><span class="ctag ctag-red">LATE DATA</span><span class="ctag ctag-red">.union()</span><span class="ctag ctag-red">DLQ PATTERN</span></div>
+      </div>
+
+      <div class="panel-card" style="animation-delay:.2s">
+        <div class="card-head">
+          <div class="card-icon">🏗</div>
+          <div><div class="card-title">DynamicKafkaSink (pattern)</div>
+          <div class="card-class">com.secuwall.flink.sink.DynamicKafkaSink</div></div>
+        </div>
+        <div class="card-body">
+          Custom sink cho phép routing đến Kafka topic khác nhau per-record:<br><br>
+          <ul>
+            <li><code>NormalizedTopicSelector</code> → <code>logs.normalized.{orgId}</code></li>
+            <li><code>MetricsTopicSelector</code> → <code>metrics.auth.{orgId}</code></li>
+            <li><code>AlertsTopicSelector</code> → <code>alerts.{orgId}</code></li>
+            <li><code>LateDataDlqTopicSelector</code> → <code>dlq.normalized.{orgId}</code></li>
+          </ul>
+          <br>Pattern: mỗi TopicSelector implement <code>getTopic(T element)</code> → dynamic routing per orgId
+        </div>
+        <div class="card-tags"><span class="ctag ctag-amber">DYNAMIC ROUTING</span><span class="ctag ctag-blue">MULTI-TENANT</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB 3: INTERVIEW NOTES
+  ═══════════════════════════════════════════════════ -->
+  <div id="tab-interview" class="tab">
+    <div class="sec-title">Flink Core Concepts — Câu hỏi phổ biến trong PV</div>
+    <div class="interview-grid">
+
+      <div class="interview-card">
+        <h3><span style="color:#38bdf8">⏱</span> Event Time vs Processing Time</h3>
+        <div class="iq">Q: Pipeline này dùng Event Time hay Processing Time? Tại sao?</div>
+        <div class="ia">Dùng <code>Event Time</code>. Timestamp được extract từ <code>event.getTime()</code> (log timestamp thực tế), không phải thời gian Flink nhận được. Điều này đảm bảo window tính toán đúng ngay cả khi dữ liệu đến trễ (network lag, backpressure).</div>
+
+        <div class="iq">Q: forBoundedOutOfOrderness là gì?</div>
+        <div class="ia">Watermark strategy cho phép event đến trễ tối đa N giây sau event mới nhất. Watermark = max_seen_timestamp - N. Ở đây N = <code>allowedLatenessSec (default 30s)</code>. Sau watermark này, event sẽ bị coi là "late".</div>
+      </div>
+
+      <div class="interview-card">
+        <h3><span style="color:#a78bfa">🪟</span> Tumbling vs Session Window</h3>
+        <div class="compare-row">
+          <div class="compare-box">
+            <h4 style="color:#a78bfa">Tumbling (Metrics)</h4>
+            <ul>
+              <li>Fixed-size, non-overlapping</li>
+              <li>5 phút một window</li>
+              <li>Key: orgId</li>
+              <li>Đếm success/fail per org</li>
+              <li>Predictable, good for dashboards</li>
+            </ul>
+          </div>
+          <div class="compare-box">
+            <h4 style="color:#fb923c">Session (Brute Force)</h4>
+            <ul>
+              <li>Dynamic, gap-based</li>
+              <li>Gap = 2 phút inactivity</li>
+              <li>Key: Tuple2(orgId, ip)</li>
+              <li>Cluster failed attempts per IP</li>
+              <li>Ideal for behavioral patterns</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="interview-card">
+        <h3><span style="color:#f87171">📦</span> Side Outputs & DLQ Pattern</h3>
+        <div class="iq">Q: Side Output dùng để làm gì?</div>
+        <div class="ia">Side output cho phép emit các loại dữ liệu khác nhau từ cùng 1 operator mà không làm phức tạp main stream. Ở đây có 2 loại: <code>PARSE_ERROR_DLQ_TAG</code> (String — raw JSON lỗi) và <code>LATE_EVENT_DLQ_TAG</code> (OcsfAuthentication — events đến sau watermark).</div>
+
+        <div class="iq">Q: allowedLateness và sideOutputLateData khác gì nhau?</div>
+        <div class="ia"><code>allowedLateness</code> = thời gian window vẫn còn "sống" sau watermark để nhận thêm late events (trigger thêm). <code>sideOutputLateData</code> = sau khi window đóng hoàn toàn, events còn trễ hơn sẽ bị route sang side output thay vì bị drop.</div>
+      </div>
+
+      <div class="interview-card">
+        <h3><span style="color:#34d399">🔄</span> AggregateFunction vs ProcessWindowFunction</h3>
+        <div class="iq">Q: Tại sao dùng cả hai?</div>
+        <div class="ia"><code>AggregateFunction</code> tính toán incremental (không giữ toàn bộ elements trong memory), kết hợp với <code>ProcessWindowFunction</code> để access <code>WindowContext</code> (lấy <code>window.getStart()</code>, <code>window.getEnd()</code>). Đây là pattern hiệu quả nhất: low memory + window metadata.</div>
+
+        <div class="iq">Q: merge() trong AggregateFunction khi nào được gọi?</div>
+        <div class="ia">Khi Flink cần merge 2 session windows (SessionWindows có thể merge khi events của 2 session gặp nhau). Với TumblingWindows, <code>merge()</code> ít khi dùng nhưng vẫn phải implement.</div>
+      </div>
+
+      <div class="interview-card">
+        <h3><span style="color:#f59e0b">☁</span> Checkpointing & Fault Tolerance</h3>
+        <div class="iq">Q: Checkpoint interval bao lâu? Tại sao?</div>
+        <div class="ia">60 giây (<code>CHECKPOINT_INTERVAL_MS = 60_000</code>). Balance giữa: overhead của checkpoint (snapshot state + barriers) và recovery time (replay từ last checkpoint). Với security analytics, 60s acceptable.</div>
+
+        <div class="iq">Q: Kafka offset được quản lý thế nào?</div>
+        <div class="ia">Flink Kafka Source tích hợp với checkpoint — offset được commit vào Flink state, không phải Kafka consumer group. Điều này cho phép exactly-once semantics (với appropriate Kafka sink config). Dùng <code>OffsetsInitializer.earliest()</code> để consume lại từ đầu khi có state mới.</div>
+      </div>
+
+      <div class="interview-card">
+        <h3><span style="color:#f472b6">🏗</span> Architecture Patterns trong code này</h3>
+        <div class="iq">Q: Multi-tenant design?</div>
+        <div class="ia">Toàn bộ topics, indexes, groupId đều có <code>{orgId}</code> suffix. <code>DynamicKafkaSink</code> route per-record dựa trên <code>element.getMetadata().getOrgId()</code>. Một job xử lý nhiều org đồng thời, mỗi org có data isolated.</div>
+
+        <div class="iq">Q: Idempotent writes OpenSearch?</div>
+        <div class="ia">DocId = <code>sha256(orgId + "|" + time + "|" + ip)</code>. Khi Flink retry (at-least-once), cùng event sẽ write cùng docId → OpenSearch upsert → không tạo duplicate. Guard thêm: validate <code>Instant.parse(time)</code> trước khi index, tránh bulk API failure làm ảnh hưởng toàn checkpoint.</div>
+      </div>
+
+      <div class="interview-card">
+        <h3><span style="color:#06b6d4">🔑</span> KeySelector & Parallelism</h3>
+        <div class="iq">Q: Tại sao Branch B key bằng Tuple2(orgId, ip) thay vì chỉ ip?</div>
+        <div class="ia">Multi-tenant: IP <code>192.168.1.1</code> của org A và org B là hoàn toàn khác nhau. Nếu chỉ key by IP, brute force detection sẽ cross-contaminate giữa các org. Key compound <code>Tuple2(orgId, ip)</code> đảm bảo isolation.</div>
+
+        <div class="iq">Q: "unknown_ip" fallback ảnh hưởng gì?</div>
+        <div class="ia">Tất cả events không có IP sẽ group vào 1 key <code>(orgId, "unknown_ip")</code> — tạo ra một "super session" có thể trigger false positive nếu có nhiều lỗi auth không có IP. Đây là điểm có thể cải thiện (drop hoặc separate bucket).</div>
+      </div>
+
+      <div class="interview-card">
+        <h3><span style="color:#fb923c">⚠</span> Điểm cần cải thiện / Trade-offs</h3>
+        <ul style="font-size:12px;color:#94a3b8;line-height:2;list-style:none;padding:0">
+          <li>⚠ <code>printToErr()</code> cho parse errors — không phù hợp production, nên dùng Kafka DLQ topic thực sự</li>
+          <li>⚠ Chỉ xử lý 1 org (DEMO_ORG_ID) — cần extend để consume nhiều topics pattern</li>
+          <li>⚠ <code>unknown_ip</code> fallback có thể tạo false positive brute force alerts</li>
+          <li>⚠ OpenSearch sink: AT_LEAST_ONCE, sha256 dedup handle duplicate nhưng cần test kỹ bulk failure scenario</li>
+          <li>✅ Tất cả magic strings đã được extract thành constants — dễ maintain</li>
+          <li>✅ MAPPER là static field thread-safe (ObjectMapper)</li>
+          <li>✅ NormalizerRegistry là transient — tránh serialization issue trong distributed env</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB 4: TOPICS & CONFIG
+  ═══════════════════════════════════════════════════ -->
+  <div id="tab-topics" class="tab">
+    <div class="sec-title">Kafka Topics Flow</div>
+    <table class="topics-table">
+      <thead>
+        <tr>
+          <th>Direction</th><th>Topic Pattern</th><th>Type</th><th>Constant</th><th>Producer</th><th>Consumer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="color:#f59e0b">INPUT</td><td><code>logs.raw.{orgId}</code></td><td style="color:#94a3b8">String (raw JSON)</td><td><code>TOPIC_RAW_PREFIX</code></td><td>External</td><td>KafkaSource</td></tr>
+        <tr><td style="color:#38bdf8">OUTPUT</td><td><code>logs.normalized.{orgId}</code></td><td style="color:#94a3b8">OcsfAuthentication (JSON)</td><td><code>TOPIC_NORMALIZED_PREFIX</code></td><td>NormalizedTopicSelector</td><td>Downstream</td></tr>
+        <tr><td style="color:#38bdf8">OUTPUT</td><td><code>metrics.auth.{orgId}</code></td><td style="color:#94a3b8">AuthWindowSummary (JSON)</td><td><code>TOPIC_METRICS_PREFIX</code></td><td>MetricsTopicSelector</td><td>Dashboard / Analytics</td></tr>
+        <tr><td style="color:#fb923c">ALERT</td><td><code>alerts.{orgId}</code></td><td style="color:#94a3b8">BruteForceAlert (JSON)</td><td><code>TOPIC_ALERTS_PREFIX</code></td><td>AlertsTopicSelector</td><td>SIEM / Notification</td></tr>
+        <tr><td style="color:#f87171">DLQ</td><td><code>dlq.normalized.{orgId}</code></td><td style="color:#94a3b8">OcsfAuthentication (late)</td><td><code>TOPIC_DLQ_LATE_PREFIX</code></td><td>LateDataDlqTopicSelector</td><td>Replay / Monitor</td></tr>
+        <tr><td style="color:#34d399">INDEX</td><td><code>ocsf-auth-{orgId}-000001</code></td><td style="color:#94a3b8">OcsfAuthentication (JSON)</td><td><code>INDEX_OCSF_AUTH_PREFIX</code></td><td>OcsfOpensearchEmitter</td><td>OpenSearch</td></tr>
+      </tbody>
+    </table>
+
+    <div class="sec-title">JobConfig — Cấu hình runtime</div>
+    <table class="topics-table">
+      <thead>
+        <tr><th>Parameter Key</th><th>Default</th><th>Getter Method</th><th>Ảnh hưởng</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>KAFKA_BROKERS</code></td><td><code>kafka:29092</code></td><td><code>getKafkaBrokers()</code></td><td>KafkaSource bootstrap servers</td></tr>
+        <tr><td><code>OPENSEARCH_URL</code></td><td><code>http://opensearch:9200</code></td><td><code>getOpenSearchUrl()</code></td><td>OpensearchSinkBuilder host</td></tr>
+        <tr><td><code>DEMO_ORG_ID</code></td><td><code>org1</code></td><td><code>getOrgId()</code></td><td>Topics, indexes, groupId suffix</td></tr>
+        <tr><td><code>BRUTE_FORCE_THRESHOLD</code></td><td><code>10</code></td><td><code>getBruteForceThreshold()</code></td><td>BruteForceEmitter: min failures to alert</td></tr>
+        <tr><td><code>METRICS_WINDOW_MIN</code></td><td><code>5</code></td><td><code>getMetricsWindowMin()</code></td><td>TumblingEventTimeWindows size</td></tr>
+        <tr><td><code>SESSION_GAP_MIN</code></td><td><code>2</code></td><td><code>getSessionGapMin()</code></td><td>EventTimeSessionWindows gap</td></tr>
+        <tr><td><code>ALLOWED_LATENESS_SEC</code></td><td><code>30</code></td><td><code>getAllowedLatenessSec()</code></td><td>forBoundedOutOfOrderness + allowedLateness</td></tr>
+        <tr><td><code>CHECKPOINT_INTERVAL_MS</code></td><td><code>60000</code></td><td><code>getCheckpointIntervalMs()</code></td><td>env.enableCheckpointing()</td></tr>
+      </tbody>
+    </table>
+
+    <div class="sec-title">Priority: args → System Properties → Environment Variables</div>
+    <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;color:var(--txt2);line-height:2">
+      <span style="color:#38bdf8">ParameterTool.fromArgs(args)</span><br>
+      &nbsp;&nbsp;<span style="color:#475569">.mergeWith(</span> <span style="color:#38bdf8">ParameterTool.fromSystemProperties()</span> <span style="color:#475569">)</span><br>
+      &nbsp;&nbsp;<span style="color:#475569">.mergeWith(</span> <span style="color:#38bdf8">ParameterTool.fromMap(System.getenv())</span> <span style="color:#475569">)</span><br>
+      <span style="color:#475569">// priority: args &gt; system props &gt; env vars</span>
+    </div>
+  </div>
+
+</div><!-- end wrap -->
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

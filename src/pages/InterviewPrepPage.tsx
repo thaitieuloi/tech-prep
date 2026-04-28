@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Target, FileText, CheckCircle2, Star, AlertCircle, Mail, ChevronUp, Briefcase, Calendar, Cpu, Users, Zap, Search, MessageSquare, ShieldAlert, GitBranch, Terminal, LineChart } from 'lucide-react';
+import { ArrowLeft, Target, FileText, CheckCircle2, Star, AlertCircle, Mail, ChevronUp, Briefcase, Calendar, Cpu, Users, Zap, Search, MessageSquare, ShieldAlert, GitBranch, Terminal, LineChart, AlertTriangle, Brain, Network, Database, Layers } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 
@@ -35,11 +35,19 @@ export default function InterviewPrepPage() {
           </div>
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
-              <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-white/20">Studio Edition</span>
+              <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-white/20">Studio Edition · v2.0 — Post-Interview Improved</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tight">🎯 TECHNICAL LEADER INTERVIEW</h1>
             <p className="text-xl text-slate-100 mb-8 font-medium opacity-90 italic">Bilingual Q&A Preparation Guide · Song ngữ Anh–Việt</p>
             
+            {/* New: Improvement Alert */}
+            <div className="bg-white/15 border border-white/20 rounded-2xl p-4 mb-6 backdrop-blur-md">
+              <p className="text-sm font-bold text-yellow-200 flex items-center gap-2 mb-1">
+                <AlertTriangle className="w-4 h-4" /> Cải tiến dựa trên feedback buổi phỏng vấn thực tế:
+              </p>
+              <p className="text-white/80 text-xs">Đã bổ sung: Kafka Deep Dive · RAG Pipeline chuẩn · System Design Flow · Communication Framework · Câu trả lời được cấu trúc lại</p>
+            </div>
+
             <div className="flex flex-wrap gap-3">
               <span className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full text-sm font-medium flex items-center gap-2">
                 <Users className="w-4 h-4 text-blue-300" /> Thái Tiểu Lôi
@@ -57,8 +65,131 @@ export default function InterviewPrepPage() {
           </div>
         </motion.div>
 
+        {/* NEW: Post-Interview Feedback Analysis */}
+        <motion.div
+          id="pre-feedback"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-red-50 border-2 border-red-200 rounded-3xl p-8 mb-12"
+        >
+          <h3 className="text-lg font-black text-red-700 mb-6 flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5" /> ⚠️ Phân tích buổi phỏng vấn trước — Điểm cần cải thiện ngay
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white border border-red-100 rounded-2xl p-5">
+              <span className="text-xs font-black uppercase text-red-500 tracking-widest">Vấn đề #1</span>
+              <h4 className="font-black text-slate-800 mt-2 mb-2">Communication Structure</h4>
+              <p className="text-xs text-slate-500">Câu trả lời rời rạc, không có flow rõ ràng. Interviewer phản hồi: <em>"It did, but it's not very helpful."</em></p>
+              <div className="mt-3 p-2 bg-green-50 rounded-lg text-xs text-green-700 font-bold">✓ Fix: Dùng framework BLUF + STAR cho mọi câu</div>
+            </div>
+            <div className="bg-white border border-red-100 rounded-2xl p-5">
+              <span className="text-xs font-black uppercase text-red-500 tracking-widest">Vấn đề #2</span>
+              <h4 className="font-black text-slate-800 mt-2 mb-2">Thiếu Flow & Diagram</h4>
+              <p className="text-xs text-slate-500">System design không vẽ flow end-to-end. Kafka không giải thích partition/scaling strategy.</p>
+              <div className="mt-3 p-2 bg-green-50 rounded-lg text-xs text-green-700 font-bold">✓ Fix: Học thuộc flow diagrams trong guide này</div>
+            </div>
+            <div className="bg-white border border-red-100 rounded-2xl p-5">
+              <span className="text-xs font-black uppercase text-red-500 tracking-widest">Vấn đề #3</span>
+              <h4 className="font-black text-slate-800 mt-2 mb-2">Thiếu Insight & Trade-off</h4>
+              <p className="text-xs text-slate-500">Kafka & RAG chưa nói sâu về limitation, trade-off. Chỉ nói "tôi dùng Kafka" mà không giải thích WHY.</p>
+              <div className="mt-3 p-2 bg-green-50 rounded-lg text-xs text-green-700 font-bold">✓ Fix: Mỗi câu đều có Trade-off section mới</div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* NEW: Communication Framework */}
+        <motion.div
+          id="pre-framework"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="bg-white border border-slate-200 rounded-3xl p-8 mb-12 shadow-sm"
+        >
+          <h3 className="text-xl font-black text-slate-900 mb-2 flex items-center gap-2">
+            <MessageSquare className="w-6 h-6 text-indigo-500" />
+            🗣️ Communication Framework — Cấu trúc câu trả lời chuẩn
+          </h3>
+          <p className="text-sm text-slate-500 mb-8">Áp dụng cho MỌI câu hỏi kỹ thuật. Interviewer muốn nghe theo cấu trúc này.</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="border border-indigo-100 bg-indigo-50 rounded-2xl p-6">
+              <span className="text-xs font-black text-indigo-600 uppercase tracking-widest">Template 1 — BLUF (Bottom Line Up Front)</span>
+              <p className="text-xs text-slate-500 mt-1 mb-4">Dùng cho câu hỏi kỹ thuật trực tiếp</p>
+              <div className="space-y-3">
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">1</span>
+                  <div>
+                    <p className="text-xs font-black text-slate-800">ANSWER FIRST (1 câu)</p>
+                    <p className="text-xs text-slate-500 italic">"We chose Kafka because it decouples services and handles 10K+ TPS."</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">2</span>
+                  <div>
+                    <p className="text-xs font-black text-slate-800">WHY / HOW (2-3 câu)</p>
+                    <p className="text-xs text-slate-500 italic">"Specifically, we had DB write bottleneck causing 800ms latency..."</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">3</span>
+                  <div>
+                    <p className="text-xs font-black text-slate-800">TRADE-OFF (1 câu)</p>
+                    <p className="text-xs text-slate-500 italic">"The trade-off is eventual consistency, which was acceptable for this use case."</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 bg-indigo-400 text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">4</span>
+                  <div>
+                    <p className="text-xs font-black text-slate-800">RESULT (số liệu)</p>
+                    <p className="text-xs text-slate-500 italic">"Result: latency dropped from 800ms → 380ms."</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="border border-amber-100 bg-amber-50 rounded-2xl p-6">
+              <span className="text-xs font-black text-amber-600 uppercase tracking-widest">Template 2 — STAR (Situational)</span>
+              <p className="text-xs text-slate-500 mt-1 mb-4">Dùng cho câu behavioral / "tell me about a time"</p>
+              <div className="space-y-3">
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">S</span>
+                  <div>
+                    <p className="text-xs font-black text-slate-800">SITUATION (context ngắn gọn)</p>
+                    <p className="text-xs text-slate-500 italic">"At HSC, we were handling 1,500 TPS and needed to scale to 10K..."</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">T</span>
+                  <div>
+                    <p className="text-xs font-black text-slate-800">TASK (vai trò của bạn)</p>
+                    <p className="text-xs text-slate-500 italic">"As Tech Lead, my responsibility was to redesign the persistence layer..."</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">A</span>
+                  <div>
+                    <p className="text-xs font-black text-slate-800">ACTION (cụ thể, kỹ thuật)</p>
+                    <p className="text-xs text-slate-500 italic">"I introduced Kafka as WAL buffer, partitioned by symbol..."</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">R</span>
+                  <div>
+                    <p className="text-xs font-black text-slate-800">RESULT (số liệu bắt buộc)</p>
+                    <p className="text-xs text-slate-500 italic">"10,000 TPS sustained with p99 under 50ms."</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <TipBox 
+            en='Practice saying "The trade-off is..." after every technical decision. This single habit separates Senior from Principal engineers in interviews.'
+            vi='Luyện tập nói "The trade-off is..." sau mỗi quyết định kỹ thuật. Thói quen này phân biệt Senior với Principal engineer trong phỏng vấn.'
+          />
+        </motion.div>
+
         {/* Legend */}
-        <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm mb-12 border-l-4 border-l-[#2E75B6]">
+        <div id="legend" className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm mb-12 border-l-4 border-l-[#2E75B6]">
           <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
             🎨 Chú thích màu highlight – Keyword Recognition
           </h3>
@@ -86,40 +217,100 @@ export default function InterviewPrepPage() {
           </div>
         </div>
 
-        {/* Table of Contents */}
-        <div className="bg-white p-8 md:p-10 rounded-2xl border border-slate-200 shadow-sm mb-12">
-          <h2 className="text-2xl font-bold text-slate-900 mb-8 pb-4 border-b border-slate-100 flex items-center gap-3">
-            <FileText className="w-6 h-6 text-[#1F4E79]" />
-            📋 Mục lục / Table of Contents
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
-            {[
-              "Interview Opening – Self Introduction",
-              "Java, Spring Boot & Microservices",
-              "System Design & Architecture",
-              "Performance Optimization – 10k TPS",
-              "Data Engineering – Kafka, ELK",
-              "AI & RAG Systems",
-              "DevOps, CI/CD & Cloud",
-              "Team Leadership & Mentoring",
-              "Behavioral & Situational Questions",
-              "Candidate's Questions to Interviewer",
-              "Interview Closing",
-              "Final Tips – Lời khuyên tổng kết"
-            ].map((item, idx) => (
-              <a 
-                key={idx} 
-                href={`#s${idx + 1}`}
-                className="group flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 transition-colors text-slate-600 hover:text-[#2E75B6]"
-              >
-                <span className="w-6 h-6 rounded-lg bg-slate-100 group-hover:bg-[#1F4E79] group-hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
-                  {idx + 1}
-                </span>
-                <span className="text-[13px] font-semibold">{item}</span>
-              </a>
-            ))}
+        {/* Layout Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start relative">
+          {/* Sidebar TOC - Sticky Column (Desktop Only) */}
+          <div className="hidden lg:block lg:col-span-3 lg:sticky lg:top-24 order-2">
+            <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 overflow-y-auto max-h-[80vh] border-l-4 border-l-indigo-500">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                <Layers className="w-4 h-4 text-indigo-500" /> NAVIGATION
+              </h3>
+              <nav className="space-y-1">
+                {[
+                  { id: 'pre-feedback', label: 'Analysis Analysis', icon: <AlertTriangle className="w-3 h-3" /> },
+                  { id: 'pre-framework', label: 'Comm. Framework', icon: <MessageSquare className="w-3 h-3" /> },
+                  { id: 's1', label: 'Self Introduction' },
+                  { id: 's2', label: 'Java & Micro' },
+                  { id: 's3', label: 'Architecture Flow' },
+                  { id: 's4', label: 'Performance 10k' },
+                  { id: 's5', label: 'Kafka Deep Dive' },
+                  { id: 's6', label: 'RAG Pipeline' },
+                  { id: 's7', label: 'DevOps & Cloud' },
+                  { id: 's8', label: 'Leadership' },
+                  { id: 's9', label: 'Behavioral' },
+                  { id: 's10', label: 'Q to Interviewer' },
+                  { id: 's11', label: 'Interview Closing' },
+                  { id: 's12', label: 'Final Tips' }
+                ].map((item, idx) => (
+                  <a 
+                    key={item.id} 
+                    href={`#${item.id}`}
+                    className="group flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-slate-50 transition-all text-slate-500 hover:text-indigo-600 border border-transparent hover:border-slate-100"
+                  >
+                    <span className="w-5 h-5 bg-slate-50 rounded-lg flex items-center justify-center text-[10px] font-black group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                      {idx + 1}
+                    </span>
+                    <span className="text-[11px] font-bold truncate">{item.label}</span>
+                  </a>
+                ))}
+              </nav>
+
+              <div className="mt-8 pt-6 border-t border-slate-100">
+                <button 
+                  onClick={scrollToTop}
+                  className="w-full py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-indigo-600 transition-all shadow-lg shadow-slate-200"
+                >
+                  <ChevronUp className="w-3 h-3" /> Top
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+
+          {/* Main Content Column */}
+          <div className="lg:col-span-9 order-1">
+            {/* Table of Contents (Landing View) */}
+            <div id="toc" className="bg-white p-8 md:p-10 rounded-[2rem] border border-slate-200 shadow-sm mb-12 scroll-mt-24">
+              <h2 className="text-2xl font-bold text-slate-900 mb-8 pb-4 border-b border-slate-100 flex items-center gap-3">
+                <FileText className="w-6 h-6 text-[#1F4E79]" />
+                📋 Mục lục / Table of Contents
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
+                {[
+                  { id: 'pre-feedback', label: 'Analysis – Điểm cần cải thiện', icon: <AlertTriangle className="w-4 h-4 text-red-500" /> },
+                  { id: 'pre-framework', label: 'Communication Framework', icon: <MessageSquare className="w-4 h-4 text-blue-500" /> },
+                  { id: 's1', label: 'Interview Opening' },
+                  { id: 's2', label: 'Java & Microservices' },
+                  { id: 's3', label: 'System Design & Architecture' },
+                  { id: 's4', label: 'Performance Optimization' },
+                  { id: 's5', label: 'Kafka Deep Dive ★', star: true },
+                  { id: 's6', label: 'RAG Pipeline ★', star: true },
+                  { id: 's7', label: 'DevOps & Cloud' },
+                  { id: 's8', label: 'Leadership & Mentoring' },
+                  { id: 's9', label: 'Behavioral & Situational' },
+                  { id: 's10', label: 'Questions to Interviewer' },
+                  { id: 's11', label: 'Interview Closing' },
+                  { id: 's12', label: 'Final Tips' }
+                ].map((item, idx) => (
+                  <a 
+                    key={item.id} 
+                    href={`#${item.id}`}
+                    className={cn(
+                      "group flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 transition-colors text-slate-600 hover:text-[#2E75B6]",
+                      item.star && "bg-amber-50/50"
+                    )}
+                  >
+                    <span className="w-6 h-6 rounded-lg bg-slate-100 group-hover:bg-[#1F4E79] group-hover:text-white flex items-center justify-center text-[10px] font-bold transition-colors shrink-0">
+                      {idx + 1}
+                    </span>
+                    <span className="text-[13px] font-semibold flex items-center gap-2">
+                      {item.label}
+                      {item.icon}
+                      {item.star && <Star className="w-3 h-3 text-amber-500 fill-amber-500" />}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
 
         {/* Section 1: Opening */}
         <section id="s1" className="mb-16 scroll-mt-24">
@@ -301,9 +492,81 @@ export default function InterviewPrepPage() {
           </QuestionBlock>
         </section>
 
-        {/* Section 3: System Design */}
+        {/* Section 3: System Design — IMPROVED with Flow Diagrams */}
         <section id="s3" className="mb-16 scroll-mt-24">
-          <SectionHeader num={3} title="System Design & Architecture" sub="Thiết kế hệ thống & Kiến trúc" />
+          <SectionHeader num={3} title="System Design & Architecture — End-to-End Flow" sub="Thiết kế hệ thống & Kiến trúc — Cải thiện với sơ đồ rõ ràng" />
+
+          {/* NEW: Architecture Flow Visual */}
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm mb-10">
+            <h3 className="text-lg font-black text-slate-800 mb-2 flex items-center gap-2">
+              <Network className="w-5 h-5 text-indigo-500" />
+              🏗️ System Architecture Flow — HSC Trading Platform
+            </h3>
+            <p className="text-xs text-slate-500 mb-6">Vẽ sơ đồ này khi bị hỏi "Describe your architecture end-to-end". Nói từng bước theo mũi tên.</p>
+            
+            <div className="bg-slate-950 rounded-2xl p-6 font-mono text-sm overflow-x-auto">
+              <div className="text-green-400 text-xs mb-4">// Architecture Flow — HSC Stock Trading Platform (10,000 TPS)</div>
+              <div className="space-y-1 text-slate-300 text-xs leading-6">
+                <div><span className="text-yellow-400">CLIENT</span> (Mobile / Web)</div>
+                <div className="pl-4">↓ HTTPS</div>
+                <div><span className="text-blue-400">API GATEWAY</span> (Kong / Nginx) <span className="text-slate-500">// Rate limiting, Auth, SSL termination</span></div>
+                <div className="pl-4">↓ Internal HTTP</div>
+                <div><span className="text-blue-400">ORDER SERVICE</span> (Spring Boot) <span className="text-slate-500">// Validate, Enrich order</span></div>
+                <div className="pl-4">↓ Publish Event</div>
+                <div><span className="text-orange-400">KAFKA TOPIC: orders.{"{symbol}"}</span> <span className="text-slate-500">// Partitioned by symbol for ordering</span></div>
+                <div className="pl-4 grid grid-cols-3 gap-4 my-2">
+                  <div className="border border-slate-700 rounded p-2 text-center">
+                    <div className="text-green-400 text-xs">MATCHING ENGINE</div>
+                    <div className="text-slate-400 text-[10px]">Single thread/symbol</div>
+                    <div className="text-slate-400 text-[10px]">Deterministic order</div>
+                  </div>
+                  <div className="border border-slate-700 rounded p-2 text-center">
+                    <div className="text-purple-400 text-xs">RISK SERVICE</div>
+                    <div className="text-slate-400 text-[10px]">Compliance check</div>
+                    <div className="text-slate-400 text-[10px]">Async parallel</div>
+                  </div>
+                  <div className="border border-slate-700 rounded p-2 text-center">
+                    <div className="text-cyan-400 text-xs">NOTIFICATION</div>
+                    <div className="text-slate-400 text-[10px]">Push / Email</div>
+                    <div className="text-slate-400 text-[10px]">Fire & forget</div>
+                  </div>
+                </div>
+                <div className="pl-4">↓ Trade executed → Publish to settlement topic</div>
+                <div><span className="text-orange-400">KAFKA TOPIC: trades.settled</span></div>
+                <div className="pl-4">↓ Consume</div>
+                <div className="flex gap-4">
+                  <div><span className="text-red-400">PostgreSQL</span> <span className="text-slate-500">// Positions (CP - Strong consistent)</span></div>
+                  <div className="ml-8"><span className="text-red-400">Cassandra</span> <span className="text-slate-500">// Trade history (AP - Eventual)</span></div>
+                </div>
+                <div className="pl-4">↓ Cache Layer</div>
+                <div><span className="text-green-400">REDIS</span> <span className="text-slate-500">// User positions, session (60% DB load reduction)</span></div>
+                <div className="mt-4 border-t border-slate-700 pt-4">
+                  <div className="text-slate-500">Monitoring: <span className="text-blue-300">Prometheus</span> + <span className="text-orange-300">Grafana</span> + <span className="text-yellow-300">ELK Stack</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                <span className="text-xs font-black text-blue-600 uppercase">Key Design Decision #1</span>
+                <p className="text-sm font-bold text-slate-800 mt-1">Partition by Symbol</p>
+                <p className="text-xs text-slate-500 mt-1">Ensures order per instrument without global lock. Trade-off: uneven partition load for hot symbols.</p>
+                <p className="text-[11px] text-slate-400 italic mt-2">🇻🇳 Phân vùng theo Symbol đảm bảo thứ tự khớp lệnh. Đánh đổi: phân vùng có thể mất cân bằng với symbol hot.</p>
+              </div>
+              <div className="bg-purple-50 border border-purple-100 rounded-xl p-4">
+                <span className="text-xs font-black text-purple-600 uppercase">Key Design Decision #2</span>
+                <p className="text-sm font-bold text-slate-800 mt-1">CP vs AP per data type</p>
+                <p className="text-xs text-slate-500 mt-1">Balance (money) = CP (PostgreSQL). History = AP (Cassandra). This is CAP theorem applied in practice.</p>
+                <p className="text-[11px] text-slate-400 italic mt-2">🇻🇳 Số dư tiền cần nhất quán tức thì. Lịch sử giao dịch chịu được eventual consistency.</p>
+              </div>
+              <div className="bg-green-50 border border-green-100 rounded-xl p-4">
+                <span className="text-xs font-black text-green-600 uppercase">Key Design Decision #3</span>
+                <p className="text-sm font-bold text-slate-800 mt-1">WAL via Kafka</p>
+                <p className="text-xs text-slate-500 mt-1">Don't write to DB synchronously in hot path. Write to Kafka first (WAL), then project to DB async. 3x speed gain.</p>
+                <p className="text-[11px] text-slate-400 italic mt-2">🇻🇳 Ghi Kafka trước (WAL), sau đó mới đồng bộ sang DB, tăng 3x tốc độ.</p>
+              </div>
+            </div>
+          </div>
 
           <QuestionBlock 
             qNum="Q7"
@@ -334,33 +597,6 @@ export default function InterviewPrepPage() {
                 </ListItem>
               </ul>
             </div>
-          </QuestionBlock>
-
-          <QuestionBlock 
-            qNum="SHD"
-            qEn="What is your strategy for Database Sharding?"
-            qVi="Chiến lược Database Sharding của bạn là gì?"
-          >
-            <ul className="space-y-3 text-slate-700">
-              <ListItem>
-                <div>
-                  <p><Highlight type="key">When to shard:</Highlight> When we hit the <Highlight type="num">IOPS limit</Highlight> of a single disk or vertical scaling is too costly.</p>
-                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Khi nào shard: Khi chạm ngưỡng giới hạn IOPS của đĩa đơn hoặc việc nâng cấp phần cứng quá tốn kém.</p>
-                </div>
-              </ListItem>
-              <ListItem>
-                <div>
-                  <p><Highlight type="key">Strategy:</Highlight> I prefer <Highlight type="action">Application-level sharding</Highlight> using <Highlight type="soft">UserId</Highlight> to avoid cross-shard joins.</p>
-                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Chiến lược: Ưu tiên sharding ở tầng ứng dụng theo UserId để tránh việc join dữ liệu giữa các phân vùng khác nhau.</p>
-                </div>
-              </ListItem>
-              <ListItem>
-                <div>
-                  <p><Highlight type="key">The cost:</Highlight> You lose <Highlight type="soft">Global referential integrity</Highlight> and reporting becomes complex.</p>
-                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Chi phí: Mất đi tính nhất quán tham chiếu toàn cục và việc làm báo cáo sẽ trở nên rất phức tạp.</p>
-                </div>
-              </ListItem>
-            </ul>
           </QuestionBlock>
 
           <QuestionBlock 
@@ -411,27 +647,11 @@ export default function InterviewPrepPage() {
               <ul className="space-y-3 text-slate-700">
                 <ListItem>
                   <div>
-                    <p><Highlight type="key">Asynchronous Decoupling:</Highlight> We broke the monolith process into small, atomic tasks. DB writes moved to an <Highlight type="tech">Outbox pattern</Highlight>.</p>
-                    <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Tách rời bất đồng bộ: Chia nhỏ quy trình thành các tác vụ nguyên tử. Ghi DB thông qua Outbox pattern.</p>
-                  </div>
-                </ListItem>
-                <ListItem>
-                  <div>
-                    <p><Highlight type="tech">Optimistic Locking:</Highlight> We used version-based locking to allow more concurrent reads.</p>
-                    <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Optimistic Locking: Sử dụng cơ chế lock theo version để cho phép đọc dữ liệu đồng thời nhiều hơn.</p>
-                  </div>
-                </ListItem>
-                <ListItem>
-                  <div>
                     <p><Highlight type="action">Result:</Highlight> Settlement time dropped from <Highlight type="num">800ms</Highlight> to <Highlight type="num">380ms</Highlight> (roughly 52%).</p>
                     <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Kết quả: Thời gian tất toán giảm từ 800ms xuống còn 380ms (khoảng 52%).</p>
                   </div>
                 </ListItem>
               </ul>
-              <TipBox 
-                en="Interviewers love this because it shows you can quantify technical decisions into business ROI."
-                vi="Sử dụng số liệu % cụ thể giúp bạn ghi điểm tuyệt đối vì chứng minh được bạn có tư duy tối ưu hóa lợi nhuận (ROI) cho doanh nghiệp."
-              />
             </div>
           </QuestionBlock>
 
@@ -467,52 +687,150 @@ export default function InterviewPrepPage() {
               </div>
             </div>
           </QuestionBlock>
+        </section>
 
+        {/* Section 5: Kafka DEEP DIVE — COMPLETELY NEW */}
+        <section id="s5" className="mb-16 scroll-mt-24">
+          <SectionHeader num={5} title="Kafka Deep Dive ★ — Được cải thiện" sub="Kỹ thuật dữ liệu – Kafka chuyên sâu theo feedback phỏng vấn" />
+
+          {/* NEW: Why Kafka — BLUF Template */}
           <QuestionBlock 
-            qNum="STR"
-            qEn="As an Architecture/Tech Lead, what are your systematic strategies to improve system performance?"
-            qVi="Với vai trò là Tech Lead, anh có những chiến lược hệ thống nào để cải thiện hiệu năng?"
+            qNum="WHY"
+            qEn="Why did you choose Kafka? What problem does it solve?"
+            qVi="Tại sao chọn Kafka? Nó giải quyết vấn đề gì? — Câu bị hỏi trong phỏng vấn"
             isMustKnow
+          >
+            <div className="space-y-6">
+              <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5 mb-4">
+                <span className="text-xs font-black text-indigo-600 uppercase tracking-widest">Câu trả lời chuẩn theo BLUF Template</span>
+                <div className="mt-4 space-y-3 text-sm text-slate-700">
+                  <div className="flex gap-3">
+                    <span className="w-5 h-5 bg-indigo-600 text-white rounded-full flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5">1</span>
+                    <p><strong>ANSWER:</strong> "We chose Kafka because it <Highlight type="key">decouples services and handles high throughput</Highlight> asynchronously."</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <span className="w-5 h-5 bg-indigo-600 text-white rounded-full flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5">2</span>
+                    <p><strong>WHY:</strong> "Specifically, our DB write throughput was our bottleneck. Synchronous writes caused <Highlight type="num">800ms</Highlight> latency. Kafka acts as a <Highlight type="tech">write-ahead buffer</Highlight>, taking DB pressure off the hot path."</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <span className="w-5 h-5 bg-amber-500 text-white rounded-full flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5">3</span>
+                    <p><strong>TRADE-OFF:</strong> "The trade-off is we moved from synchronous to <Highlight type="key">eventual consistency</Highlight>. For trade history this is acceptable, but for account balance we kept synchronous DB writes."</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <span className="w-5 h-5 bg-green-600 text-white rounded-full flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5">4</span>
+                    <p><strong>RESULT:</strong> "Latency dropped from <Highlight type="num">800ms to 380ms</Highlight>, and we scaled to <Highlight type="num">10,000 TPS</Highlight>."</p>
+                  </div>
+                </div>
+              </div>
+              <ul className="space-y-3 text-slate-700">
+                <ListItem>
+                  <div>
+                    <p>4 core reasons to use Kafka: <Highlight type="key">Decoupling · High Throughput · Durability · Replay</Highlight></p>
+                    <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 4 lý do cốt lõi: Tách rời hệ thống, thông lượng cao, độ bền dữ liệu, khả năng replay event.</p>
+                  </div>
+                </ListItem>
+                <ListItem>
+                  <div>
+                    <p>Kafka is especially suited for <Highlight type="key">spike traffic buffering</Highlight> — absorbs burst loads and lets downstream consume at their own pace.</p>
+                    <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Kafka đặc biệt phù hợp để buffer khi có spike traffic — hấp thụ tải đột biến, cho downstream xử lý theo tốc độ riêng.</p>
+                  </div>
+                </ListItem>
+              </ul>
+            </div>
+          </QuestionBlock>
+
+          {/* NEW: Kafka Partition Strategy */}
+          <QuestionBlock 
+            qNum="PAR"
+            qEn="How did you design your Kafka partition strategy? How do you scale from 10K to 100K TPS?"
+            qVi="Chiến lược partition Kafka của bạn là gì? Scale từ 10K lên 100K TPS thế nào? — Câu hỏi khó trong buổi phỏng vấn"
+            isMustKnow
+          >
+            <div className="space-y-6">
+              <div className="bg-slate-950 rounded-2xl p-6 font-mono text-xs overflow-x-auto">
+                <div className="text-green-400 mb-3">// Kafka Partition Strategy at HSC</div>
+                <div className="space-y-1 text-slate-300">
+                  <div className="text-yellow-400">Topic: orders.{"{symbol}"}</div>
+                  <div className="pl-4 text-slate-400">// Partition key = symbol (VNM, HPG, VIC...)</div>
+                  <div className="pl-4">Partition 0: VNM, FPT</div>
+                  <div className="pl-4">Partition 1: HPG, MWG</div>
+                  <div className="pl-4">Partition 2: VIC, CTG</div>
+                  <div className="pl-4 text-slate-400">// Same symbol → same partition → guaranteed order</div>
+                  <div className="pl-4 text-slate-400">// Different symbols → parallel processing</div>
+                  <div className="mt-3 text-yellow-400">Consumer Group: matching-engine-group</div>
+                  <div className="pl-4">Consumer 0 → Partition 0 (1:1 mapping)</div>
+                  <div className="pl-4">Consumer 1 → Partition 1</div>
+                  <div className="pl-4">Consumer 2 → Partition 2</div>
+                  <div className="pl-4 text-slate-400">// Rule: #consumers ≤ #partitions</div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
+                  <span className="text-xs font-black text-blue-600 uppercase">Scaling 10K → 100K TPS Strategy</span>
+                  <ul className="mt-3 space-y-2 text-xs text-slate-600">
+                    <li className="flex gap-2"><span className="text-blue-500">▸</span> <span><strong>Step 1:</strong> Increase partitions (e.g., 3 → 30)</span></li>
+                    <li className="flex gap-2"><span className="text-blue-500">▸</span> <span><strong>Step 2:</strong> Scale consumer group horizontally (add pods)</span></li>
+                    <li className="flex gap-2"><span className="text-blue-500">▸</span> <span><strong>Step 3:</strong> Optimize producer batching (linger.ms, batch.size)</span></li>
+                    <li className="flex gap-2"><span className="text-blue-500">▸</span> <span><strong>Step 4:</strong> Scale Kafka brokers + disk IOPS</span></li>
+                    <li className="flex gap-2"><span className="text-blue-500">▸</span> <span><strong>Step 5:</strong> Tune replication factor vs durability</span></li>
+                  </ul>
+                  <p className="text-[10px] text-slate-400 mt-3 italic">🇻🇳 Muốn scale Kafka: tăng partition → thêm consumer → optimize batch → mở rộng broker</p>
+                </div>
+                <div className="bg-amber-50 border border-amber-100 rounded-xl p-5">
+                  <span className="text-xs font-black text-amber-600 uppercase">⚠️ Kafka Auto-Scaling Caveat</span>
+                  <p className="text-xs text-slate-600 mt-3"><strong>Kafka does NOT auto-scale easily</strong> because partition count is fixed at topic creation.</p>
+                  <ul className="mt-3 space-y-2 text-xs text-slate-600">
+                    <li className="flex gap-2"><span className="text-amber-500">!</span> <span>Adding partitions breaks key-based ordering</span></li>
+                    <li className="flex gap-2"><span className="text-amber-500">!</span> <span>Must re-partition → requires consumer group reset</span></li>
+                    <li className="flex gap-2"><span className="text-green-600">✓</span> <span><strong>Solution:</strong> Pre-plan partition count (10x expected load)</span></li>
+                    <li className="flex gap-2"><span className="text-green-600">✓</span> <span>Or use <Highlight type="tech">Kafka Streams</Highlight> re-partitioning strategy</span></li>
+                  </ul>
+                  <p className="text-[10px] text-slate-400 mt-3 italic">🇻🇳 Kafka không auto-scale đơn giản. Cần pre-plan số partition từ đầu hoặc chấp nhận re-partition phức tạp.</p>
+                </div>
+              </div>
+
+              <TipBox 
+                en='When asked "How do you scale Kafka?", always mention: (1) more partitions = more parallelism, (2) partition count is fixed — this is the key constraint, (3) consumer count ≤ partition count.'
+                vi='Khi bị hỏi "Scale Kafka thế nào?", luôn đề cập: (1) Thêm partition = thêm song song, (2) Số partition cố định — đây là constraint chính, (3) Số consumer ≤ số partition.'
+              />
+            </div>
+          </QuestionBlock>
+
+          {/* NEW: Kafka Challenges */}
+          <QuestionBlock 
+            qNum="KCHA"
+            qEn="What are the real challenges when using Kafka in production?"
+            qVi="Khó khăn thực tế khi dùng Kafka trong production là gì? — Câu hỏi Insight"
           >
             <ul className="space-y-4 text-slate-700">
               <ListItem>
                 <div>
-                  <p><Highlight type="key">Measurement First:</Highlight> Establish <Highlight type="tech">Prometheus/Grafana</Highlight> dashboards and use <Highlight type="tech">JFR/async-profiler</Highlight> to identify bottlenecks. You cannot optimize what you don't measure.</p>
-                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Đo lường trước tiên: Thiết lập dashboard và dùng các công cụ profiling để tìm điểm nghẽn. Không tối ưu dựa trên phỏng đoán.</p>
+                  <p><Highlight type="key">Challenge 1 — Message Ordering:</Highlight> Only guaranteed within a partition, not across partitions. Solution: partition by business key (symbol, userId).</p>
+                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Thứ tự message: Chỉ đảm bảo trong cùng partition. Giải pháp: partition theo business key.</p>
                 </div>
               </ListItem>
               <ListItem>
                 <div>
-                  <p><Highlight type="key">Database Scaling Strategy:</Highlight> Implement <Highlight type="tech">Read Replicas</Highlight> for query offloading and <Highlight type="tech">Sharding</Highlight> (horizontal partitioning) for massive write volumes.</p>
-                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Chiến lược scale DB: Triển khai Read Replicas để chia tải truy vấn và Sharding (phân vùng dữ liệu) để xử lý lượng ghi khổng lồ.</p>
+                  <p><Highlight type="key">Challenge 2 — Duplicate Messages:</Highlight> At-least-once delivery means duplicates are possible. Solution: <Highlight type="tech">Idempotent consumers</Highlight> with dedup key in DB.</p>
+                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Message trùng lặp: At-least-once delivery có thể gây duplicate. Giải pháp: Idempotent consumer với dedup key trong DB.</p>
                 </div>
               </ListItem>
               <ListItem>
                 <div>
-                  <p><Highlight type="key">Advanced Caching:</Highlight> Multi-level caching (L1 In-memory, L2 <Highlight type="tech">Redis</Highlight>) and <Highlight type="soft">Global CDN</Highlight> for static assets and edge-caching.</p>
-                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Cache nâng cao: Áp dụng cache đa tầng và dùng CDN để giảm tải cho server gốc, tăng tốc độ truy cập từ xa.</p>
+                  <p><Highlight type="key">Challenge 3 — Consumer Lag:</Highlight> When consumers fall behind producers. Fix: scale consumers, batch tuning, async offset commit.</p>
+                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Consumer lag: Khi consumer không kịp theo producer. Fix: scale consumer, tuning batch, async commit.</p>
                 </div>
               </ListItem>
               <ListItem>
                 <div>
-                  <p><Highlight type="key">Architectural Decoupling:</Highlight> Move to <Highlight type="tech">Event-driven</Highlight> (Kafka) for async processing. Use <Highlight type="tech">Virtual Threads</Highlight> (Java 21) or non-blocking IO to maximize resource utilization.</p>
-                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Tách rời kiến trúc: Chuyển sang mô hình hướng sự kiện (Kafka). Sử dụng Virtual Threads hoặc non-blocking IO để tối ưu hóa tài nguyên server.</p>
-                </div>
-              </ListItem>
-              <ListItem>
-                <div>
-                  <p><Highlight type="key">Infrastructure & Load Balancing:</Highlight> Efficient <Highlight type="num">Load Balancing</Highlight> (L4/L7) and auto-scaling based on CPU/Memory/Traffic thresholds.</p>
-                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Hạ tầng & Load Balancing: Sử dụng cân bằng tải thông minh và tự động mở rộng (Auto-scaling) dựa trên các ngưỡng metric thực tế.</p>
+                  <p><Highlight type="key">Challenge 4 — Exactly-Once:</Highlight> Very hard to achieve. Requires <Highlight type="tech">Kafka transactions + idempotent producers</Highlight>. High overhead.</p>
+                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Exactly-once rất khó đạt được. Cần Kafka transactions + idempotent producer. Chi phí hiệu năng cao.</p>
                 </div>
               </ListItem>
             </ul>
           </QuestionBlock>
-        </section>
 
-        {/* Section 5: Data Engineering */}
-        <section id="s5" className="mb-16 scroll-mt-24">
-          <SectionHeader num={5} title="Data Engineering – Kafka, ELK" sub="Kỹ thuật dữ liệu – Kafka, ELK" />
-          
           <QuestionBlock 
             qNum="Q11"
             qEn="How do you handle Kafka consumer lag in a high-throughput system?"
@@ -541,9 +859,156 @@ export default function InterviewPrepPage() {
           </QuestionBlock>
         </section>
 
-        {/* Section 6: AI & RAG */}
+        {/* Section 6: RAG Pipeline — COMPLETELY REBUILT */}
         <section id="s6" className="mb-16 scroll-mt-24">
-          <SectionHeader num={6} title="AI & RAG Systems" sub="Hệ thống AI & RAG" />
+          <SectionHeader num={6} title="RAG Pipeline Chuẩn ★ — Được cải thiện" sub="Hệ thống AI & RAG — Rebuilt theo feedback phỏng vấn" />
+
+          {/* NEW: RAG Pipeline Diagram */}
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm mb-10">
+            <h3 className="text-lg font-black text-slate-800 mb-2 flex items-center gap-2">
+              <Brain className="w-5 h-5 text-purple-500" />
+              🤖 RAG Pipeline — Flow chuẩn cần thuộc lòng
+            </h3>
+            <p className="text-xs text-slate-500 mb-6">Khi bị hỏi "Describe your RAG system", trả lời theo đúng flow này. Interviewer đã gợi ý flow này trong buổi phỏng vấn trước.</p>
+            
+            <div className="bg-slate-950 rounded-2xl p-6 font-mono text-xs overflow-x-auto mb-6">
+              <div className="text-purple-400 mb-3">// RAG Pipeline — GLOHOW AI System</div>
+              <div className="space-y-2 text-slate-300">
+                <div className="text-yellow-400">═══ INGESTION PIPELINE (Offline) ═══</div>
+                <div className="pl-4">
+                  <div><span className="text-blue-300">DATA SOURCES</span>: emails, PDFs, documents, web pages</div>
+                  <div className="pl-8">↓ Extract text</div>
+                  <div><span className="text-blue-300">CHUNKING</span>: Split into ~500 token chunks with 50 token overlap</div>
+                  <div className="pl-8 text-slate-500">// Overlap prevents losing context at boundaries</div>
+                  <div className="pl-8">↓ Embed each chunk</div>
+                  <div><span className="text-blue-300">EMBEDDING MODEL</span>: text-embedding-3-small (OpenAI) or local model</div>
+                  <div className="pl-8">↓ Store vector + metadata</div>
+                  <div><span className="text-blue-300">VECTOR DB</span>: Qdrant (with metadata: source, date, type)</div>
+                </div>
+                <div className="mt-3 text-yellow-400">═══ RETRIEVAL PIPELINE (Online / Per Query) ═══</div>
+                <div className="pl-4">
+                  <div><span className="text-green-300">USER QUERY</span>: "Summarize last week's client emails"</div>
+                  <div className="pl-8">↓ Embed query</div>
+                  <div><span className="text-green-300">HYBRID SEARCH</span>: Vector similarity + BM25 keyword</div>
+                  <div className="pl-8 text-slate-500">// Semantic: finds related concepts</div>
+                  <div className="pl-8 text-slate-500">// Keyword: ensures exact match for names/IDs</div>
+                  <div className="pl-8">↓ Top-K results (K=10)</div>
+                  <div><span className="text-green-300">RE-RANKING</span>: Cross-encoder model to reorder by relevance</div>
+                  <div className="pl-8">↓ Top 3-5 chunks (filtered)</div>
+                  <div><span className="text-green-300">LLM GENERATION</span>: Claude/GPT with system prompt + chunks as context</div>
+                  <div className="pl-8 text-slate-500">// Temperature: 0.1 (low, for factual accuracy)</div>
+                  <div className="pl-8">↓</div>
+                  <div><span className="text-purple-300">RESPONSE</span>: Answer with citations [Source: email_20240115.pdf]</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-purple-50 border border-purple-100 rounded-xl p-4">
+                <span className="text-xs font-black text-purple-600 uppercase">Why Qdrant?</span>
+                <ul className="mt-2 space-y-1 text-xs text-slate-600">
+                  <li className="flex gap-2"><span className="text-purple-500">▸</span> Written in Rust → extremely fast</li>
+                  <li className="flex gap-2"><span className="text-purple-500">▸</span> Rich metadata filtering (filter by date, type, user)</li>
+                  <li className="flex gap-2"><span className="text-purple-500">▸</span> Native hybrid search (vector + sparse)</li>
+                  <li className="flex gap-2"><span className="text-purple-500">▸</span> Self-hostable, good Java client</li>
+                </ul>
+                <p className="text-[10px] text-slate-400 mt-2 italic">🇻🇳 Qdrant: Tốc độ cao (Rust), lọc metadata mạnh, hybrid search native, tự host được.</p>
+              </div>
+              <div className="bg-red-50 border border-red-100 rounded-xl p-4">
+                <span className="text-xs font-black text-red-600 uppercase">Why NOT Pinecone?</span>
+                <ul className="mt-2 space-y-1 text-xs text-slate-600">
+                  <li className="flex gap-2"><span className="text-red-500">✗</span> Fully managed = vendor lock-in</li>
+                  <li className="flex gap-2"><span className="text-red-500">✗</span> Expensive at scale</li>
+                  <li className="flex gap-2"><span className="text-red-500">✗</span> Limited metadata filtering in free tier</li>
+                  <li className="flex gap-2"><span className="text-green-600">✓</span> Good choice if: managed infra is priority</li>
+                </ul>
+                <p className="text-[10px] text-slate-400 mt-2 italic">🇻🇳 Pinecone: Tốt nếu muốn managed, nhưng tốn kém và bị lock-in vendor.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* NEW: RAG Bottlenecks — the key interview question */}
+          <QuestionBlock 
+            qNum="BOT"
+            qEn="What are the bottlenecks and limitations of a RAG system? How do you solve them?"
+            qVi="Điểm nghẽn và giới hạn của RAG system là gì? Cách giải quyết? — Câu hỏi Insight được gợi ý trong phỏng vấn"
+            isMustKnow
+          >
+            <div className="space-y-4">
+              <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-6">
+                <p className="text-xs font-black text-red-600 uppercase mb-2">Interviewer đã hint câu này:</p>
+                <p className="text-sm text-slate-700 italic">"Vector search is not 100% accurate. Too many retrieved documents confuse the LLM." → Họ muốn bạn nói về giải pháp.</p>
+              </div>
+              <ul className="space-y-4 text-slate-700">
+                <ListItem>
+                  <div>
+                    <p><Highlight type="key">Problem 1 — Low Retrieval Precision:</Highlight> Vector search retrieves semantically similar but not always relevant chunks.</p>
+                    <p className="text-sm font-bold text-slate-700 mt-1">✓ Solution: <Highlight type="tech">Hybrid Search</Highlight> (vector + BM25) + <Highlight type="tech">Re-ranking</Highlight> with cross-encoder model.</p>
+                    <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Tìm kiếm vector không đủ chính xác. Fix: Kết hợp BM25 + vector search, thêm bước re-ranking.</p>
+                  </div>
+                </ListItem>
+                <ListItem>
+                  <div>
+                    <p><Highlight type="key">Problem 2 — Context Window Overflow:</Highlight> Retrieving too many chunks (K=20+) exceeds LLM context and degrades quality.</p>
+                    <p className="text-sm font-bold text-slate-700 mt-1">✓ Solution: Keep K=3-5 after re-ranking. Use <Highlight type="tech">map-reduce summarization</Highlight> for large docs.</p>
+                    <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Quá nhiều context làm LLM "confused". Fix: Giữ K=3-5 sau re-ranking, dùng map-reduce cho tài liệu dài.</p>
+                  </div>
+                </ListItem>
+                <ListItem>
+                  <div>
+                    <p><Highlight type="key">Problem 3 — Hallucinations:</Highlight> LLM generates false information not in retrieved context.</p>
+                    <p className="text-sm font-bold text-slate-700 mt-1">✓ Solution: Low temperature (0.1), force citation format, <Highlight type="tech">groundedness check</Highlight> post-generation.</p>
+                    <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 LLM "bịa" thông tin. Fix: Temperature thấp (0.1), bắt buộc trích dẫn nguồn, kiểm tra groundedness sau khi generate.</p>
+                  </div>
+                </ListItem>
+                <ListItem>
+                  <div>
+                    <p><Highlight type="key">Problem 4 — Chunking Strategy:</Highlight> Wrong chunk size loses context. Too small = fragmented, Too large = noisy.</p>
+                    <p className="text-sm font-bold text-slate-700 mt-1">✓ Solution: ~500 tokens with 50-token overlap. Use <Highlight type="tech">semantic chunking</Highlight> for structured docs.</p>
+                    <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Chunk sai kích thước làm mất ngữ cảnh. Fix: 500 token với 50 token overlap, dùng semantic chunking cho tài liệu cấu trúc.</p>
+                  </div>
+                </ListItem>
+              </ul>
+            </div>
+          </QuestionBlock>
+
+          {/* NEW: Summarization Strategy */}
+          <QuestionBlock 
+            qNum="SUM"
+            qEn="How does your summarization feature work exactly?"
+            qVi="Tính năng summarization hoạt động chính xác như thế nào? — Câu bị hỏi trong phỏng vấn"
+          >
+            <div className="space-y-4">
+              <div className="bg-slate-950 rounded-2xl p-5 font-mono text-xs">
+                <div className="text-purple-400 mb-2">// Summarization Strategy — Map-Reduce Pattern</div>
+                <div className="space-y-1 text-slate-300">
+                  <div className="text-yellow-400">If document {"<"} 4K tokens:</div>
+                  <div className="pl-4">→ Direct summarization (single LLM call)</div>
+                  <div className="mt-2 text-yellow-400">If document {">"} 4K tokens (Map-Reduce):</div>
+                  <div className="pl-4">Step 1 (MAP):    Split into chunks</div>
+                  <div className="pl-4">                 Summarize each chunk independently</div>
+                  <div className="pl-4">                 [chunk1_summary, chunk2_summary, ...]</div>
+                  <div className="pl-4">Step 2 (REDUCE): Combine all chunk summaries</div>
+                  <div className="pl-4">                 Final LLM call to create cohesive summary</div>
+                  <div className="pl-4 text-green-400">Result: Scalable to documents of any length</div>
+                </div>
+              </div>
+              <ul className="space-y-3 text-slate-700 mt-2">
+                <ListItem>
+                  <div>
+                    <p>Not just "I call the API" — I design the <Highlight type="key">chunking → parallel map → reduce</Highlight> pipeline.</p>
+                    <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Không chỉ "gọi API" — phải thiết kế pipeline chunking → map song song → reduce hợp nhất.</p>
+                  </div>
+                </ListItem>
+                <ListItem>
+                  <div>
+                    <p><Highlight type="key">Trade-off:</Highlight> Map-reduce adds latency. For real-time, use streaming response. For batch, accept latency.</p>
+                    <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Trade-off: Map-reduce tốn thời gian. Real-time dùng streaming. Batch thì chấp nhận latency.</p>
+                  </div>
+                </ListItem>
+              </ul>
+            </div>
+          </QuestionBlock>
 
           <QuestionBlock 
             qNum="EVA"
@@ -571,37 +1036,9 @@ export default function InterviewPrepPage() {
               </ListItem>
             </ul>
           </QuestionBlock>
-
-          <QuestionBlock 
-            qNum="Q14"
-            qEn="Explain your RAG architecture at GLOHOW. Why Qdrant?"
-            qVi="Giải thích kiến trúc RAG tại GLOHOW. Tại sao chọn Qdrant?"
-            isMustKnow
-          >
-            <ul className="space-y-3 text-slate-700">
-              <ListItem>
-                <div>
-                  <p><Highlight type="tech">Hybrid Search</Highlight>: combine semantic and keyword search.</p>
-                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Hybrid Search: Kết hợp tìm kiếm theo ngữ nghĩa (semantic) và từ khóa để tối ưu độ chính xác.</p>
-                </div>
-              </ListItem>
-              <ListItem>
-                <div>
-                  <p><Highlight type="tech">Why Qdrant</Highlight>: Rust-based speed, great metadata filtering.</p>
-                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Tại sao Qdrant: Tốc độ cực nhanh nhờ viết bằng Rust, khả năng lọc metadata mạnh mẽ.</p>
-                </div>
-              </ListItem>
-              <ListItem>
-                <div>
-                  <p><Highlight type="key">Hallucinations</Highlight>: Grounding with citations & low Temperature.</p>
-                  <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Giảm thiểu ảo giác: Trích dẫn nguồn dữ liệu chính xác và hạ tham số Temperature xuống 0.1.</p>
-                </div>
-              </ListItem>
-            </ul>
-          </QuestionBlock>
         </section>
 
-        {/* Section 7: DevOps, CI/CD */}
+        {/* Section 7: DevOps */}
         <section id="s7" className="mb-16 scroll-mt-24">
           <SectionHeader num={7} title="DevOps, CI/CD & Cloud" sub="Vận hành hệ thống & Đám mây" />
           
@@ -707,7 +1144,7 @@ export default function InterviewPrepPage() {
             <ul className="space-y-3 text-slate-700">
               <ListItem>
                 <div>
-                  <p><Highlight type="soft">Situation:</Highlight> Undestimating the database migration risk during a major release at HDS.</p>
+                  <p><Highlight type="soft">Situation:</Highlight> Underestimating the database migration risk during a major release at HDS.</p>
                   <p className="text-[11px] text-slate-500 italic mt-1">🇻🇳 Tình huống: Đánh giá thấp rủi ro khi migrate database trong một bản release lớn tại HDS.</p>
                 </div>
               </ListItem>
@@ -813,7 +1250,7 @@ export default function InterviewPrepPage() {
           </div>
         </section>
 
-        {/* Closing Sections */}
+        {/* Section 11: Closing */}
         <section id="s11" className="mb-16 scroll-mt-24">
           <SectionHeader num={11} title="Interview Closing" sub="Kết thúc buổi phỏng vấn — Tạo ấn tượng cuối cùng" />
           
@@ -835,7 +1272,7 @@ export default function InterviewPrepPage() {
                 <Label lang="vi">Câu kết thúc ấn tượng (VI)</Label>
                 <ul className="space-y-2 mt-4 text-slate-600 text-[13px] italic">
                    <li className="flex gap-2"><span>🇻🇳 Cảm ơn anh/chị về buổi trao đổi. Tôi thực sự thấy hứng thú khi nghe về [chi tiết trong buổi phỏng vấn].</span></li>
-                   <li className="flex gap-2"><span>🇻🇳 Tôi tự tin rằng kinh nghiệm của mình về hệ thông quy mô lớn và kiến trúc AI rất phù hợp với lộ trình của công ty.</span></li>
+                   <li className="flex gap-2"><span>🇻🇳 Tôi tự tin rằng kinh nghiệm của mình về hệ thống quy mô lớn và kiến trúc AI rất phù hợp với lộ trình của công ty.</span></li>
                    <li className="flex gap-2"><span>🇻🇳 Tôi rất mong được tiếp tục các bước tiếp theo. Anh/chị có cần tôi cung cấp thêm mẫu code hay case study nào không?</span></li>
                 </ul>
               </div>
@@ -858,39 +1295,92 @@ export default function InterviewPrepPage() {
           </div>
         </section>
 
-        {/* Final Tips Section */}
-        <SectionHeader num={12} title="Final Tips" sub="Lời khuyên tổng kết" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 px-2">
+        {/* Section 12: Final Tips */}
+        <div id="s12" className="scroll-mt-24">
+          <SectionHeader num={12} title="Final Tips" sub="Lời khuyên tổng kết" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 px-2">
           <TipCard title="Trước phỏng vấn" type="before" icon={<Search className="w-5 h-5" />}>
              <ul className="text-xs space-y-3 text-slate-600">
                <li className="flex gap-2"><span>✓</span> <span>Nghiên cứu kỹ sản phẩm & tech stack.</span></li>
                <li className="flex gap-2"><span>✓</span> <span>Chuẩn bị sẵn 3 câu chuyện <strong className="text-emerald-700">STAR</strong>.</span></li>
-               <li className="flex gap-2"><span>✓</span> <span>Đọc lại CV và chuẩn bị giải thích mọi chi tiết.</span></li>
+               <li className="flex gap-2"><span>✓</span> <span>Luyện nói flow diagram (architecture, RAG, Kafka) thành tiếng.</span></li>
+               <li className="flex gap-2"><span>✓</span> <span>Luyện template BLUF cho mọi câu kỹ thuật.</span></li>
              </ul>
           </TipCard>
           <TipCard title="Trong phỏng vấn" type="during" icon={<Zap className="w-5 h-5" />}>
              <ul className="text-xs space-y-3 text-slate-600">
                <li className="flex gap-2"><span>★</span> <span>Nói rõ ràng, không vội vã.</span></li>
                <li className="flex gap-2"><span>★</span> <span>Sử dụng số liệu: <strong className="text-amber-700">10k TPS, 60% reduction</strong>.</span></li>
-               <li className="flex gap-3"><span>★</span> <span>Nếu không biết, hãy nói về cách bạn sẽ tìm hiểu.</span></li>
+               <li className="flex gap-2"><span>★</span> <span>Luôn nêu trade-off sau mỗi quyết định kỹ thuật.</span></li>
+               <li className="flex gap-2"><span>★</span> <span>Nếu không biết, nói cách bạn sẽ tìm hiểu.</span></li>
              </ul>
           </TipCard>
           <TipCard title="Cần tránh" type="avoid" icon={<ShieldAlert className="w-5 h-5" />}>
              <ul className="text-xs space-y-3 text-slate-600 font-medium">
+               <li className="flex gap-2"><span>✗</span> <span>Trả lời không có structure (không BLUF, không STAR).</span></li>
+               <li className="flex gap-2"><span>✗</span> <span>Chỉ nói "tôi dùng Kafka" mà không giải thích WHY.</span></li>
                <li className="flex gap-2"><span>✗</span> <span>Nói xấu công ty hoặc đồng nghiệp cũ.</span></li>
                <li className="flex gap-2"><span>✗</span> <span>Nhận vơ công sức không phải của mình.</span></li>
-               <li className="flex gap-2"><span>✗</span> <span>Thái độ quá tự tin thiếu cầu thị.</span></li>
              </ul>
           </TipCard>
         </div>
+      </div>
 
-        {/* Closing Banner */}
+      {/* Closing Banner */}
         <div className="bg-gradient-to-br from-[#F59E0B] via-[#EF4444] to-[#EC4899] text-white p-16 rounded-[40px] text-center shadow-2xl relative overflow-hidden">
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
           <h2 className="text-4xl font-black mb-4 relative z-10">🎉 Chúc anh Thái Tiểu Lôi phỏng vấn thành công rực rỡ!</h2>
           <p className="text-white text-xl italic relative z-10 opacity-95">You are over-prepared. Just go there and own it! 💪</p>
         </div>
       </div>
+
+      {/* Sidebar TOC - Sticky Column (Desktop Only) */}
+      <div className="hidden lg:block lg:col-span-3 lg:sticky lg:top-24 order-2 mt-24">
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 max-h-[80vh] overflow-y-auto border-l-4 border-l-indigo-500">
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+            <Layers className="w-4 h-4 text-indigo-500" /> NAVIGATION
+          </h3>
+          <nav className="space-y-1">
+            {[
+              { id: 'pre-feedback', label: 'Analysis', icon: <AlertTriangle className="w-3 h-3" /> },
+              { id: 'pre-framework', label: 'Framework', icon: <MessageSquare className="w-3 h-3" /> },
+              { id: 's1', label: 'Self Intro' },
+              { id: 's2', label: 'Java & Micro' },
+              { id: 's3', label: 'Architecture' },
+              { id: 's4', label: 'Performance' },
+              { id: 's5', label: 'Kafka Deep' },
+              { id: 's6', label: 'AI & RAG' },
+              { id: 's7', label: 'DevOps' },
+              { id: 's8', label: 'Leadership' },
+              { id: 's9', label: 'Behavioral' },
+              { id: 's10', label: 'Q -> Inter' },
+              { id: 's11', label: 'Closing' },
+              { id: 's12', label: 'Final Tips' }
+            ].map((item, idx) => (
+              <a 
+                key={item.id} 
+                href={`#${item.id}`}
+                className="group flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-slate-50 transition-all text-slate-500 hover:text-indigo-600 border border-transparent hover:border-slate-100"
+              >
+                <span className="w-5 h-5 bg-slate-50 rounded-lg flex items-center justify-center text-[9px] font-black group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                  {idx + 1}
+                </span>
+                <span className="text-[11px] font-bold truncate">{item.label}</span>
+              </a>
+            ))}
+          </nav>
+
+          <div className="mt-8 pt-6 border-t border-slate-100">
+            <button 
+              onClick={scrollToTop}
+              className="w-full py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-indigo-600 transition-all shadow-lg"
+            >
+              <ChevronUp className="w-3 h-3" /> Top
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
       {/* Floating Back to Top */}
       <button 
@@ -900,6 +1390,7 @@ export default function InterviewPrepPage() {
         <ChevronUp className="w-7 h-7 group-hover:scale-110 transition-transform" />
       </button>
     </div>
+  </div>
   );
 }
 
