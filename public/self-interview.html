@@ -384,6 +384,13 @@ svg{font-family:'JetBrains Mono',monospace;overflow:visible;}
       <a class="nav-a" href="#s7">🛡 Bot Detection + AI Opp.</a>
     </div>
     <div class="nav-section">
+      <div class="nav-label">Tech Stack</div>
+      <a class="nav-a" href="#s-tech">🧰 Tech Stack Tổng Hợp <span class="nbadge nb-n">NEW</span></a>
+      <a class="nav-a" href="#s-microarch">🏗 Microservice Architecture <span class="nbadge nb-m">★</span></a>
+      <a class="nav-a" href="#s-keycloak">🔐 Keycloak + Auth <span class="nbadge nb-m">★</span></a>
+      <a class="nav-a" href="#s-mesh">🕸 Service Mesh <span class="nbadge nb-m">★</span></a>
+    </div>
+    <div class="nav-section">
       <div class="nav-label">Leadership</div>
       <a class="nav-a" href="#s8">👥 Team · Conflict · Balance</a>
       <a class="nav-a" href="#s9">💬 Behavioral STAR</a>
@@ -413,8 +420,8 @@ svg{font-family:'JetBrains Mono',monospace;overflow:visible;}
 </div>
 <!-- STATS BAR -->
 <div class="stats">
-  <div class="stat"><div class="stat-num">12</div><div class="stat-lbl">Diagrams SVG</div></div>
-  <div class="stat"><div class="stat-num">18</div><div class="stat-lbl">Q&amp;A Blocks</div></div>
+  <div class="stat"><div class="stat-num">15</div><div class="stat-lbl">Diagrams SVG</div></div>
+  <div class="stat"><div class="stat-num">26</div><div class="stat-lbl">Q&amp;A Blocks</div></div>
   <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">Real Qs từ Interview</div></div>
   <div class="stat"><div class="stat-num">12</div><div class="stat-lbl">Flashcards</div></div>
   <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">Companies trên CV</div></div>
@@ -422,11 +429,11 @@ svg{font-family:'JetBrains Mono',monospace;overflow:visible;}
 <!-- LEGEND -->
 <div class="legend">
   <span class="legend-title">Keywords:</span>
-  <span class="lc"><span class="kt" style="font-size:11px">Tech Stack</span> Công nghệ</span>
-  <span class="lc"><span class="kn" style="font-size:11px">10K TPS</span> Metrics/Số liệu</span>
-  <span class="lc"><span class="ka" style="font-size:11px">Led team</span> Actions/Roles</span>
-  <span class="lc"><span class="kk" style="font-size:11px">CAP Theorem</span> Key concepts</span>
-  <span class="lc"><span class="kw" style="font-size:11px">⚠ Problem</span> Constraints</span>
+  <span class="lc"><span class="kt" style="font-size:11px">Spring Boot</span>&nbsp;Tech Stack</span>
+  <span class="lc"><span class="kn" style="font-size:11px">10K TPS</span>&nbsp;Metrics</span>
+  <span class="lc"><span class="ka" style="font-size:11px">Led team</span>&nbsp;Actions</span>
+  <span class="lc"><span class="kk" style="font-size:11px">CAP Theorem</span>&nbsp;Concept</span>
+  <span class="lc"><span class="kw" style="font-size:11px">⚠ Problem</span>&nbsp;Constraint</span>
 </div>
 <!-- ALERT -->
 <div class="alert-bar"><strong>⚠ Feedback Louis (transcript):</strong> "It did, but it's not very helpful." → Thiếu structure + không có flow + không có số liệu. Mỗi câu trả lời PHẢI theo BLUF: Answer → Why → Trade-off → Result.</div>
@@ -1327,6 +1334,728 @@ Third, I'm looking for a <span class="ka">Technical Leader</span> role where I c
           <text x="22" y="189" fill="#48566a" font-size="7.5">Link to HSC (CKPHCM): "Same Kafka WAL pattern — buffer traffic spikes, decouple ingestion from detection"</text>
         </svg>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S-TECH: TECH STACK ════ -->
+<section class="section" id="s-tech">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#0c4a6e,#0284c7)">T</div>
+    <div><div class="sec-title">Tech Stack Tổng Hợp</div><div class="sec-sub">Dev tools · Microservice design · Monitoring &amp; Observability · từ CV thực tế</div></div>
+  </div>
+
+  <!-- Category 1: Dev Tools -->
+  <div class="qblock open">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">DEV</span>
+      <div style="flex:1"><div class="q-en">What is your core development toolchain?</div><div class="q-vi">Toolchain phát triển chính của bạn?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="g3">
+        <div class="card" style="border-color:rgba(0,212,255,.3)">
+          <div class="ct2" style="color:var(--cyan)">Backend Core</div>
+          <ul class="alist" style="margin-top:6px">
+            <li><span class="arr">▸</span><span><span class="kt">Java 21</span> — Virtual threads (Project Loom), Records, Sealed classes<span class="vi">Primary language — 8 years</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Spring Boot 3</span> — Auto-config, Actuator, Native image<span class="vi">Framework chính cho microservices</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">JHipster</span> — Scaffold microservices nhanh với best practices<span class="vi">Dùng tại HSC &amp; Glohow</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">GraphQL</span> — Reduce over-fetching, flexible frontend queries<span class="vi">API layer tại HSC &amp; Glohow</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Camunda 7/8</span> — BPMN workflow engine, state machine<span class="vi">50% time reduction tại HSC</span></span></li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(245,166,35,.3)">
+          <div class="ct2" style="color:var(--amber)">Messaging &amp; Data</div>
+          <ul class="alist" style="margin-top:6px">
+            <li><span class="arr">▸</span><span><span class="kt">Kafka</span> — Event streaming, WAL pattern, 10K TPS<span class="vi">3 years · HSC production</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">PostgreSQL</span> — CP data, ACID, complex queries<span class="vi">Account balances tại HSC</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Cassandra</span> — AP data, time-series, high write<span class="vi">Trade history tại HSC</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Redis</span> — Cache, sessions, distributed lock<span class="vi">60% DB load reduction</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">MongoDB</span> — Document store, flexible schema<span class="vi">Trên CV — 3 years</span></span></li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(0,229,160,.3)">
+          <div class="ct2" style="color:var(--green)">DevOps &amp; CI/CD</div>
+          <ul class="alist" style="margin-top:6px">
+            <li><span class="arr">▸</span><span><span class="kt">Docker</span> — Containerization, multi-stage builds<span class="vi">Standard cho mọi service</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Kubernetes</span> — Orchestration, HPA, rolling deploy<span class="vi">Dùng tại Hitachi &amp; HSC</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Jenkins</span> — CI/CD pipelines, automated testing<span class="vi">Dùng tại HSC &amp; Glohow</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Azure DevOps</span> — Cloud CI/CD, artifact registry<span class="vi">Dùng tại HSC &amp; Glohow</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Git</span> — Version control, GitFlow branching<span class="vi">Standard</span></span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category 2: Microservice Design -->
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">MSV</span>
+      <div style="flex:1"><div class="q-en">Microservice design tools — Gateway, Service Mesh, Auth?</div><div class="q-vi">Công cụ thiết kế microservice — Gateway, Service Mesh, Auth?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="g3">
+        <div class="card" style="border-color:rgba(167,139,250,.3)">
+          <div class="ct2" style="color:var(--purple)">API Gateway</div>
+          <ul class="alist" style="margin-top:6px">
+            <li><span class="arr">▸</span><span><span class="kt">Kong Gateway</span> — Rate limiting, auth plugins, load balancing<span class="vi">Production-grade, plugin ecosystem phong phú</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Spring Cloud Gateway</span> — Java-native, reactive, custom filters<span class="vi">Dễ tích hợp với Spring ecosystem</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Nginx</span> — Reverse proxy, SSL termination, static assets<span class="vi">Layer 7 LB trước Kong</span></span></li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(255,107,157,.3)">
+          <div class="ct2" style="color:var(--rose)">Service Mesh</div>
+          <ul class="alist" style="margin-top:6px">
+            <li><span class="arr">▸</span><span><span class="kt">Istio</span> — mTLS, traffic management, circuit breaker, observability<span class="vi">Full-featured, production standard</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Envoy Proxy</span> — Data plane của Istio, sidecar pattern<span class="vi">Xử lý toàn bộ east-west traffic</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Linkerd</span> — Lightweight alternative, simpler ops<span class="vi">Khi Istio quá phức tạp</span></span></li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(0,212,255,.3)">
+          <div class="ct2" style="color:var(--cyan)">Auth &amp; Security</div>
+          <ul class="alist" style="margin-top:6px">
+            <li><span class="arr">▸</span><span><span class="kt">Keycloak</span> — OAuth2/OIDC, SSO, RBAC, user federation<span class="vi">Identity provider chuẩn enterprise</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">JWT</span> — Stateless token, claims-based auth<span class="vi">Standard cho microservice auth</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Spring Security</span> — Resource server, method security<span class="vi">Tích hợp với Keycloak JWT</span></span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category 3: Monitoring -->
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">MON</span>
+      <div style="flex:1"><div class="q-en">Monitoring, tracing, logging stack?</div><div class="q-vi">Stack monitoring, tracing, logging?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="g3">
+        <div class="card" style="border-color:rgba(245,166,35,.3)">
+          <div class="ct2" style="color:var(--amber)">Metrics</div>
+          <ul class="alist" style="margin-top:6px">
+            <li><span class="arr">▸</span><span><span class="kt">Prometheus</span> — Metrics scraping, alerting rules, time-series DB<span class="vi">Dùng tại HSC &amp; Glohow</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Grafana</span> — Dashboard, visualization, alert notifications<span class="vi">p50/p95/p99 SLA monitoring tại HSC</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Micrometer</span> — Spring Boot metrics bridge to Prometheus<span class="vi">Auto-instrument HTTP, JVM, cache</span></span></li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(0,229,160,.3)">
+          <div class="ct2" style="color:var(--green)">Distributed Tracing</div>
+          <ul class="alist" style="margin-top:6px">
+            <li><span class="arr">▸</span><span><span class="kt">Jaeger</span> — Distributed tracing, trace visualization<span class="vi">End-to-end request tracking</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Zipkin</span> — Lightweight alternative to Jaeger<span class="vi">Compatible với Spring Cloud Sleuth</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">OpenTelemetry</span> — Vendor-neutral instrumentation standard<span class="vi">Trace + Metrics + Logs unified</span></span></li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(234,179,8,.3)">
+          <div class="ct2" style="color:#eab308">Log Aggregation</div>
+          <ul class="alist" style="margin-top:6px">
+            <li><span class="arr">▸</span><span><span class="kt">Elasticsearch</span> — Log storage, full-text search, aggregation<span class="vi">Cũng dùng cho RAG tại Glohow</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Logstash</span> — Log pipeline, parse, transform, enrich<span class="vi">Ingest từ Kafka hoặc Filebeat</span></span></li>
+            <li><span class="arr">▸</span><span><span class="kt">Kibana</span> — Log visualization, dashboard, alerting<span class="vi">ELK Stack — dùng tại HSC &amp; Glohow</span></span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S-MICROARCH: MICROSERVICE ARCHITECTURE ════ -->
+<section class="section" id="s-microarch">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#312e81,#4f46e5)">🏗</div>
+    <div><div class="sec-title">Microservice Architecture — Best Practice</div><div class="sec-sub">Kong Gateway · Istio Service Mesh · Keycloak · Monitoring · End-to-End</div></div>
+  </div>
+
+  <div class="qblock open">
+    <div class="qhead must" onclick="toggleQ(this)">
+      <span class="qnum qn-m">ARCH</span>
+      <div style="flex:1">
+        <div class="q-en">Design a production-grade microservice architecture with API Gateway, Service Mesh, Auth, and full observability.</div>
+        <div class="q-vi">Thiết kế kiến trúc microservice production với API Gateway, Service Mesh, Auth và observability đầy đủ.</div>
+      </div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+
+      <!-- DIAGRAM: Full Microservice Architecture -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM — MICROSERVICE BEST PRACTICE: Kong · Istio · Keycloak · ELK · Prometheus</div>
+        <svg viewBox="0 0 900 620" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono',monospace">
+          <defs>
+            <marker id="ma1" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#48566a"/></marker>
+            <marker id="ma2" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00d4ff"/></marker>
+            <marker id="ma3" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00e5a0"/></marker>
+            <marker id="ma4" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#a78bfa"/></marker>
+          </defs>
+
+          <!-- ─── ZONE LABELS ─── -->
+          <text x="450" y="15" fill="#48566a" font-size="8" text-anchor="middle" letter-spacing="4" font-weight="700">EXTERNAL ZONE</text>
+
+          <!-- CLIENTS -->
+          <rect x="60" y="22" width="80" height="38" rx="6" fill="#0a1220" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="100" y="37" fill="#00d4ff" font-size="8.5" text-anchor="middle" font-weight="700">Web App</text>
+          <text x="100" y="50" fill="#48566a" font-size="7" text-anchor="middle">React/Vue</text>
+
+          <rect x="160" y="22" width="80" height="38" rx="6" fill="#0a1220" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="200" y="37" fill="#00d4ff" font-size="8.5" text-anchor="middle" font-weight="700">Mobile App</text>
+          <text x="200" y="50" fill="#48566a" font-size="7" text-anchor="middle">iOS/Android</text>
+
+          <rect x="260" y="22" width="80" height="38" rx="6" fill="#0a1220" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="300" y="37" fill="#00d4ff" font-size="8.5" text-anchor="middle" font-weight="700">3rd Party</text>
+          <text x="300" y="50" fill="#48566a" font-size="7" text-anchor="middle">B2B / Partner</text>
+
+          <!-- HTTPS arrows down -->
+          <line x1="100" y1="60" x2="100" y2="88" stroke="#48566a" stroke-width="1.2" marker-end="url(#ma1)"/>
+          <line x1="200" y1="60" x2="200" y2="88" stroke="#48566a" stroke-width="1.2" marker-end="url(#ma1)"/>
+          <line x1="300" y1="60" x2="300" y2="88" stroke="#48566a" stroke-width="1.2" marker-end="url(#ma1)"/>
+          <text x="200" y="82" fill="#48566a" font-size="7" text-anchor="middle">HTTPS / TLS 1.3</text>
+
+          <!-- ─── GATEWAY ZONE ─── -->
+          <rect x="20" y="92" width="580" height="62" rx="8" fill="#0a0f20" stroke="#f5a623" stroke-width="2"/>
+          <text x="310" y="112" fill="#f5a623" font-size="10" text-anchor="middle" font-weight="700">🔶 KONG API GATEWAY</text>
+          <text x="95" y="130" fill="#8896b2" font-size="7.5" text-anchor="middle">Rate Limiting</text>
+          <text x="185" y="130" fill="#8896b2" font-size="7.5" text-anchor="middle">JWT Validation</text>
+          <text x="275" y="130" fill="#8896b2" font-size="7.5" text-anchor="middle">Request Routing</text>
+          <text x="365" y="130" fill="#8896b2" font-size="7.5" text-anchor="middle">SSL Termination</text>
+          <text x="455" y="130" fill="#8896b2" font-size="7.5" text-anchor="middle">API Versioning</text>
+          <text x="545" y="130" fill="#8896b2" font-size="7.5" text-anchor="middle">Load Balance</text>
+
+          <!-- Keycloak beside Gateway -->
+          <rect x="624" y="92" width="110" height="62" rx="8" fill="#0a1220" stroke="#00d4ff" stroke-width="2"/>
+          <text x="679" y="114" fill="#00d4ff" font-size="9" text-anchor="middle" font-weight="700">🔑 KEYCLOAK</text>
+          <text x="679" y="128" fill="#8896b2" font-size="7" text-anchor="middle">OAuth2 / OIDC</text>
+          <text x="679" y="140" fill="#8896b2" font-size="7" text-anchor="middle">SSO · RBAC</text>
+          <text x="679" y="152" fill="#48566a" font-size="7" text-anchor="middle">Token Issuer</text>
+          <!-- Kong ↔ Keycloak -->
+          <line x1="600" y1="123" x2="622" y2="123" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#ma2)"/>
+          <text x="611" y="117" fill="#00d4ff" font-size="6.5" text-anchor="middle">verify</text>
+
+          <!-- ─── SERVICE MESH ZONE ─── -->
+          <rect x="14" y="172" width="720" height="24" rx="4" fill="rgba(167,139,250,.08)" stroke="rgba(167,139,250,.3)" stroke-width="1" stroke-dasharray="4"/>
+          <text x="374" y="187" fill="#a78bfa" font-size="8" text-anchor="middle" letter-spacing="4">ISTIO SERVICE MESH — mTLS East-West Traffic · Sidecar Proxy (Envoy)</text>
+
+          <!-- DOWN arrows from Kong -->
+          <line x1="130" y1="154" x2="130" y2="198" stroke="#48566a" stroke-width="1.2" marker-end="url(#ma1)"/>
+          <line x1="260" y1="154" x2="260" y2="198" stroke="#48566a" stroke-width="1.2" marker-end="url(#ma1)"/>
+          <line x1="390" y1="154" x2="390" y2="198" stroke="#48566a" stroke-width="1.2" marker-end="url(#ma1)"/>
+          <line x1="520" y1="154" x2="520" y2="198" stroke="#48566a" stroke-width="1.2" marker-end="url(#ma1)"/>
+
+          <!-- ─── MICROSERVICES ─── -->
+          <rect x="14" y="200" width="726" height="140" rx="8" fill="rgba(0,212,255,.02)" stroke="#1c2334" stroke-width="1"/>
+          <text x="377" y="218" fill="#48566a" font-size="7.5" text-anchor="middle" letter-spacing="3">MICROSERVICES (Kubernetes Pods — Spring Boot)</text>
+
+          <!-- Service 1: Order -->
+          <rect x="24" y="224" width="150" height="102" rx="7" fill="#0c1a30" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="99" y="243" fill="#00d4ff" font-size="8.5" text-anchor="middle" font-weight="700">Order Service</text>
+          <rect x="34" y="252" width="130" height="16" rx="3" fill="#030508" stroke="#48566a" stroke-width="0.8"/>
+          <text x="99" y="263" fill="#a78bfa" font-size="7" text-anchor="middle">▣ Envoy Sidecar</text>
+          <text x="99" y="280" fill="#8896b2" font-size="7" text-anchor="middle">Spring Boot 3</text>
+          <text x="99" y="292" fill="#48566a" font-size="7" text-anchor="middle">Kafka Producer</text>
+          <text x="99" y="305" fill="#48566a" font-size="7" text-anchor="middle">Port: 8081</text>
+          <text x="99" y="318" fill="#00e5a0" font-size="7" text-anchor="middle">/health /metrics</text>
+
+          <!-- Service 2: User -->
+          <rect x="186" y="224" width="150" height="102" rx="7" fill="#0c1a30" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="261" y="243" fill="#00d4ff" font-size="8.5" text-anchor="middle" font-weight="700">User Service</text>
+          <rect x="196" y="252" width="130" height="16" rx="3" fill="#030508" stroke="#48566a" stroke-width="0.8"/>
+          <text x="261" y="263" fill="#a78bfa" font-size="7" text-anchor="middle">▣ Envoy Sidecar</text>
+          <text x="261" y="280" fill="#8896b2" font-size="7" text-anchor="middle">Spring Boot 3</text>
+          <text x="261" y="292" fill="#48566a" font-size="7" text-anchor="middle">Keycloak Client</text>
+          <text x="261" y="305" fill="#48566a" font-size="7" text-anchor="middle">Port: 8082</text>
+          <text x="261" y="318" fill="#00e5a0" font-size="7" text-anchor="middle">/health /metrics</text>
+
+          <!-- Service 3: Notification -->
+          <rect x="348" y="224" width="150" height="102" rx="7" fill="#0c1a30" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="423" y="243" fill="#00d4ff" font-size="8.5" text-anchor="middle" font-weight="700">Notification Svc</text>
+          <rect x="358" y="252" width="130" height="16" rx="3" fill="#030508" stroke="#48566a" stroke-width="0.8"/>
+          <text x="423" y="263" fill="#a78bfa" font-size="7" text-anchor="middle">▣ Envoy Sidecar</text>
+          <text x="423" y="280" fill="#8896b2" font-size="7" text-anchor="middle">Spring Boot 3</text>
+          <text x="423" y="292" fill="#48566a" font-size="7" text-anchor="middle">Kafka Consumer</text>
+          <text x="423" y="305" fill="#48566a" font-size="7" text-anchor="middle">Port: 8083</text>
+          <text x="423" y="318" fill="#00e5a0" font-size="7" text-anchor="middle">/health /metrics</text>
+
+          <!-- Service 4: Payment -->
+          <rect x="510" y="224" width="150" height="102" rx="7" fill="#0c1a30" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="585" y="243" fill="#a78bfa" font-size="8.5" text-anchor="middle" font-weight="700">Payment Service</text>
+          <rect x="520" y="252" width="130" height="16" rx="3" fill="#030508" stroke="#48566a" stroke-width="0.8"/>
+          <text x="585" y="263" fill="#a78bfa" font-size="7" text-anchor="middle">▣ Envoy Sidecar</text>
+          <text x="585" y="280" fill="#8896b2" font-size="7" text-anchor="middle">Spring Boot 3</text>
+          <text x="585" y="292" fill="#48566a" font-size="7" text-anchor="middle">Saga Pattern</text>
+          <text x="585" y="305" fill="#48566a" font-size="7" text-anchor="middle">Port: 8084</text>
+          <text x="585" y="318" fill="#00e5a0" font-size="7" text-anchor="middle">/health /metrics</text>
+
+          <!-- Service mesh connections (horizontal dashes) -->
+          <line x1="174" y1="275" x2="184" y2="275" stroke="#a78bfa" stroke-width="1" stroke-dasharray="2"/>
+          <line x1="336" y1="275" x2="346" y2="275" stroke="#a78bfa" stroke-width="1" stroke-dasharray="2"/>
+          <line x1="498" y1="275" x2="508" y2="275" stroke="#a78bfa" stroke-width="1" stroke-dasharray="2"/>
+          <text x="755" y="275" fill="#a78bfa" font-size="7" text-anchor="middle">mTLS</text>
+
+          <!-- ─── KAFKA MESSAGE BUS ─── -->
+          <rect x="14" y="358" width="726" height="40" rx="6" fill="#120d00" stroke="#f5a623" stroke-width="1.8"/>
+          <text x="377" y="375" fill="#f5a623" font-size="9.5" text-anchor="middle" font-weight="700">⚡ KAFKA — Event Bus (Async Decoupling)</text>
+          <text x="377" y="391" fill="#48566a" font-size="7.5" text-anchor="middle">Topics: orders.placed · payments.processed · notifications.sent · audit.events</text>
+
+          <!-- Services → Kafka -->
+          <line x1="99" y1="326" x2="99" y2="356" stroke="#f5a623" stroke-width="1" marker-end="url(#ma1)"/>
+          <line x1="585" y1="326" x2="585" y2="356" stroke="#f5a623" stroke-width="1" marker-end="url(#ma1)"/>
+          <line x1="423" y1="326" x2="423" y2="356" stroke="#48566a" stroke-width="1" marker-end="url(#ma1)"/>
+
+          <!-- ─── DATA LAYER ─── -->
+          <rect x="14" y="412" width="726" height="80" rx="8" fill="rgba(255,77,109,.03)" stroke="#1c2334" stroke-width="1"/>
+          <text x="377" y="430" fill="#48566a" font-size="7.5" text-anchor="middle" letter-spacing="3">DATA LAYER (Database per Service Pattern)</text>
+
+          <rect x="24" y="436" width="140" height="46" rx="6" fill="#0a1828" stroke="#ff4d6d" stroke-width="1.5"/>
+          <text x="94" y="454" fill="#ff4d6d" font-size="8.5" text-anchor="middle" font-weight="700">PostgreSQL</text>
+          <text x="94" y="467" fill="#48566a" font-size="7" text-anchor="middle">Order/Payment — CP</text>
+          <text x="94" y="478" fill="#48566a" font-size="7" text-anchor="middle">ACID · Strong consistent</text>
+
+          <rect x="178" y="436" width="140" height="46" rx="6" fill="#0a1828" stroke="#ff4d6d" stroke-width="1"/>
+          <text x="248" y="454" fill="#ff4d6d" font-size="8.5" text-anchor="middle" font-weight="700">Cassandra</text>
+          <text x="248" y="467" fill="#48566a" font-size="7" text-anchor="middle">History/Audit — AP</text>
+          <text x="248" y="478" fill="#48566a" font-size="7" text-anchor="middle">Eventual consistent</text>
+
+          <rect x="332" y="436" width="130" height="46" rx="6" fill="#001a10" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="397" y="454" fill="#00e5a0" font-size="8.5" text-anchor="middle" font-weight="700">Redis Cluster</text>
+          <text x="397" y="467" fill="#48566a" font-size="7" text-anchor="middle">Cache · Sessions</text>
+          <text x="397" y="478" fill="#48566a" font-size="7" text-anchor="middle">Distributed Lock</text>
+
+          <rect x="476" y="436" width="130" height="46" rx="6" fill="#0a1828" stroke="#7c5af6" stroke-width="1.5"/>
+          <text x="541" y="454" fill="#a78bfa" font-size="8.5" text-anchor="middle" font-weight="700">Qdrant</text>
+          <text x="541" y="467" fill="#48566a" font-size="7" text-anchor="middle">Vector Store</text>
+          <text x="541" y="478" fill="#48566a" font-size="7" text-anchor="middle">AI/RAG queries</text>
+
+          <rect x="620" y="436" width="110" height="46" rx="6" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="675" y="454" fill="#8896b2" font-size="8.5" text-anchor="middle" font-weight="700">MongoDB</text>
+          <text x="675" y="467" fill="#48566a" font-size="7" text-anchor="middle">Document Store</text>
+          <text x="675" y="478" fill="#48566a" font-size="7" text-anchor="middle">Flexible schema</text>
+
+          <!-- Kafka → DB arrows -->
+          <line x1="150" y1="398" x2="94" y2="434" stroke="#48566a" stroke-width="1" marker-end="url(#ma1)"/>
+          <line x1="280" y1="398" x2="248" y2="434" stroke="#48566a" stroke-width="1" marker-end="url(#ma1)"/>
+
+          <!-- ─── OBSERVABILITY ─── -->
+          <rect x="14" y="508" width="870" height="102" rx="8" fill="rgba(245,166,35,.03)" stroke="rgba(245,166,35,.2)" stroke-width="1"/>
+          <text x="449" y="524" fill="#f5a623" font-size="8" text-anchor="middle" letter-spacing="3">OBSERVABILITY LAYER (OpenTelemetry Instrumentation)</text>
+
+          <!-- Prometheus+Grafana -->
+          <rect x="24" y="530" width="148" height="66" rx="6" fill="#0a1220" stroke="#f97316" stroke-width="1.5"/>
+          <text x="98" y="548" fill="#f97316" font-size="8.5" text-anchor="middle" font-weight="700">Prometheus</text>
+          <text x="98" y="562" fill="#8896b2" font-size="7" text-anchor="middle">Metrics scraping</text>
+          <text x="98" y="574" fill="#8896b2" font-size="7" text-anchor="middle">Alert rules</text>
+          <text x="98" y="588" fill="#f97316" font-size="8" text-anchor="middle" font-weight="700">→ Grafana</text>
+
+          <!-- Jaeger -->
+          <rect x="182" y="530" width="148" height="66" rx="6" fill="#0a1220" stroke="#06b6d4" stroke-width="1.5"/>
+          <text x="256" y="548" fill="#06b6d4" font-size="8.5" text-anchor="middle" font-weight="700">Jaeger</text>
+          <text x="256" y="562" fill="#8896b2" font-size="7" text-anchor="middle">Distributed tracing</text>
+          <text x="256" y="574" fill="#8896b2" font-size="7" text-anchor="middle">Trace ID propagation</text>
+          <text x="256" y="588" fill="#48566a" font-size="7" text-anchor="middle">via OpenTelemetry</text>
+
+          <!-- ELK -->
+          <rect x="340" y="530" width="148" height="66" rx="6" fill="#0a1220" stroke="#eab308" stroke-width="1.5"/>
+          <text x="414" y="548" fill="#eab308" font-size="8.5" text-anchor="middle" font-weight="700">ELK Stack</text>
+          <text x="414" y="562" fill="#8896b2" font-size="7" text-anchor="middle">Elasticsearch + Kibana</text>
+          <text x="414" y="574" fill="#8896b2" font-size="7" text-anchor="middle">Log aggregation</text>
+          <text x="414" y="588" fill="#48566a" font-size="7" text-anchor="middle">Logstash pipeline</text>
+
+          <!-- Kiali Istio dashboard -->
+          <rect x="498" y="530" width="148" height="66" rx="6" fill="#0a1220" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="572" y="548" fill="#a78bfa" font-size="8.5" text-anchor="middle" font-weight="700">Kiali</text>
+          <text x="572" y="562" fill="#8896b2" font-size="7" text-anchor="middle">Service mesh topology</text>
+          <text x="572" y="574" fill="#8896b2" font-size="7" text-anchor="middle">Traffic visualization</text>
+          <text x="572" y="588" fill="#48566a" font-size="7" text-anchor="middle">Istio dashboard</text>
+
+          <!-- Alertmanager -->
+          <rect x="656" y="530" width="148" height="66" rx="6" fill="#0a1220" stroke="#ff4d6d" stroke-width="1.5"/>
+          <text x="730" y="548" fill="#ff4d6d" font-size="8.5" text-anchor="middle" font-weight="700">AlertManager</text>
+          <text x="730" y="562" fill="#8896b2" font-size="7" text-anchor="middle">PagerDuty / Slack</text>
+          <text x="730" y="574" fill="#8896b2" font-size="7" text-anchor="middle">SLA breach alerts</text>
+          <text x="730" y="588" fill="#48566a" font-size="7" text-anchor="middle">On-call routing</text>
+
+          <!-- Metrics arrows from services to Prometheus -->
+          <line x1="99" y1="326" x2="98" y2="528" stroke="#f97316" stroke-width="0.7" stroke-dasharray="3" opacity="0.5"/>
+          <line x1="261" y1="326" x2="200" y2="528" stroke="#f97316" stroke-width="0.7" stroke-dasharray="3" opacity="0.5"/>
+        </svg>
+      </div>
+
+      <!-- Key Design Decisions -->
+      <div class="g3" style="margin-top:16px">
+        <div class="card" style="border-color:rgba(245,166,35,.3)">
+          <div class="ct2" style="color:var(--amber)">Kong Gateway — Why?</div>
+          <div class="cb">Single entry point cho tất cả clients. Xử lý cross-cutting concerns (auth, rate limit, logging) tại edge — không để từng service tự xử lý. Plugin ecosystem: JWT validation với Keycloak, IP restriction, request transformation.<div class="chip">Trade-off: single point of failure → cần HA cluster Kong</div></div>
+        </div>
+        <div class="card" style="border-color:rgba(167,139,250,.3)">
+          <div class="ct2" style="color:var(--purple)">Istio Service Mesh — Why?</div>
+          <div class="cb">East-west traffic (service-to-service) cần mTLS, circuit breaker, retry, và observability — không code vào application. Envoy sidecar inject tự động. Istio control plane quản lý policy tập trung.<div class="chip">Trade-off: ~15% latency overhead, ops complexity cao</div></div>
+        </div>
+        <div class="card" style="border-color:rgba(0,212,255,.3)">
+          <div class="ct2" style="color:var(--cyan)">Database per Service — Why?</div>
+          <div class="cb">Mỗi service own schema riêng — loose coupling, independent deploy. Saga pattern cho distributed transactions thay vì 2PC. Event sourcing qua Kafka cho audit trail.<div class="chip">Trade-off: join queries phức tạp hơn — cần CQRS</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S-KEYCLOAK: KEYCLOAK ════ -->
+<section class="section" id="s-keycloak">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#164e63,#0891b2)">🔐</div>
+    <div><div class="sec-title">Keycloak — Auth &amp; Identity</div><div class="sec-sub">OAuth2 · OIDC · SSO · RBAC · Token flows · Tích hợp với Spring Boot</div></div>
+  </div>
+
+  <div class="qblock">
+    <div class="qhead must" onclick="toggleQ(this)">
+      <span class="qnum qn-m">KC1</span>
+      <div style="flex:1">
+        <div class="q-en">How does Keycloak integrate with your microservice architecture? Explain the token flow.</div>
+        <div class="q-vi">Keycloak tích hợp thế nào với microservice? Giải thích token flow.</div>
+      </div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">ANSWER</span><span class="btext"><span class="kt">Keycloak</span> là <span class="kk">Identity Provider (IdP)</span> — issue <span class="kt">JWT Access Token</span> và <span class="kt">Refresh Token</span>. <span class="kt">Kong Gateway</span> validate token tại edge. Services downstream nhận token đã verified — không cần call Keycloak mỗi request.</span></div>
+        <div class="bluf-row"><span class="bl bl-w">FLOW</span><span class="btext">
+          <ul class="nlist" style="margin-top:6px">
+            <li><span class="nn nn-c">①</span><span class="ni">User login → POST /realms/{'{realm}'}/protocol/openid-connect/token → Keycloak trả về <span class="kt">Access Token</span> (JWT, 15min) + <span class="kt">Refresh Token</span> (7 days)</span></li>
+            <li><span class="nn nn-c">②</span><span class="ni">Client gửi request kèm <code>Authorization: Bearer {'{token}'}</code> → <span class="kt">Kong</span> intercept</span></li>
+            <li><span class="nn nn-c">③</span><span class="ni">Kong validate JWT signature (public key từ Keycloak JWKS endpoint) — không cần gọi Keycloak</span></li>
+            <li><span class="nn nn-c">④</span><span class="ni">Kong forward request kèm decoded claims (userId, roles) đến service</span></li>
+            <li><span class="nn nn-c">⑤</span><span class="ni">Service dùng <span class="kt">Spring Security</span> + <span class="kt">@PreAuthorize</span> để enforce RBAC theo roles trong JWT</span></li>
+          </ul>
+        </span></div>
+        <div class="bluf-row"><span class="bl bl-t">TRADE-OFF</span><span class="btext">JWT stateless = không thể revoke ngay lập tức. Solution: short-lived access token (15min) + <span class="kt">Redis blacklist</span> cho logout trước hạn. Hoặc dùng <span class="kt">Keycloak introspection endpoint</span> (online validation) cho high-security endpoints.</span></div>
+      </div>
+
+      <!-- Keycloak Token Flow Diagram -->
+      <div class="dbox">
+        <div class="dbox-t">KEYCLOAK TOKEN FLOW — Authorization Code + PKCE (Web App)</div>
+        <svg viewBox="0 0 820 260" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono',monospace">
+          <defs>
+            <marker id="kc1" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#48566a"/></marker>
+            <marker id="kc2" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00d4ff"/></marker>
+          </defs>
+
+          <!-- Actors -->
+          <rect x="10" y="20" width="90" height="36" rx="6" fill="#0a1220" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="55" y="38" fill="#00d4ff" font-size="8.5" text-anchor="middle" font-weight="700">Browser</text>
+          <text x="55" y="50" fill="#48566a" font-size="7" text-anchor="middle">User</text>
+
+          <rect x="140" y="20" width="110" height="36" rx="6" fill="#0a0f20" stroke="#f5a623" stroke-width="2"/>
+          <text x="195" y="38" fill="#f5a623" font-size="8.5" text-anchor="middle" font-weight="700">Kong Gateway</text>
+          <text x="195" y="50" fill="#48566a" font-size="7" text-anchor="middle">JWT Verify Plugin</text>
+
+          <rect x="290" y="20" width="110" height="36" rx="6" fill="#0a1220" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="345" y="38" fill="#00d4ff" font-size="8.5" text-anchor="middle" font-weight="700">Keycloak</text>
+          <text x="345" y="50" fill="#48566a" font-size="7" text-anchor="middle">Identity Provider</text>
+
+          <rect x="440" y="20" width="110" height="36" rx="6" fill="#0a1220" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="495" y="38" fill="#00e5a0" font-size="8.5" text-anchor="middle" font-weight="700">Microservice</text>
+          <text x="495" y="50" fill="#48566a" font-size="7" text-anchor="middle">Spring Boot</text>
+
+          <rect x="590" y="20" width="90" height="36" rx="6" fill="#0a1220" stroke="#ff4d6d" stroke-width="1.5"/>
+          <text x="635" y="38" fill="#ff4d6d" font-size="8.5" text-anchor="middle" font-weight="700">Redis</text>
+          <text x="635" y="50" fill="#48566a" font-size="7" text-anchor="middle">Token Blacklist</text>
+
+          <!-- Vertical lines -->
+          <line x1="55" y1="56" x2="55" y2="255" stroke="#1c2334" stroke-width="1" stroke-dasharray="3"/>
+          <line x1="195" y1="56" x2="195" y2="255" stroke="#1c2334" stroke-width="1" stroke-dasharray="3"/>
+          <line x1="345" y1="56" x2="345" y2="255" stroke="#1c2334" stroke-width="1" stroke-dasharray="3"/>
+          <line x1="495" y1="56" x2="495" y2="255" stroke="#1c2334" stroke-width="1" stroke-dasharray="3"/>
+          <line x1="635" y1="56" x2="635" y2="255" stroke="#1c2334" stroke-width="1" stroke-dasharray="3"/>
+
+          <!-- Step 1: Login -->
+          <line x1="55" y1="78" x2="341" y2="78" stroke="#00d4ff" stroke-width="1.2" marker-end="url(#kc1)"/>
+          <text x="198" y="74" fill="#00d4ff" font-size="7.5" text-anchor="middle">① POST /token (username + password)</text>
+
+          <!-- Step 2: Token response -->
+          <line x1="345" y1="95" x2="59" y2="95" stroke="#00e5a0" stroke-width="1.2" marker-end="url(#kc1)"/>
+          <text x="198" y="91" fill="#00e5a0" font-size="7.5" text-anchor="middle">② Access Token (JWT) + Refresh Token</text>
+
+          <!-- Step 3: API call with token -->
+          <line x1="55" y1="116" x2="191" y2="116" stroke="#f5a623" stroke-width="1.5" marker-end="url(#kc1)"/>
+          <text x="123" y="111" fill="#f5a623" font-size="7.5" text-anchor="middle">③ Bearer Token</text>
+
+          <!-- Step 4: Kong validates JWT locally -->
+          <line x1="195" y1="133" x2="341" y2="133" stroke="#48566a" stroke-width="1" marker-end="url(#kc1)" stroke-dasharray="4"/>
+          <text x="268" y="128" fill="#48566a" font-size="7" text-anchor="middle">④ JWKS (public key cache)</text>
+
+          <!-- Kong check blacklist -->
+          <line x1="195" y1="150" x2="631" y2="150" stroke="#48566a" stroke-width="1" marker-end="url(#kc1)" stroke-dasharray="4"/>
+          <text x="413" y="145" fill="#48566a" font-size="7" text-anchor="middle">⑤ Check token blacklist</text>
+
+          <!-- Step 5: Forward to service -->
+          <line x1="195" y1="170" x2="491" y2="170" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#kc2)"/>
+          <text x="343" y="165" fill="#00d4ff" font-size="7.5" text-anchor="middle">⑥ Forward + X-User-Id, X-Roles headers</text>
+
+          <!-- Step 6: Service responds -->
+          <line x1="495" y1="188" x2="199" y2="188" stroke="#00e5a0" stroke-width="1.2" marker-end="url(#kc1)"/>
+          <text x="347" y="183" fill="#00e5a0" font-size="7.5" text-anchor="middle">⑦ Response 200</text>
+
+          <!-- Kong to Browser -->
+          <line x1="195" y1="206" x2="59" y2="206" stroke="#00e5a0" stroke-width="1.2" marker-end="url(#kc1)"/>
+          <text x="127" y="201" fill="#00e5a0" font-size="7.5" text-anchor="middle">⑧ Response to client</text>
+
+          <!-- Token Refresh -->
+          <rect x="10" y="220" width="690" height="28" rx="4" fill="rgba(245,166,35,.06)" stroke="rgba(245,166,35,.2)" stroke-width="1"/>
+          <text x="355" y="234" fill="#f5a623" font-size="7.5" text-anchor="middle">Token expired? → Client dùng Refresh Token gọi Keycloak → nhận Access Token mới (silent refresh)</text>
+          <text x="355" y="244" fill="#48566a" font-size="7" text-anchor="middle">Kong không cần làm gì thêm — JWT signature validation là stateless</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">KC2</span>
+      <div style="flex:1">
+        <div class="q-en">How do you implement RBAC with Keycloak in Spring Boot microservices?</div>
+        <div class="q-vi">Implement RBAC với Keycloak trong Spring Boot microservices thế nào?</div>
+      </div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">SETUP</span><span class="btext">Keycloak Realm → Clients (per service) → Roles (ADMIN, USER, READONLY) → Assign to Users/Groups. Spring Boot config: <span class="kt">spring-boot-starter-oauth2-resource-server</span> + JwtDecoder pointing to Keycloak JWKS URI.</span></div>
+        <div class="bluf-row"><span class="bl bl-w">CODE</span><span class="btext">Roles nằm trong JWT claims (<code>realm_access.roles</code>). Custom <span class="kt">JwtAuthenticationConverter</span> extract roles thành Spring Security Authorities. Dùng <span class="kt">@PreAuthorize("hasRole('ADMIN')")</span> ở method level.</span></div>
+        <div class="bluf-row"><span class="bl bl-t">GOTCHA</span><span class="btext"><span class="kw">Keycloak role prefix</span>: Spring Security tự thêm <code>ROLE_</code> prefix. Nếu Keycloak role là <code>admin</code>, annotation phải là <code>hasRole('admin')</code> không phải <code>ADMIN</code>. Hay dùng <code>hasAuthority('ROLE_admin')</code> cho chắc.</span></div>
+      </div>
+      <div class="code"><span class="cc">// Spring Boot Resource Server config — Keycloak JWT</span>
+<span class="ck">@Configuration</span>
+<span class="ck">@EnableMethodSecurity</span>
+<span class="ck">public class</span> <span class="ct">SecurityConfig</span> {
+
+    <span class="ck">@Bean</span>
+    <span class="ct">SecurityFilterChain</span> filterChain(<span class="ct">HttpSecurity</span> http) <span class="ck">throws</span> Exception {
+        http.oauth2ResourceServer(oauth2 -> oauth2
+            .jwt(jwt -> jwt.jwtAuthenticationConverter(
+                <span class="ck">new</span> <span class="ct">KeycloakJwtConverter</span>()  <span class="cc">// extract realm_access.roles</span>
+            ))
+        );
+        <span class="ck">return</span> http.build();
+    }
+}
+
+<span class="cc">// Controller với method-level security</span>
+<span class="ck">@GetMapping</span>(<span class="cs">"/admin/users"</span>)
+<span class="ck">@PreAuthorize</span>(<span class="cs">"hasAuthority('ROLE_admin')"</span>)   <span class="cc">// chỉ ADMIN mới vào được</span>
+<span class="ct">List</span>&lt;<span class="ct">UserDto</span>&gt; getUsers() { ... }
+
+<span class="ck">@PostMapping</span>(<span class="cs">"/orders"</span>)
+<span class="ck">@PreAuthorize</span>(<span class="cs">"hasAnyAuthority('ROLE_user','ROLE_admin')"</span>)
+<span class="ct">OrderDto</span> createOrder(<span class="ck">@RequestBody</span> <span class="ct">CreateOrderRequest</span> req) { ... }</div>
+    </div>
+  </div>
+
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">KC3</span>
+      <div style="flex:1">
+        <div class="q-en">How do you handle token revocation and logout in a stateless JWT system?</div>
+        <div class="q-vi">Xử lý token revocation và logout trong hệ thống JWT stateless thế nào?</div>
+      </div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">PROBLEM</span><span class="btext"><span class="kw">JWT stateless = không thể revoke</span>. Nếu token bị đánh cắp, hacker dùng được đến khi hết hạn (15min). Logout không thực sự vô hiệu hóa được JWT.</span></div>
+        <div class="bluf-row"><span class="bl bl-w">SOLUTION 1</span><span class="btext"><span class="kt">Redis blacklist</span>: Khi logout, lưu JTI (JWT ID) vào Redis với TTL = remaining lifetime. Kong check blacklist mỗi request tại plugin level. <span class="kw">Trade-off</span>: thêm Redis lookup cho mỗi request (~1ms).</span></div>
+        <div class="bluf-row"><span class="bl bl-w">SOLUTION 2</span><span class="btext"><span class="kt">Short TTL + Refresh rotation</span>: Access token 5min, Refresh token single-use (rotate sau mỗi lần dùng). Compromise phát hiện khi Refresh Token bị dùng lần 2 — Keycloak revoke toàn bộ session.</span></div>
+        <div class="bluf-row"><span class="bl bl-t">MY CHOICE</span><span class="btext">Hybrid: <span class="kn">15min</span> access token + Redis blacklist chỉ cho logout. Không check blacklist cho mọi request — chỉ check khi <span class="kt">Keycloak session_state</span> thay đổi.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S-MESH: SERVICE MESH ════ -->
+<section class="section" id="s-mesh">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#4c1d95,#6d28d9)">🕸</div>
+    <div><div class="sec-title">Service Mesh — Istio Deep Dive</div><div class="sec-sub">Sidecar pattern · mTLS · Traffic management · Circuit breaker · Observability</div></div>
+  </div>
+
+  <div class="qblock">
+    <div class="qhead must" onclick="toggleQ(this)">
+      <span class="qnum qn-m">SM1</span>
+      <div style="flex:1">
+        <div class="q-en">What is a service mesh? Why use Istio instead of handling this in application code?</div>
+        <div class="q-vi">Service mesh là gì? Tại sao dùng Istio thay vì xử lý trong application code?</div>
+      </div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">ANSWER</span><span class="btext">Service mesh là infrastructure layer xử lý <span class="kk">service-to-service communication</span> (east-west traffic) — mTLS, retry, circuit breaker, load balancing, observability — <span class="kw">không cần code vào application</span>. Istio inject <span class="kt">Envoy sidecar</span> proxy vào mỗi pod, transparent với app.</span></div>
+        <div class="bluf-row"><span class="bl bl-w">WHY NOT APP CODE</span><span class="btext">Nếu code trong app: mỗi service phải implement retry, timeout, circuit breaker riêng → duplicate code, inconsistent behavior, khó update policy. Với Istio: thay đổi <span class="kt">VirtualService</span> YAML là xong — không redeploy service.</span></div>
+        <div class="bluf-row"><span class="bl bl-t">TRADE-OFF</span><span class="btext"><span class="kw">Latency overhead ~5-15ms</span> per hop (sidecar processing). <span class="kw">Ops complexity cao</span>: Istio control plane, CRDs, certificate rotation. <span class="kw">Resource overhead</span>: mỗi pod thêm 1 Envoy container (~50MB RAM). Acceptable cho production microservices.</span></div>
+      </div>
+
+      <!-- Service Mesh Diagram -->
+      <div class="dbox">
+        <div class="dbox-t">ISTIO SERVICE MESH — SIDECAR PATTERN &amp; TRAFFIC MANAGEMENT</div>
+        <svg viewBox="0 0 820 300" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono',monospace">
+          <defs>
+            <marker id="sm1" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#48566a"/></marker>
+            <marker id="sm2" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#a78bfa"/></marker>
+          </defs>
+
+          <!-- Control Plane -->
+          <rect x="8" y="8" width="800" height="50" rx="7" fill="#08001a" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="408" y="28" fill="#a78bfa" font-size="9.5" text-anchor="middle" font-weight="700">ISTIO CONTROL PLANE</text>
+          <text x="160" y="46" fill="#8896b2" font-size="7.5" text-anchor="middle">Pilot (traffic mgmt)</text>
+          <text x="310" y="46" fill="#8896b2" font-size="7.5" text-anchor="middle">Citadel (cert mgmt)</text>
+          <text x="460" y="46" fill="#8896b2" font-size="7.5" text-anchor="middle">Galley (config validation)</text>
+          <text x="640" y="46" fill="#8896b2" font-size="7.5" text-anchor="middle">Kiali Dashboard</text>
+
+          <!-- Data Plane: Pod A -->
+          <rect x="8" y="78" width="380" height="140" rx="8" fill="rgba(0,212,255,.03)" stroke="#1c2334" stroke-width="1"/>
+          <text x="198" y="96" fill="#48566a" font-size="7.5" text-anchor="middle">Kubernetes Pod A</text>
+
+          <!-- Sidecar A -->
+          <rect x="18" y="104" width="120" height="100" rx="6" fill="#08001a" stroke="#a78bfa" stroke-width="2"/>
+          <text x="78" y="122" fill="#a78bfa" font-size="8" text-anchor="middle" font-weight="700">Envoy</text>
+          <text x="78" y="134" fill="#a78bfa" font-size="7.5" text-anchor="middle">Sidecar Proxy</text>
+          <text x="78" y="150" fill="#8896b2" font-size="7" text-anchor="middle">mTLS</text>
+          <text x="78" y="163" fill="#8896b2" font-size="7" text-anchor="middle">Retry / Timeout</text>
+          <text x="78" y="176" fill="#8896b2" font-size="7" text-anchor="middle">Circuit Breaker</text>
+          <text x="78" y="189" fill="#8896b2" font-size="7" text-anchor="middle">Metrics/Traces</text>
+
+          <!-- App A -->
+          <rect x="152" y="104" width="226" height="100" rx="6" fill="#0a1828" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="265" y="124" fill="#00d4ff" font-size="9" text-anchor="middle" font-weight="700">Order Service</text>
+          <text x="265" y="140" fill="#8896b2" font-size="7.5" text-anchor="middle">Spring Boot</text>
+          <text x="265" y="155" fill="#48566a" font-size="7" text-anchor="middle">localhost:8080</text>
+          <text x="265" y="170" fill="#48566a" font-size="7" text-anchor="middle">→ gọi User Service</text>
+          <text x="265" y="185" fill="#48566a" font-size="7" text-anchor="middle">KHÔNG biết về mTLS</text>
+          <text x="265" y="200" fill="#00e5a0" font-size="7" text-anchor="middle">Transparent to app ✓</text>
+
+          <!-- Pod B -->
+          <rect x="430" y="78" width="380" height="140" rx="8" fill="rgba(0,212,255,.03)" stroke="#1c2334" stroke-width="1"/>
+          <text x="620" y="96" fill="#48566a" font-size="7.5" text-anchor="middle">Kubernetes Pod B</text>
+
+          <!-- Sidecar B -->
+          <rect x="440" y="104" width="120" height="100" rx="6" fill="#08001a" stroke="#a78bfa" stroke-width="2"/>
+          <text x="500" y="122" fill="#a78bfa" font-size="8" text-anchor="middle" font-weight="700">Envoy</text>
+          <text x="500" y="134" fill="#a78bfa" font-size="7.5" text-anchor="middle">Sidecar Proxy</text>
+          <text x="500" y="150" fill="#8896b2" font-size="7" text-anchor="middle">mTLS Terminate</text>
+          <text x="500" y="163" fill="#8896b2" font-size="7" text-anchor="middle">Policy Enforce</text>
+          <text x="500" y="176" fill="#8896b2" font-size="7" text-anchor="middle">Load Balance</text>
+          <text x="500" y="189" fill="#8896b2" font-size="7" text-anchor="middle">Access Logging</text>
+
+          <!-- App B -->
+          <rect x="570" y="104" width="230" height="100" rx="6" fill="#0a1828" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="685" y="124" fill="#00e5a0" font-size="9" text-anchor="middle" font-weight="700">User Service</text>
+          <text x="685" y="140" fill="#8896b2" font-size="7.5" text-anchor="middle">Spring Boot</text>
+          <text x="685" y="155" fill="#48566a" font-size="7" text-anchor="middle">localhost:8080</text>
+          <text x="685" y="170" fill="#48566a" font-size="7" text-anchor="middle">Nhận plain HTTP</text>
+          <text x="685" y="185" fill="#48566a" font-size="7" text-anchor="middle">từ Envoy sidecar</text>
+
+          <!-- mTLS arrow between proxies -->
+          <line x1="138" y1="154" x2="438" y2="154" stroke="#a78bfa" stroke-width="2" marker-end="url(#sm2)"/>
+          <text x="288" y="148" fill="#a78bfa" font-size="8.5" text-anchor="middle" font-weight="700">mTLS encrypted</text>
+          <text x="288" y="160" fill="#48566a" font-size="7" text-anchor="middle">mutual certificate auth</text>
+
+          <!-- Control plane arrows -->
+          <line x1="78" y1="58" x2="78" y2="102" stroke="#a78bfa" stroke-width="1" stroke-dasharray="3" marker-end="url(#sm2)"/>
+          <line x1="500" y1="58" x2="500" y2="102" stroke="#a78bfa" stroke-width="1" stroke-dasharray="3" marker-end="url(#sm2)"/>
+          <text x="78" y="82" fill="#a78bfa" font-size="6.5" text-anchor="middle">xDS config</text>
+          <text x="500" y="82" fill="#a78bfa" font-size="6.5" text-anchor="middle">xDS config</text>
+
+          <!-- Observability -->
+          <rect x="8" y="236" width="800" height="54" rx="7" fill="rgba(245,166,35,.04)" stroke="rgba(245,166,35,.2)" stroke-width="1"/>
+          <text x="408" y="254" fill="#f5a623" font-size="8.5" text-anchor="middle" font-weight="700">OBSERVABILITY (automatic — no app code needed)</text>
+          <text x="150" y="272" fill="#8896b2" font-size="7.5" text-anchor="middle">Prometheus metrics</text>
+          <text x="310" y="272" fill="#8896b2" font-size="7.5" text-anchor="middle">Jaeger traces (auto inject)</text>
+          <text x="470" y="272" fill="#8896b2" font-size="7.5" text-anchor="middle">Access logs → ELK</text>
+          <text x="640" y="272" fill="#8896b2" font-size="7.5" text-anchor="middle">Kiali topology graph</text>
+          <text x="150" y="284" fill="#48566a" font-size="7" text-anchor="middle">request rate, error rate</text>
+          <text x="310" y="284" fill="#48566a" font-size="7" text-anchor="middle">distributed trace_id</text>
+          <text x="470" y="284" fill="#48566a" font-size="7" text-anchor="middle">per-service latency</text>
+          <text x="640" y="284" fill="#48566a" font-size="7" text-anchor="middle">circuit breaker status</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">SM2</span>
+      <div style="flex:1">
+        <div class="q-en">How do you configure traffic management in Istio — canary deploy, circuit breaker, retries?</div>
+        <div class="q-vi">Cấu hình traffic management trong Istio — canary, circuit breaker, retry?</div>
+      </div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">CANARY</span><span class="btext"><span class="kt">VirtualService</span> + <span class="kt">DestinationRule</span>. Ví dụ: 90% traffic → v1, 10% → v2. Tăng dần không cần redeploy. Header-based routing cho internal testing.</span></div>
+        <div class="bluf-row"><span class="bl bl-w">CIRCUIT BREAKER</span><span class="btext"><span class="kt">DestinationRule</span> với <span class="kk">outlierDetection</span>: nếu service trả về 5xx liên tục → Envoy eject khỏi load balancer pool. Auto recover sau <span class="kn">30s</span>. Không cần Hystrix hay Resilience4j.</span></div>
+        <div class="bluf-row"><span class="bl bl-t">RETRY</span><span class="btext"><span class="kt">VirtualService</span> retries: max 3 attempts, timeout 2s, retry on 503/504. <span class="kw">Idempotency quan trọng</span>: chỉ retry GET và idempotent POST. Dùng idempotency key cho payment.</span></div>
+      </div>
+      <div class="code"><span class="cc"># VirtualService — Canary 90/10 split</span>
+<span class="ck">apiVersion</span>: networking.istio.io/v1alpha3
+<span class="ck">kind</span>: VirtualService
+<span class="ck">spec</span>:
+  <span class="ck">http</span>:
+  - <span class="ck">match</span>:
+    - <span class="ck">headers</span>: { <span class="cs">x-canary</span>: { <span class="ck">exact</span>: <span class="cs">"true"</span> } }
+    <span class="ck">route</span>: [{ <span class="ck">destination</span>: { <span class="ck">host</span>: order-svc, <span class="ck">subset</span>: v2 } }]
+  - <span class="ck">route</span>:
+    - <span class="ck">destination</span>: { <span class="ck">host</span>: order-svc, <span class="ck">subset</span>: v1 }
+      <span class="ck">weight</span>: <span class="cv">90</span>
+    - <span class="ck">destination</span>: { <span class="ck">host</span>: order-svc, <span class="ck">subset</span>: v2 }
+      <span class="ck">weight</span>: <span class="cv">10</span>
+    <span class="ck">retries</span>: { <span class="ck">attempts</span>: <span class="cv">3</span>, <span class="ck">perTryTimeout</span>: <span class="cs">2s</span>, <span class="ck">retryOn</span>: <span class="cs">5xx</span> }
+
+<span class="cc"># DestinationRule — Circuit Breaker</span>
+<span class="ck">apiVersion</span>: networking.istio.io/v1alpha3
+<span class="ck">kind</span>: DestinationRule
+<span class="ck">spec</span>:
+  <span class="ck">trafficPolicy</span>:
+    <span class="ck">outlierDetection</span>:
+      <span class="ck">consecutive5xxErrors</span>: <span class="cv">5</span>      <span class="cc"># 5 lỗi liên tục → eject</span>
+      <span class="ck">interval</span>: <span class="cs">30s</span>
+      <span class="ck">baseEjectionTime</span>: <span class="cs">30s</span>         <span class="cc"># cool-down 30s</span>
+      <span class="ck">maxEjectionPercent</span>: <span class="cv">50</span>         <span class="cc"># max 50% hosts bị eject</span></div>
+    </div>
+  </div>
+
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">SM3</span>
+      <div style="flex:1">
+        <div class="q-en">Istio vs Linkerd — when would you choose which?</div>
+        <div class="q-vi">Istio vs Linkerd — chọn cái nào và khi nào?</div>
+      </div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="g2">
+        <div class="card" style="border-color:rgba(167,139,250,.3)">
+          <div class="ct2" style="color:var(--purple)">Istio — Chọn khi:</div>
+          <ul class="alist" style="margin-top:6px">
+            <li><span class="arr">▸</span><span>Complex traffic management: canary, A/B, fault injection<span class="vi">VirtualService + DestinationRule rất powerful</span></span></li>
+            <li><span class="arr">▸</span><span>Rich observability cần Kiali dashboard<span class="vi">Service topology visualization</span></span></li>
+            <li><span class="arr">▸</span><span>Multi-cluster, multi-cloud deployments<span class="vi">Istio hỗ trợ federation tốt hơn</span></span></li>
+            <li><span class="arr">▸</span><span>Team có Kubernetes expertise cao<span class="vi">Ops complexity đáng đổi lấy feature richness</span></span></li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(0,229,160,.3)">
+          <div class="ct2" style="color:var(--green)">Linkerd — Chọn khi:</div>
+          <ul class="alist" style="margin-top:6px">
+            <li><span class="arr">▸</span><span>Team nhỏ, ít ops bandwidth<span class="vi">Linkerd đơn giản hơn nhiều, less config</span></span></li>
+            <li><span class="arr">▸</span><span>Latency nhạy cảm: Linkerd ~2ms overhead vs Istio ~15ms<span class="vi">Rust-based proxy, much lighter than Envoy</span></span></li>
+            <li><span class="arr">▸</span><span>chỉ cần mTLS + basic observability<span class="vi">Không cần advanced traffic management</span></span></li>
+            <li><span class="arr">▸</span><span>Resource-constrained clusters<span class="vi">Linkerd sidecar &lt;10MB vs Envoy ~50MB</span></span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="tip"><div class="tip-t">My recommendation</div><div class="tip-b"><strong style="color:var(--amber)">"For production enterprise with complex routing needs like bot detection platform — Istio. For a startup or smaller team — Linkerd first, migrate to Istio when complexity justifies it."</strong></div></div>
     </div>
   </div>
 </section>
