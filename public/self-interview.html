@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Interview Prep v3 — Thái Tiểu Lôi</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root{
+  --bg0:#08090d;--bg1:#0d1017;--bg2:#121620;--bg3:#181d28;
+  --border:#1c2334;--border2:#242f44;
+  --text:#dce4f2;--text2:#8896b2;--text3:#48566a;
+  --cyan:#00d4ff;--violet:#7c5af6;--green:#00e5a0;
+  --amber:#f5a623;--red:#ff4d6d;--rose:#ff6b9d;--purple:#a78bfa;
+  --font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;
+  --r:10px;--r2:6px;--r3:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;overflow-x:hidden;}
+body{
+  background:var(--bg0);color:var(--text);font-family:var(--font);
+  font-size:14.5px;line-height:1.65;
+  overflow-x:hidden;min-width:0;
+}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg1);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ── LAYOUT ── */
+.shell{
+  display:block;
+  min-height:100vh;
+}
+.main{
+  margin-left:268px;
+  min-width:0;
+  overflow-x:hidden;
+  transition:margin-left .3s ease;
+}
+
+/* ── SIDEBAR TOGGLE BUTTON (desktop) ── */
+.sb-toggle{
+  position:fixed;
+  top:50%;
+  left:268px;
+  transform:translate(-50%,-50%);
+  z-index:210;
+  width:22px;height:44px;
+  background:var(--bg2);
+  border:1px solid var(--border2);
+  border-radius:0 8px 8px 0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  color:var(--text3);
+  font-size:11px;
+  transition:left .3s ease, color .15s, background .15s;
+  user-select:none;
+}
+.sb-toggle:hover{color:var(--cyan);background:var(--bg3);border-color:var(--cyan);}
+
+/* Sidebar */
+.sidebar{
+  position:fixed;top:0;left:0;width:268px;height:100vh;
+  background:var(--bg1);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;z-index:200;
+  transition:transform .3s ease;
+}
+.sidebar.collapsed{
+  transform:translateX(-268px);
+}
+.sb-head{padding:16px 16px 12px;border-bottom:1px solid var(--border);}
+.sb-brand{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);}
+.sb-sub{font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono);}
+.sb-profile{margin:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:flex;gap:10px;align-items:center;}
+.sb-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--cyan));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;color:#fff;}
+.sb-name{font-size:12px;font-weight:700;}
+.sb-role{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.sb-search{margin:0 10px 6px;position:relative;}
+.sb-search input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:7px 10px 7px 32px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;transition:border-color .2s;}
+.sb-search input::placeholder{color:var(--text3);}
+.sb-search input:focus{border-color:var(--cyan);}
+.sb-search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none;}
+.sb-actions{display:flex;gap:6px;margin:0 10px 6px;}
+.sb-btn{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:5px 8px;color:var(--text2);font-size:10px;font-family:var(--mono);cursor:pointer;transition:all .15s;text-align:center;}
+.sb-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.nav{flex:1;overflow-y:auto;padding:4px 0 20px;}
+.nav-section{margin-bottom:2px;}
+.nav-label{font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);padding:10px 16px 3px;}
+.nav-a{display:flex;align-items:center;gap:7px;padding:6px 16px;color:var(--text2);font-size:11.5px;font-weight:500;text-decoration:none;border-left:2px solid transparent;transition:all .12s;cursor:pointer;}
+.nav-a:hover,.nav-a.active{color:var(--text);background:rgba(0,212,255,.05);border-left-color:var(--cyan);}
+.nbadge{margin-left:auto;font-family:var(--mono);font-size:8.5px;font-weight:700;padding:2px 5px;border-radius:3px;}
+.nb-r{background:rgba(245,166,35,.18);color:var(--amber);}
+.nb-m{background:rgba(255,77,109,.18);color:var(--red);}
+.nb-n{background:rgba(0,229,160,.18);color:var(--green);}
+/* progress bar */
+.read-progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--violet),var(--cyan));width:0%;z-index:999;transition:width .1s;}
+/* hamburger (mobile only) */
+.ham{display:none;position:fixed;top:12px;left:12px;z-index:300;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);width:36px;height:36px;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:150;}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(135deg,#080d1e 0%,#0c1430 55%,#080d1e 100%);
+  border-bottom:1px solid var(--border);
+  padding:48px clamp(20px,4vw,44px) 40px;
+  position:relative;overflow:hidden;
+  width:100%;max-width:100%;
+}
+.hero::before{content:'';position:absolute;top:-100px;right:-60px;width:440px;height:440px;background:radial-gradient(circle,rgba(0,212,255,.07) 0%,transparent 70%);}
+.hero::after{content:'';position:absolute;bottom:-70px;left:140px;width:360px;height:360px;background:radial-gradient(circle,rgba(124,90,246,.06) 0%,transparent 70%);}
+.hero-tag{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);padding:4px 10px;border-radius:4px;margin-bottom:16px;}
+.hero-tag span{width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:34px;font-weight:900;letter-spacing:-.02em;line-height:1.1;margin-bottom:8px;}
+.hero h1 em{font-style:normal;color:var(--cyan);}
+.hero-sub{font-size:13px;color:var(--text2);margin-bottom:22px;}
+.pills{display:flex;flex-wrap:wrap;gap:7px;}
+.pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid var(--border2);padding:5px 11px;border-radius:5px;font-size:10.5px;color:var(--text2);font-weight:500;}
+.pdot{width:5px;height:5px;border-radius:50%;}
+/* stats bar */
+.stats{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--bg1);width:100%;overflow-x:auto;}
+.stat{flex:1;padding:10px 12px;text-align:center;border-right:1px solid var(--border);min-width:80px;}
+.stat:last-child{border-right:none;}
+.stat-num{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--cyan);}
+.stat-lbl{font-size:9.5px;color:var(--text3);margin-top:1px;white-space:nowrap;}
+/* legend bar */
+.legend{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px clamp(16px,4vw,44px);background:var(--bg1);border-bottom:1px solid var(--border);font-size:11px;width:100%;}
+.legend-title{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-right:4px;}
+.lc{display:flex;align-items:center;gap:5px;color:var(--text2);}
+.alert-bar{background:rgba(255,77,109,.07);border-bottom:1px solid rgba(255,77,109,.18);padding:10px clamp(16px,4vw,44px);font-size:12.5px;color:var(--text2);width:100%;}
+.alert-bar strong{color:var(--red);}
+
+/* ── CONTENT ── */
+.content{padding:0 clamp(16px,4vw,44px) 80px;width:100%;max-width:100%;overflow-x:hidden;}
+/* ── SECTION ── */
+.section{padding-top:52px;scroll-margin-top:16px;}
+.sec-head{display:flex;align-items:flex-start;gap:13px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.sec-num{width:40px;height:40px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#fff;flex-shrink:0;box-shadow:0 4px 14px rgba(0,0,0,.35);}
+.sec-title{font-size:20px;font-weight:800;letter-spacing:-.01em;}
+.sec-sub{font-size:10.5px;color:var(--text3);font-family:var(--mono);margin-top:3px;}
+
+/* ── QBLOCK ── */
+.qblock{background:var(--bg1);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;margin-bottom:18px;transition:border-color .18s;}
+.qblock:hover{border-color:var(--border2);}
+.qhead{padding:16px 18px;display:flex;gap:11px;align-items:flex-start;cursor:pointer;user-select:none;border-left:4px solid var(--violet);}
+.qhead.real{border-left-color:var(--amber);}
+.qhead.must{border-left-color:var(--red);}
+.qnum{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.07em;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px;}
+.qn-d{background:rgba(124,90,246,.2);color:var(--purple);}
+.qn-m{background:rgba(255,77,109,.2);color:var(--red);}
+.qn-r{background:rgba(245,166,35,.2);color:var(--amber);}
+.q-en{font-size:14px;font-weight:700;color:var(--text);line-height:1.4;}
+.q-vi{font-size:11.5px;color:var(--text2);font-style:italic;margin-top:4px;}
+.qtog{margin-left:auto;color:var(--text3);font-size:19px;transition:transform .22s;flex-shrink:0;}
+.qblock.open .qtog{transform:rotate(90deg);}
+.qbody{max-height:0;overflow:hidden;transition:max-height .38s ease,padding .18s;}
+.qblock.open .qbody{max-height:9000px;padding:16px 16px 22px;}
+
+/* ── BLUF ── */
+.bluf{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:14px;margin-bottom:16px;overflow:hidden;}
+.bluf-row{display:flex;gap:11px;padding:7px 0;border-bottom:1px solid var(--border);min-width:0;}
+.bluf-row:last-child{border-bottom:none;padding-bottom:0;}
+.bl{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;min-width:62px;padding-top:2px;flex-shrink:0;}
+.bl-a{color:var(--cyan);}
+.bl-w{color:var(--purple);}
+.bl-t{color:var(--amber);}
+.bl-r{color:var(--green);}
+.btext{font-size:13px;color:var(--text);line-height:1.6;min-width:0;overflow-wrap:break-word;word-break:break-word;}
+
+/* ── LIST ── */
+.alist{list-style:none;}
+.alist li{display:flex;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.6;}
+.alist li:last-child{border-bottom:none;}
+.arr{color:var(--cyan);font-size:11px;margin-top:3px;flex-shrink:0;}
+.vi{display:block;font-size:11px;color:var(--text2);font-style:italic;margin-top:4px;}
+
+/* ── CODE ── */
+.code{
+  background:#030609;border:1px solid var(--border);border-radius:var(--r);
+  padding:14px 16px;font-family:var(--mono);font-size:11px;line-height:1.8;
+  overflow-x:auto;white-space:pre;margin:12px 0;
+  max-width:100%;-webkit-overflow-scrolling:touch;
+}
+.cc{color:#334f62;}.ck{color:var(--amber);}.cv{color:var(--green);}
+.ct{color:var(--cyan);}.cs{color:#ff8b60;}.ch{color:var(--rose);font-weight:700;}
+
+/* ── BOXES ── */
+.tip{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.22);border-radius:var(--r);padding:13px 16px;margin:13px 0;position:relative;}
+.tip::before{content:'💡';position:absolute;top:-10px;left:13px;font-size:13px;background:var(--bg1);padding:0 4px;}
+.tip-t{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:5px;margin-top:3px;}
+.tip-b{font-size:12.5px;color:var(--text2);}
+.warn{background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.18);border-radius:var(--r);padding:11px 15px;margin:11px 0;}
+.warn-t{font-family:var(--mono);font-size:8.5px;color:var(--red);letter-spacing:.09em;text-transform:uppercase;margin-bottom:5px;}
+.warn-b{font-size:12.5px;color:var(--text2);}
+.perfect{background:rgba(0,229,160,.05);border:1px solid rgba(0,229,160,.18);border-radius:var(--r);padding:16px;margin:13px 0;}
+.perfect-t{font-family:var(--mono);font-size:8.5px;color:var(--green);letter-spacing:.11em;text-transform:uppercase;margin-bottom:9px;}
+.perfect-b{font-size:13px;color:var(--text);line-height:1.72;white-space:pre-wrap;}
+
+/* ── GRID CARDS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:13px 0;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:13px 0;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:15px;}
+.ct2{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;}
+.cn{font-size:13px;font-weight:700;margin-bottom:7px;color:var(--text);}
+.cb{font-size:12px;color:var(--text2);line-height:1.6;}
+.chip{display:inline-flex;align-items:center;gap:4px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.2);border-radius:4px;padding:2px 7px;font-size:10.5px;color:var(--amber);margin-top:5px;}
+
+/* ── KEYWORDS ── */
+.kt{background:rgba(245,166,35,.14);color:#f5c540;border-radius:3px;padding:1px 5px;font-weight:600;font-size:12.5px;}
+.kn{background:rgba(0,229,160,.14);color:var(--green);border-radius:3px;padding:1px 5px;font-weight:600;font-size:12.5px;}
+.ka{background:rgba(0,212,255,.12);color:var(--cyan);border-radius:3px;padding:1px 5px;font-weight:600;font-size:12.5px;}
+.kk{border-bottom:2px solid var(--cyan);color:var(--text);font-weight:700;}
+.kw{background:rgba(255,77,109,.14);color:var(--red);border-radius:3px;padding:1px 5px;font-weight:600;font-size:12.5px;}
+
+/* ── DIAGRAM BOX ── */
+.dbox{
+  background:#030508;
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:16px;
+  margin:13px 0;
+  overflow-x:auto;         /* scroll horizontally if SVG too wide */
+  overflow-y:visible;
+  max-width:100%;
+  -webkit-overflow-scrolling:touch;
+}
+.dbox-t{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:13px;}
+.dbox svg{
+  display:block;
+  min-width:0;
+  max-width:100%;
+  height:auto;
+}
+
+/* ── PHASE ── */
+.phase{border-left:3px solid;padding-left:16px;margin-bottom:20px;}
+.p-cyan{border-color:var(--cyan);}
+.p-green{border-color:var(--green);}
+.p-violet{border-color:var(--purple);}
+.p-amber{border-color:var(--amber);}
+.phase-t{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:9px;}
+
+/* ── FLASHCARDS ── */
+.fcg{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;}
+.fc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:border-color .18s;}
+.fc:hover{border-color:var(--violet);}
+.fc-q{font-size:13px;font-weight:600;margin-bottom:5px;color:var(--text);}
+.fc-hint{font-family:var(--mono);font-size:9.5px;color:var(--text3);}
+.fc-ans{font-size:12px;color:var(--text2);line-height:1.6;border-top:1px solid var(--border);padding-top:9px;margin-top:5px;display:none;}
+.fc.revealed .fc-ans{display:block;}
+.fc.revealed .fc-hint{display:none;}
+
+/* ── SCROLL TOP ── */
+#totop{position:fixed;bottom:22px;right:22px;width:38px;height:38px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:17px;opacity:0;transition:opacity .18s;z-index:99;}
+#totop.show{opacity:1;}
+#totop:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* ── PRINT ── */
+@media print{
+  .sidebar,.ham,.overlay,.read-progress,#totop{display:none!important;}
+  .main{margin-left:0;width:100%;}
+  .hero{padding:20px;background:#fff!important;color:#000!important;}
+  .hero h1,.hero h1 em,.hero-sub,.pill{color:#000!important;}
+  .stats,.legend,.alert-bar{display:none!important;}
+  .content{padding:0 16px;}
+  .section{page-break-inside:avoid;}
+  .qblock{border:1px solid #ccc!important;background:#fff!important;page-break-inside:avoid;}
+  .qblock.open .qbody{max-height:none!important;padding:14px!important;}
+  .dbox{background:#f5f5f5!important;border:1px solid #ccc!important;}
+  svg text{fill:#111!important;}
+  .bluf{background:#f9f9f9!important;border:1px solid #ddd!important;}
+  .btext,.alist li,.tip-b,.warn-b,.perfect-b,.cb{color:#222!important;}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;width:100%;}
+  .ham{display:flex;}
+  .sb-toggle{display:none;}   /* hide desktop toggle on mobile */
+  .overlay.show{display:block;}
+  .g2,.g3{grid-template-columns:1fr;}
+  .fcg{grid-template-columns:1fr;}
+  .hero h1{font-size:26px;}
+  .bluf-row{flex-direction:column;gap:3px;}
+  .bl{min-width:auto;}
+}
+@media(max-width:600px){
+  .hero h1{font-size:22px;}
+  .sec-title{font-size:17px;}
+  .stats{flex-wrap:wrap;}
+  .stat{min-width:50%;}
+}
+
+/* ── PREVENT WIDE ELEMENTS FROM BLOWING LAYOUT ── */
+img,video,iframe,table{max-width:100%;}
+.qbody,
+.bluf,
+.tip,
+.warn,
+.perfect,
+.card,
+.g2,
+.g3,
+.fcg,
+.alist{max-width:100%;overflow-wrap:break-word;word-break:break-word;}
+/* grid items must not overflow */
+.g2>*,.g3>*{min-width:0;}
+/* qblock inner must constrain */
+.qblock{overflow:hidden;}
+mark{background:rgba(0,212,255,.2);color:var(--cyan);border-radius:2px;padding:0 2px;}
+.hidden{display:none!important;}
+/* ── NUMBERED STEPS (each on its own line) ── */
+.nlist{list-style:none;margin:0;padding:0;}
+.nlist li{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border);}
+.nlist li:last-child{border-bottom:none;}
+.nlist .nn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-family:var(--mono);font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px;}
+.nlist .nn-c{background:rgba(0,212,255,.15);color:var(--cyan);}
+.nlist .nn-a{background:rgba(245,166,35,.15);color:var(--amber);}
+.nlist .nn-g{background:rgba(0,229,160,.15);color:var(--green);}
+.nlist .nn-r{background:rgba(255,77,109,.15);color:var(--red);}
+.nlist .ni{font-size:13px;color:var(--text);line-height:1.6;}
+svg{font-family:'JetBrains Mono',monospace;overflow:visible;}
+</style>
+</head>
+<body>
+<div class="read-progress" id="rp"></div>
+<button class="ham" id="ham" onclick="toggleMobileSB()">☰</button>
+<div class="overlay" id="ov" onclick="toggleMobileSB()"></div>
+<!-- Desktop sidebar toggle -->
+<div class="sb-toggle" id="sbtoggle" onclick="toggleDesktopSB()" title="Ẩn/hiện menu">‹</div>
+
+<div class="shell">
+<!-- ══════════ SIDEBAR ══════════ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <div class="sb-brand">Interview Prep v3</div>
+    <div class="sb-sub">Thái Tiểu Lôi · Tech Lead · 2025</div>
+  </div>
+  <div class="sb-profile">
+    <div class="sb-av">TL</div>
+    <div><div class="sb-name">Thái Tiểu Lôi</div><div class="sb-role">Java 8yr · Kafka 3yr · RAG/AI</div></div>
+  </div>
+  <div class="sb-search">
+    <span class="sb-search-icon">⌕</span>
+    <input type="text" id="si" placeholder="Tìm nhanh..." autocomplete="off">
+  </div>
+  <div class="sb-actions">
+    <button class="sb-btn" onclick="expandAll()">▼ Mở hết</button>
+    <button class="sb-btn" onclick="collapseAll()">▲ Thu hết</button>
+    <button class="sb-btn" onclick="window.print()">🖨 In PDF</button>
+  </div>
+  <div class="nav">
+    <div class="nav-section">
+      <div class="nav-label">Framework</div>
+      <a class="nav-a" href="#s0">🗣 BLUF + STAR + Legend</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Real Interview</div>
+      <a class="nav-a" href="#sr">🎯 Câu hỏi từ Louis &amp; Mark <span class="nbadge nb-r">REAL</span></a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Profile &amp; Intro</div>
+      <a class="nav-a" href="#s1">👤 Self Introduction</a>
+      <a class="nav-a" href="#s2">⚖️ Tech vs Management <span class="nbadge nb-m">★</span></a>
+      <a class="nav-a" href="#s-obj">🎯 Mục tiêu công việc mới</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">HSC Deep Dive</div>
+      <a class="nav-a" href="#s3">📈 Architecture 10K TPS <span class="nbadge nb-m">★</span></a>
+      <a class="nav-a" href="#s4">⚡ Kafka Deep Dive <span class="nbadge nb-m">★</span></a>
+      <a class="nav-a" href="#s5">🔄 Camunda 50% Opt.</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Glohow / AI</div>
+      <a class="nav-a" href="#s6">🤖 RAG Pipeline <span class="nbadge nb-m">★</span></a>
+      <a class="nav-a" href="#s6b">🔍 RAG Bottlenecks <span class="nbadge nb-m">★</span></a>
+      <a class="nav-a" href="#s6c">📝 Summarization Auto</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Company Fit</div>
+      <a class="nav-a" href="#s7">🛡 Bot Detection + AI Opp.</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Leadership</div>
+      <a class="nav-a" href="#s8">👥 Team · Conflict · Balance</a>
+      <a class="nav-a" href="#s9">💬 Behavioral STAR</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Closing</div>
+      <a class="nav-a" href="#s10">🤝 Câu hỏi cho Interviewer</a>
+      <a class="nav-a" href="#sfc">🃏 Flashcards <span class="nbadge nb-n">12</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="main">
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag"><span></span>v3 Final · CV + Transcript Matched · 12 Diagrams</div>
+  <h1>Interview Prep<br><em>Thái Tiểu Lôi</em></h1>
+  <p class="hero-sub">Dựa trên CV thực tế + 2 transcripts Louis &amp; Mark · Bilingual Vi/En · Print-ready</p>
+  <div class="pills">
+    <div class="pill"><div class="pdot" style="background:var(--cyan)"></div>Java 8 years · Spring Boot</div>
+    <div class="pill"><div class="pdot" style="background:var(--amber)"></div>Kafka 3 years · 10K TPS</div>
+    <div class="pill"><div class="pdot" style="background:var(--green)"></div>RAG · Qdrant · Elasticsearch · Ollama</div>
+    <div class="pill"><div class="pdot" style="background:var(--purple)"></div>Hitachi → HSC → Glohow</div>
+    <div class="pill"><div class="pdot" style="background:var(--red)"></div>10+ năm kinh nghiệm</div>
+  </div>
+</div>
+<!-- STATS BAR -->
+<div class="stats">
+  <div class="stat"><div class="stat-num">12</div><div class="stat-lbl">Diagrams SVG</div></div>
+  <div class="stat"><div class="stat-num">18</div><div class="stat-lbl">Q&amp;A Blocks</div></div>
+  <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">Real Qs từ Interview</div></div>
+  <div class="stat"><div class="stat-num">12</div><div class="stat-lbl">Flashcards</div></div>
+  <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">Companies trên CV</div></div>
+</div>
+<!-- LEGEND -->
+<div class="legend">
+  <span class="legend-title">Keywords:</span>
+  <span class="lc"><span class="kt" style="font-size:11px">Tech Stack</span> Công nghệ</span>
+  <span class="lc"><span class="kn" style="font-size:11px">10K TPS</span> Metrics/Số liệu</span>
+  <span class="lc"><span class="ka" style="font-size:11px">Led team</span> Actions/Roles</span>
+  <span class="lc"><span class="kk" style="font-size:11px">CAP Theorem</span> Key concepts</span>
+  <span class="lc"><span class="kw" style="font-size:11px">⚠ Problem</span> Constraints</span>
+</div>
+<!-- ALERT -->
+<div class="alert-bar"><strong>⚠ Feedback Louis (transcript):</strong> "It did, but it's not very helpful." → Thiếu structure + không có flow + không có số liệu. Mỗi câu trả lời PHẢI theo BLUF: Answer → Why → Trade-off → Result.</div>
+
+<div class="content">
+
+<!-- ════ S0: FRAMEWORK + LEGEND ════ -->
+<section class="section" id="s0">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#1e3a5f,#2563eb)">0</div>
+    <div><div class="sec-title">Communication Framework</div><div class="sec-sub">BLUF + STAR · Apply for EVERY question · No exceptions</div></div>
+  </div>
+  <div class="g2">
+    <div class="card" style="border-color:rgba(0,212,255,.3)">
+      <div class="ct2" style="color:var(--cyan)">Template 1 — BLUF (Technical questions)</div>
+      <div class="bluf" style="margin:0;padding:12px">
+        <div class="bluf-row"><span class="bl bl-a">ANSWER</span><span class="btext" style="font-size:12px">"We chose <span class="kt">Kafka</span> because it decouples &amp; handles <span class="kn">10K+ TPS</span>."</span></div>
+        <div class="bluf-row"><span class="bl bl-w">WHY</span><span class="btext" style="font-size:12px">"Specifically, sync DB writes caused <span class="kn">800ms</span> latency at peak hours..."</span></div>
+        <div class="bluf-row"><span class="bl bl-t">TRADE-OFF</span><span class="btext" style="font-size:12px">"Trade-off: <span class="kk">eventual consistency</span> for trade history — acceptable T+2."</span></div>
+        <div class="bluf-row"><span class="bl bl-r">RESULT</span><span class="btext" style="font-size:12px">"Latency <span class="kn">800ms→380ms</span>. Sustained <span class="kn">10,000 TPS</span>."</span></div>
+      </div>
+    </div>
+    <div class="card" style="border-color:rgba(245,166,35,.3)">
+      <div class="ct2" style="color:var(--amber)">Template 2 — STAR (Behavioral questions)</div>
+      <div class="bluf" style="margin:0;padding:12px">
+        <div class="bluf-row"><span class="bl" style="color:var(--amber)">SIT.</span><span class="btext" style="font-size:12px">"At <span class="kt">HSC</span>, handling <span class="kn">1,500 TPS</span>, needed scale to <span class="kn">10K TPS</span>..."</span></div>
+        <div class="bluf-row"><span class="bl" style="color:var(--amber)">TASK</span><span class="btext" style="font-size:12px">"As <span class="ka">Tech Lead</span>, redesign the entire persistence layer..."</span></div>
+        <div class="bluf-row"><span class="bl" style="color:var(--amber)">ACT.</span><span class="btext" style="font-size:12px">"Introduced <span class="kt">Kafka WAL</span>, partitioned by symbol, Redis cache..."</span></div>
+        <div class="bluf-row"><span class="bl bl-r">RES.</span><span class="btext" style="font-size:12px">"<span class="kn">10K TPS</span>. p99 = <span class="kn">48ms</span>. Zero data loss on broker failure."</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="tip"><div class="tip-t">Golden Rule — Say this after every technical decision</div><div class="tip-b"><strong style="color:var(--amber)">"The trade-off is…"</strong> — This single habit separates Senior from Principal Engineer in technical interviews. Never skip it.</div></div>
+</section>
+
+<!-- ════ REAL INTERVIEW ════ -->
+<section class="section" id="sr">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#7b2d00,#e65100)">R</div>
+    <div><div class="sec-title">Real Interview Replay</div><div class="sec-sub">Câu hỏi CHÍNH XÁC từ Louis &amp; Mark · Perfect answers dựa trên CV</div></div>
+  </div>
+  <div class="warn"><div class="warn-t">Từ transcript thực tế</div><div class="warn-b">"So you mentioned you have a HSC project… can you walk me through the architecture end-to-end? What were the bottleneck? What is the trade-off you made? How you validate the system can handle the load?"</div></div>
+
+  <!-- R01 -->
+  <div class="qblock open">
+    <div class="qhead real" onclick="toggleQ(this)">
+      <span class="qnum qn-r">R-01</span>
+      <div style="flex:1"><div class="q-en">HSC architecture end-to-end. Bottlenecks? Trade-offs? How did you validate load?</div><div class="q-vi">Kiến trúc HSC end-to-end. Bottleneck? Trade-off? Validate tải thế nào?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">ANSWER</span><span class="btext">At <span class="kt">HSC</span> — Công ty Chứng khoán Hồ Chí Minh (2021–2025) as <span class="ka">Technical Leader</span>. Architecture: Client → <span class="kt">API Gateway</span> → <span class="kt">Order Service</span> (Spring Boot) → <span class="kt">Kafka</span> (partition by symbol) → <span class="kt">Matching Engine</span> → Settlement → <span class="kt">PostgreSQL</span>/<span class="kt">Cassandra</span> + <span class="kt">Redis</span>.</span></div>
+        <div class="bluf-row"><span class="bl bl-w">BOTTLENECK</span><span class="btext"><span class="kt">async-profiler</span> xác định 3 hotspot:<ul class="nlist" style="margin-top:8px"><li><span class="nn nn-r">①</span><span class="ni">Sync DB writes trên hot path = <span class="kn">800ms</span> latency</span></li><li><span class="nn nn-r">②</span><span class="ni">Single-thread order processing</span></li><li><span class="nn nn-r">③</span><span class="ni">Zero caching — every position query hit DB directly</span></li></ul></span></div>
+        <div class="bluf-row"><span class="bl bl-t">TRADE-OFF</span><span class="btext"><span class="kk">CAP Theorem applied:</span> Balance = <span class="kt">CP</span> (PostgreSQL, strong — money must be exact). History = <span class="kt">AP</span> (Cassandra, eventual — T+2 settlement allows delay). This is the core trade-off call.</span></div>
+        <div class="bluf-row"><span class="bl bl-r">VALIDATE</span><span class="btext"><span class="kt">JMeter</span> at <span class="kn">15K TPS</span> (1.5x target) + chaos kill broker + 2-week shadow traffic + <span class="kt">Grafana</span> p50/p95/p99. Result: <span class="kn">10K TPS</span>, p99=<span class="kn">48ms</span>, zero data loss.</span></div>
+      </div>
+      <!-- DIAGRAM 1: HSC Architecture Flow -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 1 — HSC (CÔNG TY CHỨNG KHOÁN HỒ CHÍ MINH) — TRADING PLATFORM ARCHITECTURE</div>
+        <svg viewBox="0 0 860 330" width="100%">
+          <defs>
+            <marker id="a1" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#48566a"/></marker>
+            <marker id="a2" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00d4ff"/></marker>
+            <marker id="a3" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00e5a0"/></marker>
+          </defs>
+          <rect x="8" y="126" width="82" height="44" rx="6" fill="#0a1828" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="49" y="145" fill="#00d4ff" font-size="9.5" text-anchor="middle" font-weight="700">CLIENT</text>
+          <text x="49" y="159" fill="#48566a" font-size="7.5" text-anchor="middle">Mobile/Web</text>
+          <line x1="90" y1="148" x2="118" y2="148" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <rect x="120" y="122" width="92" height="52" rx="6" fill="#0a1828" stroke="#7c5af6" stroke-width="1.5"/>
+          <text x="166" y="142" fill="#a78bfa" font-size="9" text-anchor="middle" font-weight="700">API GATEWAY</text>
+          <text x="166" y="154" fill="#48566a" font-size="7" text-anchor="middle">Kong · Rate limit</text>
+          <text x="166" y="165" fill="#48566a" font-size="7" text-anchor="middle">Auth · SSL</text>
+          <line x1="212" y1="148" x2="238" y2="148" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <rect x="240" y="122" width="92" height="52" rx="6" fill="#0a1828" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="286" y="142" fill="#00d4ff" font-size="9" text-anchor="middle" font-weight="700">ORDER SVC</text>
+          <text x="286" y="154" fill="#48566a" font-size="7" text-anchor="middle">Spring Boot</text>
+          <text x="286" y="165" fill="#48566a" font-size="7" text-anchor="middle">Validate·Enrich</text>
+          <line x1="332" y1="148" x2="358" y2="148" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <text x="345" y="142" fill="#48566a" font-size="7" text-anchor="middle">Publish</text>
+          <rect x="360" y="110" width="110" height="76" rx="6" fill="#120d00" stroke="#f5a623" stroke-width="2"/>
+          <text x="415" y="131" fill="#f5a623" font-size="10" text-anchor="middle" font-weight="700">KAFKA</text>
+          <text x="415" y="145" fill="#f5a623" font-size="8" text-anchor="middle">orders.{'{symbol}'}</text>
+          <text x="415" y="158" fill="#48566a" font-size="7" text-anchor="middle">90 partitions</text>
+          <text x="415" y="170" fill="#48566a" font-size="7" text-anchor="middle">Partition by Symbol</text>
+          <line x1="470" y1="133" x2="508" y2="106" stroke="#48566a" stroke-width="1.2" marker-end="url(#a1)"/>
+          <line x1="470" y1="148" x2="508" y2="148" stroke="#48566a" stroke-width="1.2" marker-end="url(#a1)"/>
+          <line x1="470" y1="163" x2="508" y2="190" stroke="#48566a" stroke-width="1.2" marker-end="url(#a1)"/>
+          <rect x="510" y="78" width="104" height="52" rx="6" fill="#0a1828" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="562" y="98" fill="#00e5a0" font-size="9" text-anchor="middle" font-weight="700">MATCHING ENG</text>
+          <text x="562" y="110" fill="#48566a" font-size="7" text-anchor="middle">1 thread/symbol</text>
+          <text x="562" y="121" fill="#48566a" font-size="7" text-anchor="middle">Deterministic order</text>
+          <rect x="510" y="138" width="104" height="44" rx="6" fill="#0a1828" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="562" y="157" fill="#a78bfa" font-size="9" text-anchor="middle" font-weight="700">RISK SERVICE</text>
+          <text x="562" y="169" fill="#48566a" font-size="7" text-anchor="middle">Compliance·Async</text>
+          <rect x="510" y="190" width="104" height="44" rx="6" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="562" y="209" fill="#8896b2" font-size="9" text-anchor="middle" font-weight="700">NOTIFICATION</text>
+          <text x="562" y="221" fill="#48566a" font-size="7" text-anchor="middle">Push/Email·F&amp;F</text>
+          <line x1="614" y1="104" x2="644" y2="104" stroke="#00e5a0" stroke-width="1.5" marker-end="url(#a3)"/>
+          <rect x="646" y="84" width="100" height="40" rx="6" fill="#120d00" stroke="#f5a623" stroke-width="1.5"/>
+          <text x="696" y="102" fill="#f5a623" font-size="8.5" text-anchor="middle" font-weight="700">KAFKA</text>
+          <text x="696" y="115" fill="#48566a" font-size="7" text-anchor="middle">trades.settled</text>
+          <line x1="696" y1="124" x2="696" y2="144" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <rect x="636" y="146" width="62" height="44" rx="5" fill="#0a1828" stroke="#ff4d6d" stroke-width="1.5"/>
+          <text x="667" y="164" fill="#ff4d6d" font-size="8.5" text-anchor="middle" font-weight="700">PostgreSQL</text>
+          <text x="667" y="178" fill="#48566a" font-size="7" text-anchor="middle">CP·Balance</text>
+          <rect x="714" y="146" width="62" height="44" rx="5" fill="#0a1828" stroke="#ff4d6d" stroke-width="1"/>
+          <text x="745" y="164" fill="#ff4d6d" font-size="8.5" text-anchor="middle" font-weight="700">Cassandra</text>
+          <text x="745" y="178" fill="#48566a" font-size="7" text-anchor="middle">AP·History</text>
+          <rect x="636" y="208" width="140" height="34" rx="5" fill="#00100a" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="706" y="224" fill="#00e5a0" font-size="8.5" text-anchor="middle" font-weight="700">REDIS CACHE</text>
+          <text x="706" y="237" fill="#48566a" font-size="7" text-anchor="middle">Positions·Sessions·60% DB↓</text>
+          <rect x="8" y="268" width="830" height="46" rx="6" fill="#030508" stroke="#1c2334" stroke-width="1"/>
+          <text x="22" y="287" fill="#48566a" font-size="8">MONITORING:</text>
+          <text x="100" y="287" fill="#00d4ff" font-size="8">Prometheus</text>
+          <text x="170" y="287" fill="#48566a" font-size="8">+</text>
+          <text x="180" y="287" fill="#f97316" font-size="8">Grafana</text>
+          <text x="228" y="287" fill="#48566a" font-size="8">+</text>
+          <text x="238" y="287" fill="#eab308" font-size="8">ELK Stack</text>
+          <text x="22" y="305" fill="#00e5a0" font-size="8.5" font-weight="700">RESULT: 10,000 TPS · p99=48ms · Zero data loss · JMeter 15K validated</text>
+        </svg>
+      </div>
+      <!-- DIAGRAM 2: CAP Theorem Decision -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 2 — CAP THEOREM APPLIED AT HSC (Công ty Chứng khoán HCM)</div>
+        <svg viewBox="0 0 780 240" width="100%">
+          <rect x="8" y="8" width="370" height="220" rx="8" fill="rgba(255,77,109,.04)" stroke="rgba(255,77,109,.25)" stroke-width="1.5"/>
+          <text x="193" y="32" fill="#ff4d6d" font-size="10" text-anchor="middle" font-weight="700">CP — Consistency + Partition</text>
+          <text x="193" y="48" fill="#48566a" font-size="8" text-anchor="middle">PostgreSQL · Account Balances · Trade Settlement</text>
+          <rect x="24" y="60" width="337" height="60" rx="6" fill="#0a1828" stroke="#ff4d6d" stroke-width="1"/>
+          <text x="192" y="82" fill="#ff4d6d" font-size="9" text-anchor="middle" font-weight="700">WHY CP for MONEY?</text>
+          <text x="192" y="97" fill="#8896b2" font-size="8" text-anchor="middle">If network partition: system returns ERROR</text>
+          <text x="192" y="110" fill="#8896b2" font-size="8" text-anchor="middle">rather than stale/wrong balance</text>
+          <rect x="24" y="130" width="337" height="88" rx="6" fill="#030508" stroke="#48566a" stroke-width="1"/>
+          <text x="192" y="150" fill="#f5a623" font-size="8.5" text-anchor="middle" font-weight="700">EXAMPLE: User buys 1000 VNM shares</text>
+          <text x="192" y="165" fill="#8896b2" font-size="8" text-anchor="middle">Balance MUST reflect exact deduction instantly.</text>
+          <text x="192" y="180" fill="#8896b2" font-size="8" text-anchor="middle">Cannot show old balance even 1ms later.</text>
+          <text x="192" y="198" fill="#ff4d6d" font-size="8" text-anchor="middle" font-weight="700">Wrong balance = regulatory violation = fines</text>
+          <text x="192" y="213" fill="#48566a" font-size="7.5" text-anchor="middle">OWASP: Strong ACID guarantees required</text>
+
+          <rect x="402" y="8" width="370" height="220" rx="8" fill="rgba(0,229,160,.04)" stroke="rgba(0,229,160,.25)" stroke-width="1.5"/>
+          <text x="587" y="32" fill="#00e5a0" font-size="10" text-anchor="middle" font-weight="700">AP — Availability + Partition</text>
+          <text x="587" y="48" fill="#48566a" font-size="8" text-anchor="middle">Cassandra · Trade History · Audit Logs</text>
+          <rect x="418" y="60" width="337" height="60" rx="6" fill="#0a1828" stroke="#00e5a0" stroke-width="1"/>
+          <text x="586" y="82" fill="#00e5a0" font-size="9" text-anchor="middle" font-weight="700">WHY AP for HISTORY?</text>
+          <text x="586" y="97" fill="#8896b2" font-size="8" text-anchor="middle">VN settlement is T+2 — 2 business days.</text>
+          <text x="586" y="110" fill="#8896b2" font-size="8" text-anchor="middle">History can be eventually consistent.</text>
+          <rect x="418" y="130" width="337" height="88" rx="6" fill="#030508" stroke="#48566a" stroke-width="1"/>
+          <text x="586" y="150" fill="#f5a623" font-size="8.5" text-anchor="middle" font-weight="700">EXAMPLE: Trade history from yesterday</text>
+          <text x="586" y="165" fill="#8896b2" font-size="8" text-anchor="middle">OK if data is 1-2 seconds stale.</text>
+          <text x="586" y="180" fill="#8896b2" font-size="8" text-anchor="middle">System stays available during partition.</text>
+          <text x="586" y="198" fill="#00e5a0" font-size="8" text-anchor="middle" font-weight="700">Availability &gt; Consistency for read-heavy data</text>
+          <text x="586" y="213" fill="#48566a" font-size="7.5" text-anchor="middle">Cassandra: tunable consistency levels</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- R02 -->
+  <div class="qblock">
+    <div class="qhead real" onclick="toggleQ(this)">
+      <span class="qnum qn-r">R-02</span>
+      <div style="flex:1"><div class="q-en">Why Kafka specifically? The difficulty? If TPS grows 10x tomorrow — would it break?</div><div class="q-vi">Tại sao Kafka? Difficulty? TPS tăng 10x — hệ thống có vỡ không?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">WHY</span><span class="btext">3 lý do cụ thể:<ul class="nlist" style="margin-top:8px"><li><span class="nn nn-c">①</span><span class="ni"><span class="kk">Decouple</span> — Order Svc &amp; Matching Engine scale độc lập</span></li><li><span class="nn nn-c">②</span><span class="ni"><span class="kk">Buffer spike</span> — market open 5x burst absorbed, consumers xử lý theo tốc độ riêng</span></li><li><span class="nn nn-c">③</span><span class="ni"><span class="kk">Replay</span> — Matching Engine crash → replay từ last offset, zero data loss. RabbitMQ rejected: no replay, &lt;50K msg/s max</span></li></ul></span></div>
+        <div class="bluf-row"><span class="bl bl-w">DIFFICULTY</span><span class="btext"><span class="kw">Ordering guarantee</span> only within partition. Solution: partition by <span class="kt">symbol</span> — all VNM orders → P0 guaranteed sequential. Trade-off: serialized per symbol, parallel across symbols.</span></div>
+        <div class="bluf-row"><span class="bl bl-t">10X TPS</span><span class="btext">Consumers scale <span class="ka">EASY via KEDA</span> (3→30 pods, 90s). <span class="kw">BUT partition count is FIXED at creation</span>. Solution: pre-planned <span class="kn">90 partitions</span> Day 1 (9× headroom). Scale to 100K TPS = add pods only.</span></div>
+        <div class="bluf-row"><span class="bl bl-r">RULE</span><span class="btext"><span class="kw">Consumer pods ≤ partition count</span>. Extra pods = idle waste. Pre-provision 3× is the defensive strategy.</span></div>
+      </div>
+      <!-- DIAGRAM 3: Kafka WAL Flow -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 3 — KAFKA WAL (Write-Ahead Log) — WHY IT SOLVES 800ms BOTTLENECK</div>
+        <svg viewBox="0 0 820 220" width="100%">
+          <rect x="8" y="8" width="392" height="204" rx="8" fill="rgba(255,77,109,.04)" stroke="rgba(255,77,109,.25)" stroke-width="1.5"/>
+          <text x="204" y="28" fill="#ff4d6d" font-size="9.5" text-anchor="middle" font-weight="700">BEFORE — Sync DB Write (800ms)</text>
+          <rect x="22" y="38" width="362" height="26" rx="5" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="203" y="55" fill="#8896b2" font-size="8.5" text-anchor="middle">① Order received by Order Service</text>
+          <text x="203" y="75" fill="#ff4d6d" font-size="8" text-anchor="middle">↓ WAIT 800ms — thread BLOCKED</text>
+          <rect x="22" y="84" width="362" height="26" rx="5" fill="#100008" stroke="#ff4d6d" stroke-width="1.5"/>
+          <text x="203" y="101" fill="#ff4d6d" font-size="8.5" text-anchor="middle" font-weight="700">② WRITE to PostgreSQL (synchronous)</text>
+          <text x="203" y="121" fill="#ff4d6d" font-size="8" text-anchor="middle">↓ WAIT for DB ack · thread BLOCKED</text>
+          <rect x="22" y="130" width="362" height="26" rx="5" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="203" y="147" fill="#8896b2" font-size="8.5" text-anchor="middle">③ Return response to client</text>
+          <text x="22" y="192" fill="#ff4d6d" font-size="9" text-anchor="start" font-weight="700">  Total: 800ms · 1,500 TPS max · Thread pool exhausted at peak</text>
+
+          <rect x="420" y="8" width="392" height="204" rx="8" fill="rgba(0,229,160,.04)" stroke="rgba(0,229,160,.25)" stroke-width="1.5"/>
+          <text x="616" y="28" fill="#00e5a0" font-size="9.5" text-anchor="middle" font-weight="700">AFTER — Kafka WAL (380ms → sub-10ms hot path)</text>
+          <rect x="434" y="38" width="362" height="26" rx="5" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="615" y="55" fill="#8896b2" font-size="8.5" text-anchor="middle">① Order received by Order Service</text>
+          <text x="615" y="75" fill="#00e5a0" font-size="8" text-anchor="middle">↓ &lt;5ms — Kafka write only</text>
+          <rect x="434" y="84" width="362" height="26" rx="5" fill="#001a10" stroke="#00e5a0" stroke-width="2"/>
+          <text x="615" y="101" fill="#00e5a0" font-size="8.5" text-anchor="middle" font-weight="700">② WRITE to Kafka (WAL buffer) — microseconds</text>
+          <text x="615" y="121" fill="#00d4ff" font-size="8" text-anchor="middle">↓ Consumer reads async (decoupled)</text>
+          <rect x="434" y="130" width="178" height="26" rx="5" fill="#0a1828" stroke="#a78bfa" stroke-width="1"/>
+          <text x="523" y="147" fill="#a78bfa" font-size="8" text-anchor="middle">DB write (async, no wait)</text>
+          <rect x="618" y="130" width="178" height="26" rx="5" fill="#0a1828" stroke="#a78bfa" stroke-width="1"/>
+          <text x="707" y="147" fill="#a78bfa" font-size="8" text-anchor="middle">Return response instantly</text>
+          <text x="616" y="192" fill="#00e5a0" font-size="9" text-anchor="middle" font-weight="700">Hot path: &lt;10ms · 10,000 TPS sustained · Thread free immediately</text>
+        </svg>
+      </div>
+      <!-- DIAGRAM 4: Kafka Partition + AutoScaling -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 4 — KAFKA PARTITION STRATEGY + KEDA AUTOSCALING</div>
+        <svg viewBox="0 0 800 270" width="100%">
+          <rect x="8" y="8" width="148" height="230" rx="7" fill="#120d00" stroke="#f5a623" stroke-width="1.5"/>
+          <text x="82" y="28" fill="#f5a623" font-size="9.5" text-anchor="middle" font-weight="700">KAFKA TOPIC</text>
+          <text x="82" y="42" fill="#f5a623" font-size="8" text-anchor="middle">orders.{'{symbol}'}</text>
+          <rect x="20" y="52" width="118" height="24" rx="4" fill="#1a1200" stroke="#f5a623" stroke-width="1"/>
+          <text x="79" y="68" fill="#f5a623" font-size="7.5" text-anchor="middle">P-0: VNM · FPT</text>
+          <rect x="20" y="82" width="118" height="24" rx="4" fill="#1a1200" stroke="#f5a623" stroke-width="1"/>
+          <text x="79" y="98" fill="#f5a623" font-size="7.5" text-anchor="middle">P-1: HPG · MWG</text>
+          <rect x="20" y="112" width="118" height="24" rx="4" fill="#1a1200" stroke="#f5a623" stroke-width="1"/>
+          <text x="79" y="128" fill="#f5a623" font-size="7.5" text-anchor="middle">P-2: VIC · CTG</text>
+          <text x="79" y="160" fill="#48566a" font-size="8.5" text-anchor="middle">· · ·</text>
+          <rect x="20" y="174" width="118" height="24" rx="4" fill="#1a1200" stroke="#48566a" stroke-width="1" stroke-dasharray="4"/>
+          <text x="79" y="190" fill="#48566a" font-size="7.5" text-anchor="middle">P-29…P-89 reserved</text>
+          <text x="79" y="226" fill="#00e5a0" font-size="7.5" text-anchor="middle" font-weight="700">90 partitions total</text>
+          <line x1="156" y1="64" x2="196" y2="64" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <line x1="156" y1="94" x2="196" y2="94" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <line x1="156" y1="124" x2="196" y2="124" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <rect x="198" y="8" width="148" height="168" rx="7" fill="#001a0f" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="272" y="26" fill="#00e5a0" font-size="9" text-anchor="middle" font-weight="700">CURRENT (3 pods)</text>
+          <rect x="210" y="36" width="124" height="34" rx="4" fill="#001008" stroke="#00e5a0" stroke-width="1"/>
+          <text x="272" y="52" fill="#00e5a0" font-size="8" text-anchor="middle" font-weight="700">Consumer-0</text>
+          <text x="272" y="64" fill="#48566a" font-size="7" text-anchor="middle">P0…P29</text>
+          <rect x="210" y="78" width="124" height="34" rx="4" fill="#001008" stroke="#00e5a0" stroke-width="1"/>
+          <text x="272" y="94" fill="#00e5a0" font-size="8" text-anchor="middle" font-weight="700">Consumer-1</text>
+          <text x="272" y="106" fill="#48566a" font-size="7" text-anchor="middle">P30…P59</text>
+          <rect x="210" y="120" width="124" height="34" rx="4" fill="#001008" stroke="#00e5a0" stroke-width="1"/>
+          <text x="272" y="136" fill="#00e5a0" font-size="8" text-anchor="middle" font-weight="700">Consumer-2</text>
+          <text x="272" y="148" fill="#48566a" font-size="7" text-anchor="middle">P60…P89</text>
+          <text x="272" y="188" fill="#f5a623" font-size="8" text-anchor="middle">↓ KEDA: lag&gt;1000</text>
+          <text x="272" y="202" fill="#48566a" font-size="7.5" text-anchor="middle">90 seconds →</text>
+          <rect x="370" y="8" width="148" height="220" rx="7" fill="#00091a" stroke="#00d4ff" stroke-width="2"/>
+          <text x="444" y="26" fill="#00d4ff" font-size="9" text-anchor="middle" font-weight="700">SCALED (30 pods)</text>
+          <rect x="382" y="36" width="124" height="26" rx="4" fill="#00050f" stroke="#00d4ff" stroke-width="1"/>
+          <text x="444" y="52" fill="#00d4ff" font-size="7.5" text-anchor="middle">Consumer-0 → P0</text>
+          <rect x="382" y="68" width="124" height="26" rx="4" fill="#00050f" stroke="#00d4ff" stroke-width="1"/>
+          <text x="444" y="84" fill="#00d4ff" font-size="7.5" text-anchor="middle">Consumer-1 → P1</text>
+          <rect x="382" y="100" width="124" height="26" rx="4" fill="#00050f" stroke="#00d4ff" stroke-width="1"/>
+          <text x="444" y="116" fill="#00d4ff" font-size="7.5" text-anchor="middle">Consumer-2 → P2</text>
+          <text x="444" y="148" fill="#48566a" font-size="8" text-anchor="middle">· · · 1:1 mapping</text>
+          <rect x="382" y="162" width="124" height="26" rx="4" fill="#00050f" stroke="#00d4ff" stroke-width="1"/>
+          <text x="444" y="178" fill="#00d4ff" font-size="7.5" text-anchor="middle">Consumer-29 → P29</text>
+          <text x="444" y="218" fill="#48566a" font-size="7.5" text-anchor="middle">P30-P89 ready for 100K</text>
+          <rect x="540" y="8" width="250" height="76" rx="7" fill="#0d0008" stroke="#ff4d6d" stroke-width="1.5"/>
+          <text x="665" y="28" fill="#ff4d6d" font-size="9.5" text-anchor="middle" font-weight="700">⚠ HARD RULE</text>
+          <text x="665" y="46" fill="#8896b2" font-size="8.5" text-anchor="middle">Consumer pods ≤ Partition count</text>
+          <text x="665" y="60" fill="#8896b2" font-size="8.5" text-anchor="middle">Extra pods = IDLE, zero benefit</text>
+          <text x="665" y="75" fill="#ff4d6d" font-size="8" text-anchor="middle" font-weight="700">Partition count is FIXED at creation</text>
+          <rect x="540" y="96" width="250" height="86" rx="7" fill="#001a0f" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="665" y="116" fill="#00e5a0" font-size="9.5" text-anchor="middle" font-weight="700">PRE-PLAN FORMULA</text>
+          <text x="665" y="133" fill="#8896b2" font-size="8" text-anchor="middle">Peak: 10K TPS ÷ ~1K/partition</text>
+          <text x="665" y="148" fill="#8896b2" font-size="8" text-anchor="middle">×9 safety factor = 90 partitions</text>
+          <text x="665" y="165" fill="#00e5a0" font-size="9" text-anchor="middle" font-weight="700">→ Created 90 from Day 1 at HSC</text>
+          <text x="665" y="178" fill="#48566a" font-size="7.5" text-anchor="middle">100K TPS = just add consumer pods</text>
+          <rect x="540" y="194" width="250" height="54" rx="7" fill="#080018" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="665" y="214" fill="#a78bfa" font-size="9" text-anchor="middle" font-weight="700">KEDA ScaledObject</text>
+          <text x="665" y="229" fill="#8896b2" font-size="8" text-anchor="middle">lagThreshold: 1000 msgs</text>
+          <text x="665" y="242" fill="#48566a" font-size="7.5" text-anchor="middle">3 pods → 30 pods in ~90 seconds</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- R03 -->
+  <div class="qblock">
+    <div class="qhead real" onclick="toggleQ(this)">
+      <span class="qnum qn-r">R-03</span>
+      <div style="flex:1"><div class="q-en">Tell me about the RAG system at Glohow. Use case? Pipeline: data → chunking → embedding → retrieval → generation.</div><div class="q-vi">RAG system tại Glohow. Use case? Pipeline đầy đủ.</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="warn"><div class="warn-t">Từ transcript — Louis gợi ý flow vì candidate chưa tự nói:</div><div class="warn-b">"When I talk about pipeline… data ingestion → you mentioned email it's a data source → after ingestion chunking → embedding → Retrieval → generation, kind of like this." → PHẢI thuộc lòng flow này.</div></div>
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">USE CASE</span><span class="btext">At <span class="kt">Glohow</span> (2025–now), tôi built RAG system xử lý large-volume business communications. Sources: <span class="kt">emails</span>, <span class="kt">PDFs</span>, <span class="kt">JSON</span> structured data. Goal: natural language query — "Summarize this week's client emails about Project Alpha."</span></div>
+        <div class="bluf-row"><span class="bl bl-w">PIPELINE</span><span class="btext">5 stages:<ul class="nlist" style="margin-top:8px"><li><span class="nn nn-c">①</span><span class="ni"><span class="kt">Ingestion</span>: extract text + metadata từ email, PDF, JSON</span></li><li><span class="nn nn-c">②</span><span class="ni"><span class="kt">Chunking</span>: 500 tokens, 50 token overlap, không cắt table/code</span></li><li><span class="nn nn-c">③</span><span class="ni"><span class="kt">Embedding</span>: text-embedding-3-small (1536 dims) hoặc local <span class="kt">Ollama</span></span></li><li><span class="nn nn-c">④</span><span class="ni"><span class="kt">Vector Index</span>: <span class="kt">Qdrant</span> + <span class="kt">Elasticsearch</span> hybrid search</span></li><li><span class="nn nn-c">⑤</span><span class="ni"><span class="kt">Generation</span>: LLM với context + bắt buộc citations</span></li></ul></span></div>
+        <div class="bluf-row"><span class="bl bl-t">TECH STACK</span><span class="btext">CV confirms: <span class="kt">Qdrant</span> (vector indexing), <span class="kt">Elasticsearch</span> (semantic search), local <span class="kt">Ollama</span> + cloud LLMs, <span class="kt">Spring Boot</span> + JHipster, REST APIs, full observability with <span class="kt">ELK + Prometheus + Grafana</span>.</span></div>
+      </div>
+      <!-- DIAGRAM 5: RAG Pipeline Full -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 5 — RAG PIPELINE END-TO-END (Glohow: Qdrant + Elasticsearch + Ollama)</div>
+        <svg viewBox="0 0 840 360" width="100%">
+          <rect x="6" y="6" width="390" height="168" rx="7" fill="rgba(0,212,255,.02)" stroke="#1c2334" stroke-width="1" stroke-dasharray="4"/>
+          <text x="201" y="22" fill="#48566a" font-size="7.5" text-anchor="middle" letter-spacing="3">INGESTION PIPELINE (OFFLINE)</text>
+          <rect x="16" y="30" width="72" height="24" rx="4" fill="#0a1220" stroke="#48566a" stroke-width="1"/><text x="52" y="46" fill="#8896b2" font-size="7.5" text-anchor="middle">📧 Emails</text>
+          <rect x="94" y="30" width="72" height="24" rx="4" fill="#0a1220" stroke="#48566a" stroke-width="1"/><text x="130" y="46" fill="#8896b2" font-size="7.5" text-anchor="middle">📄 PDFs</text>
+          <rect x="172" y="30" width="72" height="24" rx="4" fill="#0a1220" stroke="#48566a" stroke-width="1"/><text x="208" y="46" fill="#8896b2" font-size="7.5" text-anchor="middle">{'{}'} JSON</text>
+          <rect x="250" y="30" width="136" height="24" rx="4" fill="#0a1220" stroke="#48566a" stroke-width="1"/><text x="318" y="46" fill="#8896b2" font-size="7.5" text-anchor="middle">🌐 Web content</text>
+          <line x1="200" y1="54" x2="200" y2="68" stroke="#48566a" stroke-width="1" marker-end="url(#a1)"/>
+          <rect x="58" y="72" width="274" height="38" rx="6" fill="#0a1828" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="195" y="89" fill="#00d4ff" font-size="9" text-anchor="middle" font-weight="700">CHUNKING</text>
+          <text x="195" y="102" fill="#8896b2" font-size="7" text-anchor="middle">500 tokens · 50 overlap · Never split tables/code blocks</text>
+          <line x1="195" y1="110" x2="195" y2="124" stroke="#48566a" stroke-width="1" marker-end="url(#a1)"/>
+          <rect x="58" y="128" width="274" height="34" rx="6" fill="#0a1828" stroke="#7c5af6" stroke-width="1.5"/>
+          <text x="195" y="145" fill="#a78bfa" font-size="9" text-anchor="middle" font-weight="700">EMBEDDING MODEL</text>
+          <text x="195" y="157" fill="#8896b2" font-size="7" text-anchor="middle">text-embedding-3-small (1536 dims) / Ollama local</text>
+          <line x1="332" y1="145" x2="364" y2="145" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <rect x="366" y="128" width="118" height="56" rx="6" fill="#08001a" stroke="#a78bfa" stroke-width="2"/>
+          <text x="425" y="150" fill="#a78bfa" font-size="11" text-anchor="middle" font-weight="700">QDRANT</text>
+          <text x="425" y="164" fill="#8896b2" font-size="7.5" text-anchor="middle">Vector + Metadata</text>
+          <text x="425" y="176" fill="#48566a" font-size="7" text-anchor="middle">source·date·type</text>
+
+          <rect x="6" y="188" width="390" height="166" rx="7" fill="rgba(0,229,160,.02)" stroke="#1c2334" stroke-width="1" stroke-dasharray="4"/>
+          <text x="201" y="204" fill="#48566a" font-size="7.5" text-anchor="middle" letter-spacing="3">RETRIEVAL (ONLINE — PER QUERY)</text>
+          <rect x="18" y="212" width="360" height="26" rx="5" fill="#001a10" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="198" y="229" fill="#00e5a0" font-size="8.5" text-anchor="middle" font-weight="700">USER QUERY: "Summarize last week's client emails"</text>
+          <line x1="198" y1="238" x2="198" y2="252" stroke="#48566a" stroke-width="1" marker-end="url(#a1)"/>
+          <rect x="18" y="256" width="360" height="28" rx="5" fill="#0a1828" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="198" y="270" fill="#00d4ff" font-size="8.5" text-anchor="middle" font-weight="700">HYBRID SEARCH: Qdrant(vector) + Elasticsearch(BM25) → Top 20</text>
+          <text x="198" y="283" fill="#48566a" font-size="6.5" text-anchor="middle">RRF merge · metadata filter: date=last_7_days, type=email</text>
+          <line x1="198" y1="284" x2="198" y2="298" stroke="#48566a" stroke-width="1" marker-end="url(#a1)"/>
+          <rect x="18" y="302" width="360" height="28" rx="5" fill="#0a1828" stroke="#f5a623" stroke-width="1.5"/>
+          <text x="198" y="316" fill="#f5a623" font-size="8.5" text-anchor="middle" font-weight="700">RE-RANKING: Cross-encoder (ms-marco-MiniLM) → Top 4-5</text>
+          <text x="198" y="329" fill="#48566a" font-size="6.5" text-anchor="middle">Filter score &lt; 0.7 · Kills context overflow / "drafting"</text>
+
+          <line x1="425" y1="184" x2="425" y2="270" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4"/>
+          <line x1="425" y1="270" x2="378" y2="270" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4" marker-end="url(#a1)"/>
+
+          <rect x="448" y="188" width="384" height="166" rx="7" fill="rgba(124,90,246,.03)" stroke="#1c2334" stroke-width="1" stroke-dasharray="4"/>
+          <text x="640" y="204" fill="#48566a" font-size="7.5" text-anchor="middle" letter-spacing="3">GENERATION</text>
+          <rect x="460" y="212" width="360" height="50" rx="5" fill="#0a1828" stroke="#7c5af6" stroke-width="1.5"/>
+          <text x="640" y="230" fill="#a78bfa" font-size="9" text-anchor="middle" font-weight="700">PROMPT ASSEMBLY</text>
+          <text x="640" y="244" fill="#8896b2" font-size="7.5" text-anchor="middle">System: "Answer ONLY from context. Cite sources. Say I don't know if absent."</text>
+          <text x="640" y="256" fill="#48566a" font-size="7" text-anchor="middle">Context: [chunk_1][chunk_2][chunk_3][chunk_4] · User query</text>
+          <line x1="640" y1="262" x2="640" y2="276" stroke="#48566a" stroke-width="1" marker-end="url(#a1)"/>
+          <rect x="460" y="278" width="360" height="38" rx="5" fill="#080018" stroke="#a78bfa" stroke-width="2"/>
+          <text x="640" y="297" fill="#a78bfa" font-size="9.5" text-anchor="middle" font-weight="700">LLM: Ollama (local) / Claude / GPT-4o-mini</text>
+          <text x="640" y="310" fill="#48566a" font-size="7.5" text-anchor="middle">Temperature: 0.1 · Streaming: yes</text>
+          <line x1="640" y1="316" x2="640" y2="330" stroke="#48566a" stroke-width="1" marker-end="url(#a1)"/>
+          <rect x="460" y="332" width="360" height="26" rx="5" fill="#001a10" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="640" y="349" fill="#00e5a0" font-size="8.5" text-anchor="middle" font-weight="700">RESPONSE with Citations [Source: email_20240115.eml]</text>
+          <line x1="378" y1="318" x2="454" y2="318" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <text x="416" y="311" fill="#48566a" font-size="7.5" text-anchor="middle">Top 4 chunks</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- R04 -->
+  <div class="qblock">
+    <div class="qhead real" onclick="toggleQ(this)">
+      <span class="qnum qn-r">R-04</span>
+      <div style="flex:1"><div class="q-en">RAG limitations — retrieved docs inaccurate, too many = LLM "drafting". Other solutions?</div><div class="q-vi">RAG có giới hạn — vector score không chính xác, quá nhiều doc làm AI "drafting". Giải pháp?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">DRAFTING</span><span class="btext"><span class="kw">"Drafting"</span> = K=20 chunks all at similarity ~0.65 → LLM has no clear signal → hallucinates or hedges. Fix: re-rank → keep <span class="kn">top 4</span> only (score &gt;0.7). Prompt: "Say I don't know if not in context."</span></div>
+        <div class="bluf-row"><span class="bl bl-w">4 SOLUTIONS</span><span class="btext"><ul class="nlist" style="margin-top:4px"><li><span class="nn nn-g">①</span><span class="ni"><span class="kt">Hybrid Search</span> (Qdrant + Elasticsearch BM25) — +25% recall cho proper nouns, names, IDs</span></li><li><span class="nn nn-g">②</span><span class="ni"><span class="kt">Re-ranking</span> cross-encoder → giữ top 4 only (score &gt;0.7) — kills context overflow</span></li><li><span class="nn nn-g">③</span><span class="ni"><span class="kt">SQL routing</span> cho structured queries — không phải mọi thứ đều cần RAG</span></li><li><span class="nn nn-g">④</span><span class="ni"><span class="kt">Query decomposition</span> cho complex multi-part questions</span></li></ul></span></div>
+        <div class="bluf-row"><span class="bl bl-t">TRADE-OFF</span><span class="btext">Re-ranking adds ~80ms. For real-time chat, skip re-rank. For daily summaries, accept latency. My choice at Glohow: re-rank for all queries because accuracy &gt; speed for this use case.</span></div>
+      </div>
+      <!-- DIAGRAM 6: Hybrid Search RRF -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 6 — HYBRID SEARCH: Qdrant (vector) + Elasticsearch (BM25) → RRF MERGE</div>
+        <svg viewBox="0 0 800 240" width="100%">
+          <rect x="8" y="8" width="780" height="36" rx="6" fill="#001a10" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="398" y="30" fill="#00e5a0" font-size="9.5" text-anchor="middle" font-weight="700">QUERY: "emails about Project Alpha last week from client John"</text>
+          <line x1="200" y1="44" x2="140" y2="68" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <line x1="598" y1="44" x2="658" y2="68" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+
+          <rect x="8" y="70" width="260" height="82" rx="7" fill="#0a1828" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="138" y="90" fill="#a78bfa" font-size="9.5" text-anchor="middle" font-weight="700">QDRANT Vector Search</text>
+          <text x="138" y="106" fill="#8896b2" font-size="8" text-anchor="middle">embed(query) → cos_similarity</text>
+          <text x="138" y="120" fill="#8896b2" font-size="7.5" text-anchor="middle">Finds: "Project Alpha" = "Alpha project"</text>
+          <text x="138" y="134" fill="#00e5a0" font-size="7.5" text-anchor="middle">✓ Semantic understanding</text>
+          <text x="138" y="147" fill="#ff4d6d" font-size="7.5" text-anchor="middle">✗ Misses exact name "John Smith"</text>
+
+          <rect x="532" y="70" width="260" height="82" rx="7" fill="#0a1828" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="662" y="90" fill="#00d4ff" font-size="9.5" text-anchor="middle" font-weight="700">Elasticsearch BM25</text>
+          <text x="662" y="106" fill="#8896b2" font-size="8" text-anchor="middle">TF-IDF keyword matching</text>
+          <text x="662" y="120" fill="#8896b2" font-size="7.5" text-anchor="middle">Finds: exact "John", "Alpha", dates</text>
+          <text x="662" y="134" fill="#00e5a0" font-size="7.5" text-anchor="middle">✓ Exact name/ID/code matching</text>
+          <text x="662" y="147" fill="#ff4d6d" font-size="7.5" text-anchor="middle">✗ Misses synonyms/paraphrases</text>
+
+          <line x1="138" y1="152" x2="350" y2="176" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <line x1="662" y1="152" x2="450" y2="176" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+
+          <rect x="280" y="178" width="240" height="54" rx="7" fill="#0a1828" stroke="#f5a623" stroke-width="2"/>
+          <text x="400" y="198" fill="#f5a623" font-size="9.5" text-anchor="middle" font-weight="700">RRF MERGE</text>
+          <text x="400" y="213" fill="#8896b2" font-size="7.5" text-anchor="middle">Score = Σ 1/(k+rank_i) · k=60</text>
+          <text x="400" y="226" fill="#00e5a0" font-size="7.5" text-anchor="middle" font-weight="700">Result: Top 20 → Re-rank → Top 4 final</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- R05 -->
+  <div class="qblock">
+    <div class="qhead real" onclick="toggleQ(this)">
+      <span class="qnum qn-r">R-05</span>
+      <div style="flex:1"><div class="q-en">Summarization — cannot be done manually. How does system automatically decide which documents?</div><div class="q-vi">Summary — không thể manual. Cơ chế tự động quyết định document nào?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="warn"><div class="warn-t">Mark hỏi chính xác:</div><div class="warn-b">"How you do summary, because you need to decide which document to draw from the context… those processes cannot be done by a manual, by a human, right? So how it works behind the hood?"</div></div>
+      <!-- DIAGRAM 7: Auto Summarization -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 7 — AUTOMATIC SUMMARIZATION: 3 LAYERS, ZERO HUMAN INPUT</div>
+        <svg viewBox="0 0 800 290" width="100%">
+          <rect x="6" y="6" width="786" height="72" rx="7" fill="#001a0f" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="22" y="26" fill="#00e5a0" font-size="9.5" font-weight="700">LAYER 1 — Automatic Document Selection (Query-Driven · NO human)</text>
+          <text x="22" y="44" fill="#8896b2" font-size="8.5">User: "Summarize last week's maintenance requests" → System parses: type=maintenance · date=last_7_days</text>
+          <text x="22" y="60" fill="#8896b2" font-size="8.5">→ Qdrant search WITH metadata filter → Top-50 chunks → Group by source document → Automatic selection</text>
+          <text x="22" y="75" fill="#00e5a0" font-size="8" font-weight="700">→ Zero manual step. The query IS the document selector.</text>
+
+          <rect x="6" y="90" width="786" height="112" rx="7" fill="#1a1000" stroke="#f5a623" stroke-width="1.5"/>
+          <text x="22" y="110" fill="#f5a623" font-size="9.5" font-weight="700">LAYER 2 — Adaptive Strategy (auto-selected by token count)</text>
+          <rect x="18" y="120" width="230" height="72" rx="5" fill="#0a0900" stroke="#48566a" stroke-width="1"/>
+          <text x="133" y="138" fill="#f5a623" font-size="9" text-anchor="middle" font-weight="700">CASE A: &lt;4K tokens</text>
+          <text x="133" y="153" fill="#8896b2" font-size="7.5" text-anchor="middle">Direct: 1 LLM call · ~1 sec</text>
+          <text x="133" y="167" fill="#00e5a0" font-size="8" text-anchor="middle">✓ Fast path</text>
+          <rect x="264" y="120" width="258" height="72" rx="5" fill="#0a0900" stroke="#f5a623" stroke-width="1.5"/>
+          <text x="393" y="138" fill="#f5a623" font-size="9" text-anchor="middle" font-weight="700">CASE B: 4K–50K tokens</text>
+          <text x="393" y="153" fill="#8896b2" font-size="7.5" text-anchor="middle">MAP: parallel chunk summaries</text>
+          <text x="393" y="167" fill="#8896b2" font-size="7.5" text-anchor="middle">REDUCE: synthesize → 5-10 sec</text>
+          <rect x="538" y="120" width="244" height="72" rx="5" fill="#0a0900" stroke="#48566a" stroke-width="1"/>
+          <text x="660" y="138" fill="#f5a623" font-size="9" text-anchor="middle" font-weight="700">CASE C: &gt;50K tokens</text>
+          <text x="660" y="153" fill="#8896b2" font-size="7.5" text-anchor="middle">Hierarchical: doc→cluster</text>
+          <text x="660" y="167" fill="#8896b2" font-size="7.5" text-anchor="middle">→ summary → 30-60 sec</text>
+
+          <rect x="6" y="214" width="786" height="70" rx="7" fill="#080018" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="22" y="234" fill="#a78bfa" font-size="9.5" font-weight="700">LAYER 3 — Automated Quality Verification</text>
+          <text x="22" y="252" fill="#8896b2" font-size="8.5">① Does summary contain claims NOT in source? → flag for review</text>
+          <text x="22" y="268" fill="#8896b2" font-size="8.5">② Force structured JSON: executive_summary · key_decisions · action_items · participants · follow_up_required</text>
+          <text x="22" y="280" fill="#a78bfa" font-size="8" font-weight="700">→ Groundedness score 1-5. Regenerate if &lt;3. Zero human validation needed.</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S1: INTRO ════ -->
+<section class="section" id="s1">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#1e3a5f,#1565c0)">1</div>
+    <div><div class="sec-title">Self Introduction — Profile Match</div><div class="sec-sub">BYS/UTS → Hitachi → HSC → Glohow · 10+ years</div></div>
+  </div>
+  <div class="qblock open">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">OP</span>
+      <div style="flex:1"><div class="q-en">Tell me about yourself and your career journey.</div><div class="q-vi">Giới thiệu bản thân và hành trình sự nghiệp.</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="perfect">
+        <div class="perfect-t">90-second narrative — CV-matched</div>
+        <div class="perfect-b">"I'm a <span class="ka">Technical Leader</span> with <span class="kn">10+ years</span> building high-scale backend systems.
+
+I started in <span class="kt">C++</span> at BYS and UTS — security software gave me deep systems programming foundation.
+
+I then joined <span class="kt">Hitachi</span> for 7 years, progressing from Developer to Tech Lead. I architected <span class="kk">Connected Vehicle</span> systems on <span class="kt">Kubernetes</span>, using Spring Boot and Cassandra.
+
+The most impactful chapter: <span class="kt">HSC</span> — Công ty Chứng khoán Hồ Chí Minh (2021–2025) as <span class="ka">Technical Leader</span> for the Trading Platform. I scaled from baseline to <span class="kn">10,000 TPS</span> using <span class="kt">Kafka</span> event-driven architecture, and reduced settlement time by <span class="kn">50%</span> with <span class="kt">Camunda</span>.
+
+Currently at <span class="kt">Glohow</span>, bridging distributed systems with <span class="kt">AI</span> — building <span class="kk">RAG pipelines</span> with <span class="kt">Qdrant</span> vector search, integrating local <span class="kt">Ollama</span> and cloud LLMs."</div>
+      </div>
+      <!-- DIAGRAM 8: Career Timeline -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 8 — CAREER TIMELINE (từ CV thực tế)</div>
+        <svg viewBox="0 0 800 130" width="100%">
+          <line x1="40" y1="65" x2="770" y2="65" stroke="#1c2334" stroke-width="2"/>
+          <circle cx="78" cy="65" r="7" fill="#3d5268" stroke="#3d5268" stroke-width="2"/>
+          <text x="78" y="48" fill="#3d5268" font-size="7.5" text-anchor="middle" font-weight="700">2013–2015</text>
+          <text x="78" y="84" fill="#8896b2" font-size="8" text-anchor="middle">BYS / UTS</text>
+          <text x="78" y="95" fill="#3d5268" font-size="7" text-anchor="middle">C++ · Security</text>
+
+          <circle cx="240" cy="65" r="9" fill="#7c5af6" stroke="#a78bfa" stroke-width="2"/>
+          <text x="240" y="48" fill="#a78bfa" font-size="7.5" text-anchor="middle" font-weight="700">2015–2021</text>
+          <text x="240" y="84" fill="#a78bfa" font-size="8.5" text-anchor="middle" font-weight="700">Hitachi</text>
+          <text x="240" y="96" fill="#3d5268" font-size="7" text-anchor="middle">Java · K8s · Connected Vehicle</text>
+          <text x="240" y="108" fill="#3d5268" font-size="7" text-anchor="middle">Dev → Tech Lead</text>
+
+          <circle cx="510" cy="65" r="11" fill="#00d4ff" stroke="#00d4ff" stroke-width="2"/>
+          <text x="510" y="45" fill="#00d4ff" font-size="8" text-anchor="middle" font-weight="700">2021–2025</text>
+          <text x="510" y="85" fill="#00d4ff" font-size="9.5" text-anchor="middle" font-weight="700">HSC — CKPHCM</text>
+          <text x="510" y="99" fill="#8896b2" font-size="7.5" text-anchor="middle">Technical Leader · Trading Platform</text>
+          <text x="510" y="112" fill="#f5a623" font-size="7.5" text-anchor="middle">10K TPS · 50% reduction · Kafka · Camunda</text>
+
+          <circle cx="728" cy="65" r="9" fill="#00e5a0" stroke="#00e5a0" stroke-width="2"/>
+          <text x="728" y="48" fill="#00e5a0" font-size="8" text-anchor="middle" font-weight="700">2025–Now</text>
+          <text x="728" y="84" fill="#00e5a0" font-size="8.5" text-anchor="middle" font-weight="700">Glohow</text>
+          <text x="728" y="96" fill="#8896b2" font-size="7" text-anchor="middle">Sr. Dev · RAG · AI Pipeline</text>
+          <text x="728" y="108" fill="#3d5268" font-size="7" text-anchor="middle">Qdrant · Ollama · Spring Boot</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S2: POSITIONING ════ -->
+<section class="section" id="s2">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#0f766e,#0891b2)">2</div>
+    <div><div class="sec-title">Positioning — Tech vs Management</div><div class="sec-sub">Mark hỏi đầu tiên: "How do you position yourself in both management and the technical?"</div></div>
+  </div>
+  <div class="qblock">
+    <div class="qhead must" onclick="toggleQ(this)">
+      <span class="qnum qn-m">POS</span>
+      <div style="flex:1"><div class="q-en">How do you position yourself between technical and management? Specific contribution?</div><div class="q-vi">Định vị bản thân thế nào? Contribution cụ thể?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">ANSWER</span><span class="btext">"I'm a <span class="ka">Technical Leader</span> — <span class="kn">40%</span> individual contributor, <span class="kn">60%</span> team leadership. I personally own the hardest problems: architecture, performance, POC."</span></div>
+        <div class="bluf-row"><span class="bl bl-w">EVIDENCE</span><span class="btext">Tại <span class="kt">HSC</span> (CKPHCM): I personally designed <span class="kt">Kafka WAL strategy</span>, <span class="kt">partition-by-symbol</span>, and <span class="kk">CP vs AP</span> decisions → then led 6 engineers to implement. Tại <span class="kt">Glohow</span>: I built the <span class="kt">RAG pipeline core</span> (embedding + retrieval) myself → 3 engineers handled integration.</span></div>
+        <div class="bluf-row"><span class="bl bl-t">TRADE-OFF</span><span class="btext">Sweet spot = 5-10 engineers. Cannot scale as large as pure manager. But decisions are faster + more accurate because I still understand the code-level constraints.</span></div>
+      </div>
+      <!-- DIAGRAM 9: Positioning Matrix -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 9 — TECH LEAD POSITIONING MATRIX</div>
+        <svg viewBox="0 0 640 250" width="100%">
+          <line x1="60" y1="220" x2="610" y2="220" stroke="#1c2334" stroke-width="1.5"/>
+          <line x1="60" y1="220" x2="60" y2="26" stroke="#1c2334" stroke-width="1.5"/>
+          <text x="335" y="240" fill="#48566a" font-size="8.5" text-anchor="middle">MANAGEMENT INVOLVEMENT →</text>
+          <text x="20" y="126" fill="#48566a" font-size="8.5" text-anchor="middle" transform="rotate(-90,20,126)">TECHNICAL DEPTH →</text>
+          <line x1="60" y1="123" x2="610" y2="123" stroke="#1c2334" stroke-width="1" stroke-dasharray="4"/>
+          <line x1="335" y1="26" x2="335" y2="220" stroke="#1c2334" stroke-width="1" stroke-dasharray="4"/>
+
+          <circle cx="138" cy="70" r="26" fill="rgba(61,82,104,.18)" stroke="#48566a" stroke-width="1.5"/>
+          <text x="138" y="66" fill="#8896b2" font-size="8.5" text-anchor="middle" font-weight="700">Staff</text>
+          <text x="138" y="78" fill="#8896b2" font-size="8.5" text-anchor="middle">Engineer</text>
+          <circle cx="440" cy="72" r="36" fill="rgba(0,212,255,.1)" stroke="#00d4ff" stroke-width="2.5"/>
+          <circle cx="440" cy="72" r="44" fill="none" stroke="#00d4ff" stroke-width="1" opacity="0.3"/>
+          <text x="440" y="65" fill="#00d4ff" font-size="11" text-anchor="middle" font-weight="700">TECH LEAD</text>
+          <text x="440" y="79" fill="#00d4ff" font-size="8.5" text-anchor="middle">← YOU →</text>
+          <text x="440" y="91" fill="#48566a" font-size="7.5" text-anchor="middle">40% IC + 60% Lead</text>
+          <circle cx="530" cy="168" r="24" fill="rgba(61,82,104,.13)" stroke="#48566a" stroke-width="1"/>
+          <text x="530" y="164" fill="#8896b2" font-size="8" text-anchor="middle">Eng</text>
+          <text x="530" y="176" fill="#8896b2" font-size="8" text-anchor="middle">Manager</text>
+          <circle cx="584" cy="210" r="16" fill="rgba(61,82,104,.08)" stroke="#48566a" stroke-width="1" stroke-dasharray="3"/>
+          <text x="584" y="206" fill="#3d5268" font-size="7" text-anchor="middle">Dir.</text>
+          <text x="584" y="218" fill="#3d5268" font-size="7" text-anchor="middle">Eng.</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S-OBJ: Objective ════ -->
+<section class="section" id="s-obj">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#4a1942,#6d28d9)">★</div>
+    <div><div class="sec-title">Mục Tiêu Công Việc Mới</div><div class="sec-sub">Smith hỏi: "What is your main objective for looking for a new job?"</div></div>
+  </div>
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">OBJ</span>
+      <div style="flex:1"><div class="q-en">What is your main objective for the new job? What are you looking for?</div><div class="q-vi">Mục tiêu chính khi tìm việc mới? Bạn đang tìm kiếm điều gì?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="perfect">
+        <div class="perfect-t">Perfect answer — 3 honest reasons</div>
+        <div class="perfect-b">"Three main reasons:
+
+First, I want to apply my <span class="kt">Kafka</span> and high-throughput pipeline experience to a new domain. At <span class="kt">HSC</span> (Công ty Chứng khoán HCM) I solved financial trading at scale — I'm excited to solve traffic analysis and bot detection at scale. The architecture patterns are the same, the domain is new.
+
+Second, I want to grow on the <span class="kt">AI side</span>. At Glohow I built RAG pipelines but in a startup context with limited scale. I want to work on AI in a product company where it directly impacts customers — like using RAG for security analyst tooling.
+
+Third, I'm looking for a <span class="ka">Technical Leader</span> role where I can balance hands-on architecture work with team leadership — not a pure management role, not a pure individual contributor. This role matches that balance exactly."</div>
+      </div>
+      <div class="tip"><div class="tip-t">Key: Connect your objective to the company</div><div class="tip-b">Always close with: "And from what Mark described about your bot management platform — the high-efficiency traffic pipeline challenge is exactly the kind of problem I want to solve next."</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S3: HSC DEEP DIVE ════ -->
+<section class="section" id="s3">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#6b21a8,#7e22ce)">3</div>
+    <div><div class="sec-title">HSC Architecture — 10K TPS Optimization Journey</div><div class="sec-sub">Jan 2021–Jan 2025 · Technical Leader · HSC — Công ty Chứng khoán Hồ Chí Minh</div></div>
+  </div>
+  <div class="qblock">
+    <div class="qhead must" onclick="toggleQ(this)">
+      <span class="qnum qn-m">OPT</span>
+      <div style="flex:1"><div class="q-en">How did you go from baseline to 10,000 TPS? Step-by-step optimization.</div><div class="q-vi">Từ baseline lên 10K TPS thế nào? Từng bước.</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <!-- DIAGRAM 10: Performance journey -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 10 — PERFORMANCE OPTIMIZATION JOURNEY: BASELINE → 10K TPS</div>
+        <svg viewBox="0 0 800 220" width="100%">
+          <!-- Baseline -->
+          <rect x="8" y="8" width="148" height="196" rx="7" fill="rgba(255,77,109,.04)" stroke="rgba(255,77,109,.25)" stroke-width="1.5"/>
+          <text x="82" y="28" fill="#ff4d6d" font-size="9" text-anchor="middle" font-weight="700">BASELINE</text>
+          <text x="82" y="44" fill="#ff4d6d" font-size="14" text-anchor="middle" font-weight="900">1,500</text>
+          <text x="82" y="58" fill="#48566a" font-size="7.5" text-anchor="middle">TPS max</text>
+          <rect x="18" y="68" width="120" height="22" rx="4" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="78" y="82" fill="#8896b2" font-size="7.5" text-anchor="middle">Sync DB writes: 800ms</text>
+          <rect x="18" y="96" width="120" height="22" rx="4" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="78" y="110" fill="#8896b2" font-size="7.5" text-anchor="middle">Single-thread processing</text>
+          <rect x="18" y="124" width="120" height="22" rx="4" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="78" y="138" fill="#8896b2" font-size="7.5" text-anchor="middle">Zero caching</text>
+          <rect x="18" y="152" width="120" height="22" rx="4" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="78" y="166" fill="#8896b2" font-size="7.5" text-anchor="middle">Sequential settlement</text>
+          <text x="82" y="194" fill="#ff4d6d" font-size="8" text-anchor="middle" font-weight="700">p99 = 800ms</text>
+
+          <!-- Arrows -->
+          <line x1="156" y1="106" x2="176" y2="106" stroke="#f5a623" stroke-width="2" marker-end="url(#a1)"/>
+
+          <!-- Step 1 -->
+          <rect x="178" y="8" width="140" height="196" rx="7" fill="rgba(245,166,35,.04)" stroke="rgba(245,166,35,.2)" stroke-width="1"/>
+          <text x="248" y="26" fill="#f5a623" font-size="8" text-anchor="middle" font-weight="700">STEP 1</text>
+          <text x="248" y="42" fill="#f5a623" font-size="11" text-anchor="middle" font-weight="900">3,000</text>
+          <text x="248" y="56" fill="#48566a" font-size="7.5" text-anchor="middle">TPS</text>
+          <text x="248" y="74" fill="#f5a623" font-size="8" text-anchor="middle" font-weight="700">Kafka WAL</text>
+          <text x="248" y="90" fill="#8896b2" font-size="7.5" text-anchor="middle">Async persistence</text>
+          <text x="248" y="104" fill="#8896b2" font-size="7.5" text-anchor="middle">DB pressure removed</text>
+          <text x="248" y="122" fill="#00e5a0" font-size="7.5" text-anchor="middle">800ms → 280ms</text>
+          <text x="248" y="140" fill="#00e5a0" font-size="7.5" text-anchor="middle">2x TPS gain</text>
+
+          <line x1="318" y1="106" x2="338" y2="106" stroke="#f5a623" stroke-width="2" marker-end="url(#a1)"/>
+
+          <!-- Step 2 -->
+          <rect x="340" y="8" width="140" height="196" rx="7" fill="rgba(245,166,35,.05)" stroke="rgba(245,166,35,.25)" stroke-width="1"/>
+          <text x="410" y="26" fill="#f5a623" font-size="8" text-anchor="middle" font-weight="700">STEP 2</text>
+          <text x="410" y="42" fill="#f5a623" font-size="11" text-anchor="middle" font-weight="900">6,000</text>
+          <text x="410" y="56" fill="#48566a" font-size="7.5" text-anchor="middle">TPS</text>
+          <text x="410" y="74" fill="#f5a623" font-size="8" text-anchor="middle" font-weight="700">Redis Cache</text>
+          <text x="410" y="90" fill="#8896b2" font-size="7.5" text-anchor="middle">Positions + sessions</text>
+          <text x="410" y="104" fill="#8896b2" font-size="7.5" text-anchor="middle">60% DB load reduction</text>
+          <text x="410" y="122" fill="#00e5a0" font-size="7.5" text-anchor="middle">DB queries ↓ 60%</text>
+          <text x="410" y="140" fill="#00e5a0" font-size="7.5" text-anchor="middle">2x more headroom</text>
+
+          <line x1="480" y1="106" x2="500" y2="106" stroke="#f5a623" stroke-width="2" marker-end="url(#a1)"/>
+
+          <!-- Step 3 -->
+          <rect x="502" y="8" width="140" height="196" rx="7" fill="rgba(245,166,35,.06)" stroke="rgba(245,166,35,.3)" stroke-width="1.5"/>
+          <text x="572" y="26" fill="#f5a623" font-size="8" text-anchor="middle" font-weight="700">STEP 3</text>
+          <text x="572" y="42" fill="#00d4ff" font-size="11" text-anchor="middle" font-weight="900">8,000</text>
+          <text x="572" y="56" fill="#48566a" font-size="7.5" text-anchor="middle">TPS</text>
+          <text x="572" y="74" fill="#f5a623" font-size="8" text-anchor="middle" font-weight="700">Camunda Parallel</text>
+          <text x="572" y="90" fill="#8896b2" font-size="7.5" text-anchor="middle">Settlement workflow async</text>
+          <text x="572" y="104" fill="#8896b2" font-size="7.5" text-anchor="middle">Non-dep. steps parallel</text>
+          <text x="572" y="122" fill="#00e5a0" font-size="7.5" text-anchor="middle">380ms → 50% faster</text>
+
+          <line x1="642" y1="106" x2="662" y2="106" stroke="#00d4ff" stroke-width="2" marker-end="url(#a2)"/>
+
+          <!-- Final -->
+          <rect x="664" y="8" width="128" height="196" rx="7" fill="rgba(0,229,160,.06)" stroke="rgba(0,229,160,.3)" stroke-width="2"/>
+          <text x="728" y="28" fill="#00e5a0" font-size="9" text-anchor="middle" font-weight="700">FINAL RESULT</text>
+          <text x="728" y="50" fill="#00e5a0" font-size="18" text-anchor="middle" font-weight="900">10K+</text>
+          <text x="728" y="66" fill="#00e5a0" font-size="9" text-anchor="middle" font-weight="700">TPS</text>
+          <text x="728" y="86" fill="#8896b2" font-size="7.5" text-anchor="middle">p99 = 48ms</text>
+          <text x="728" y="100" fill="#8896b2" font-size="7.5" text-anchor="middle">Zero data loss</text>
+          <text x="728" y="118" fill="#f5a623" font-size="7.5" text-anchor="middle">JMeter 15K TPS ✓</text>
+          <text x="728" y="132" fill="#f5a623" font-size="7.5" text-anchor="middle">Chaos broker kill ✓</text>
+          <text x="728" y="146" fill="#f5a623" font-size="7.5" text-anchor="middle">2-week shadow ✓</text>
+          <text x="728" y="164" fill="#00e5a0" font-size="9" text-anchor="middle" font-weight="700">6.7× improvement</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S4: KAFKA ════ -->
+<section class="section" id="s4">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#92400e,#d97706)">4</div>
+    <div><div class="sec-title">Kafka Deep Dive</div><div class="sec-sub">3 years production · HSC — CKPHCM · WAL · Partition strategy · AutoScaling · Real challenges</div></div>
+  </div>
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">KCHA</span>
+      <div style="flex:1"><div class="q-en">Real production challenges with Kafka you faced at HSC (CKPHCM)?</div><div class="q-vi">Thách thức thực tế với Kafka ở HSC?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="g2">
+        <div class="card"><div class="ct2" style="color:var(--red)">Challenge 1 — Hot Partition</div><div class="cn">VNM overload</div><div class="cb">VNM (most traded symbol) → P0 overloaded while P1-P89 idle. Fix: Map top-10 hot symbols to dedicated partitions with dedicated high-spec consumers.<div class="chip">⚡ Uneven load if not planned</div></div></div>
+        <div class="card"><div class="ct2" style="color:var(--red)">Challenge 2 — Duplicate Messages</div><div class="cn">At-least-once delivery</div><div class="cb">At-least-once = duplicates possible. Fix: <span class="kt">Idempotent consumers</span> with dedup key (orderId) in PostgreSQL. Check before processing every message.<div class="chip">⚡ 1 extra DB lookup/message</div></div></div>
+        <div class="card"><div class="ct2" style="color:var(--red)">Challenge 3 — Consumer Lag</div><div class="cn">Market open surge</div><div class="cb">Market open 5x burst caused lag spike. Fix: <span class="kt">KEDA</span> autoscaler + tune fetch.min.bytes + max.poll.records + async offset commit.<div class="chip">⚡ Async commit risks reprocess</div></div></div>
+        <div class="card"><div class="ct2" style="color:var(--red)">Challenge 4 — Schema Evolution</div><div class="cn">Breaking consumers</div><div class="cb">Producers updated schema → old consumers broke. Fix: <span class="kt">Schema Registry</span> backward-compatible evolution. Never break consumers in production.<div class="chip">⚡ Adds infra complexity</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S5: CAMUNDA ════ -->
+<section class="section" id="s5">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#14532d,#166534)">5</div>
+    <div><div class="sec-title">Camunda — 50% Time Reduction</div><div class="sec-sub">CV: "Integrated Camunda workflow engine, reducing business process handling time by 50%"</div></div>
+  </div>
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">CAM</span>
+      <div style="flex:1"><div class="q-en">How did you achieve 50% reduction with Camunda? Specific before vs after.</div><div class="q-vi">50% reduction với Camunda — trước và sau cụ thể?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">PROBLEM</span><span class="btext">Settlement workflow <span class="kw">sequential</span>: DB write → Compliance → Ledger → Audit+Notify all blocking thread. Total: <span class="kn">800ms</span>.</span></div>
+        <div class="bluf-row"><span class="bl bl-w">SOLUTION</span><span class="btext">Designed <span class="kk">State Machine</span> with <span class="kt">Camunda</span>. Parallelized non-dependent steps using <span class="kt">Async Handlers</span>. Only Ledger Update stayed sequential (data integrity non-negotiable).</span></div>
+        <div class="bluf-row"><span class="bl bl-r">RESULT</span><span class="btext"><span class="kn">800ms → 380ms</span> (<span class="kn">52.5%</span> faster). Bonus: visual monitoring, dead-letter queue, built-in audit trail for compliance team.</span></div>
+      </div>
+      <!-- DIAGRAM 11: Camunda Before/After -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 11 — CAMUNDA SETTLEMENT: SEQUENTIAL → PARALLEL</div>
+        <svg viewBox="0 0 780 215" width="100%">
+          <rect x="6" y="6" width="370" height="200" rx="7" fill="rgba(255,77,109,.04)" stroke="rgba(255,77,109,.25)" stroke-width="1.5"/>
+          <text x="191" y="26" fill="#ff4d6d" font-size="9" text-anchor="middle" font-weight="700">BEFORE — Sequential (800ms total)</text>
+          <rect x="18" y="36" width="344" height="24" rx="5" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="190" y="52" fill="#8896b2" font-size="8" text-anchor="middle">① DB Write (200ms)</text>
+          <text x="190" y="70" fill="#ff4d6d" font-size="7.5" text-anchor="middle">↓ WAIT 200ms</text>
+          <rect x="18" y="78" width="344" height="24" rx="5" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="190" y="94" fill="#8896b2" font-size="8" text-anchor="middle">② Compliance Check (250ms)</text>
+          <text x="190" y="112" fill="#ff4d6d" font-size="7.5" text-anchor="middle">↓ WAIT 250ms</text>
+          <rect x="18" y="120" width="344" height="24" rx="5" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="190" y="136" fill="#8896b2" font-size="8" text-anchor="middle">③ Ledger Update (200ms)</text>
+          <text x="190" y="154" fill="#ff4d6d" font-size="7.5" text-anchor="middle">↓ WAIT 200ms</text>
+          <rect x="18" y="162" width="344" height="24" rx="5" fill="#0a1828" stroke="#48566a" stroke-width="1"/>
+          <text x="190" y="178" fill="#8896b2" font-size="8" text-anchor="middle">④ Audit + Notify (150ms)</text>
+          <text x="90" y="200" fill="#ff4d6d" font-size="9" text-anchor="middle" font-weight="700">Total: 800ms</text>
+
+          <rect x="404" y="6" width="370" height="200" rx="7" fill="rgba(0,229,160,.04)" stroke="rgba(0,229,160,.25)" stroke-width="1.5"/>
+          <text x="589" y="26" fill="#00e5a0" font-size="9" text-anchor="middle" font-weight="700">AFTER — Camunda Parallel (380ms)</text>
+          <rect x="416" y="36" width="344" height="24" rx="5" fill="#0a1828" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="588" y="52" fill="#00d4ff" font-size="8" text-anchor="middle">① DB Write (200ms) — must be sequential</text>
+          <text x="588" y="70" fill="#48566a" font-size="7.5" text-anchor="middle">↓ fork to parallel</text>
+          <rect x="416" y="78" width="164" height="44" rx="5" fill="#0a1828" stroke="#00e5a0" stroke-width="1"/>
+          <text x="498" y="97" fill="#00e5a0" font-size="8" text-anchor="middle" font-weight="700">② Compliance</text>
+          <text x="498" y="110" fill="#48566a" font-size="7.5" text-anchor="middle">Async (180ms)</text>
+          <rect x="586" y="78" width="172" height="44" rx="5" fill="#0a1828" stroke="#00e5a0" stroke-width="1"/>
+          <text x="672" y="97" fill="#00e5a0" font-size="8" text-anchor="middle" font-weight="700">③ Audit + Notify</text>
+          <text x="672" y="110" fill="#48566a" font-size="7.5" text-anchor="middle">Async (180ms)</text>
+          <text x="588" y="138" fill="#48566a" font-size="7.5" text-anchor="middle">↓ join</text>
+          <rect x="416" y="150" width="344" height="24" rx="5" fill="#0a1828" stroke="#00e5a0" stroke-width="1"/>
+          <text x="588" y="166" fill="#00e5a0" font-size="8" text-anchor="middle">④ Ledger Update (waits for compliance: 180ms)</text>
+          <text x="588" y="197" fill="#00e5a0" font-size="9" text-anchor="middle" font-weight="700">Total: 380ms — 52.5% faster ✓</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S6: RAG (with diagram 5 already in R03) ════ -->
+<section class="section" id="s6">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#3b0764,#6d28d9)">6</div>
+    <div><div class="sec-title">RAG — Additional Details</div><div class="sec-sub">Chunking strategy · Qdrant vs alternatives · Evaluation metrics</div></div>
+  </div>
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">RAG-D</span>
+      <div style="flex:1"><div class="q-en">Why Qdrant specifically? Why 500 tokens chunk size? How do you evaluate RAG quality?</div><div class="q-vi">Tại sao Qdrant? Tại sao 500 tokens? Đánh giá chất lượng RAG thế nào?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="g2">
+        <div class="card" style="border-color:rgba(167,139,250,.3)">
+          <div class="ct2" style="color:var(--purple)">Why Qdrant (from CV)</div>
+          <div class="cb">Written in Rust → extremely fast. Rich metadata filtering (filter by date, type, user). Native hybrid search (vector + sparse). Self-hostable — matches Glohow's on-prem requirement. Good Java client for Spring Boot integration.<div class="chip">vs Pinecone: vendor lock-in + expensive at scale</div></div>
+        </div>
+        <div class="card" style="border-color:rgba(0,212,255,.3)">
+          <div class="ct2" style="color:var(--cyan)">500 tokens — why?</div>
+          <div class="cb">500 tokens ≈ 375 words = one complete idea. Too small (&lt;200): fragmented, loses context. Too large (&gt;1000): noisy, LLM distracted. 50-token overlap prevents losing context at boundaries. Never split tables/code (atomic units).<div class="chip">Semantic chunking considered but too slow</div></div>
+        </div>
+      </div>
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">EVALUATE</span><span class="btext">RAG Triad metrics:<ul class="nlist" style="margin-top:8px"><li><span class="nn nn-c">①</span><span class="ni"><span class="kk">Context Relevance</span>: retrieval có tìm đúng chunks không?</span></li><li><span class="nn nn-c">②</span><span class="ni"><span class="kk">Groundedness</span>: answer có xuất phát từ context không?</span></li><li><span class="nn nn-c">③</span><span class="ni"><span class="kk">Answer Relevance</span>: answer có đúng câu hỏi không?</span></li></ul>Tooling: <span class="kt">Ragas</span> hoặc <span class="kt">DeepEval</span> cho automated LLM-as-judge scoring. Production: track negative feedback rate + p95 latency.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" id="s6b">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#3b0764,#6d28d9)">6B</div>
+    <div><div class="sec-title">RAG Bottlenecks — Full Solution Stack</div><div class="sec-sub">Interviewer hint: "vector score may not accurately retrieve · too many docs = AI drafting"</div></div>
+  </div>
+  <div class="qblock">
+    <div class="qhead must" onclick="toggleQ(this)">
+      <span class="qnum qn-m">BOT</span>
+      <div style="flex:1"><div class="q-en">What are all the RAG limitations and how do you solve each one?</div><div class="q-vi">Tất cả giới hạn của RAG và giải pháp cho từng cái?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <!-- Diagram already shown as DIAGRAM 5 in R03, here show solution details -->
+      <div class="g2">
+        <div class="card" style="border-color:rgba(255,77,109,.3)"><div class="ct2" style="color:var(--red)">Problem 1 — Low Precision</div><div class="cb">Vector retrieves similar but wrong chunks. Fix: <span class="kt">Hybrid Search</span> (Qdrant + Elasticsearch BM25). +25% recall for names/IDs.<div class="chip">Trade-off: 2 systems to maintain</div></div></div>
+        <div class="card" style="border-color:rgba(255,77,109,.3)"><div class="ct2" style="color:var(--red)">Problem 2 — Context Overflow "Drafting"</div><div class="cb">K=20, all score~0.65 → LLM confused. Fix: Re-rank → keep <span class="kn">top 4</span> only. Prompt: "Say I don't know if absent."<div class="chip">Trade-off: 80ms extra latency</div></div></div>
+        <div class="card" style="border-color:rgba(255,77,109,.3)"><div class="ct2" style="color:var(--red)">Problem 3 — Hallucinations</div><div class="cb">LLM generates false info not in context. Fix: Temperature=<span class="kn">0.1</span> + force citation + groundedness check post-generation.<div class="chip">Trade-off: 1 extra LLM call for check</div></div></div>
+        <div class="card" style="border-color:rgba(255,77,109,.3)"><div class="ct2" style="color:var(--red)">Problem 4 — Recency Bias</div><div class="cb">Vector favors recent docs over relevant older ones. Fix: Time-decay scoring: score = similarity × decay(age). Recent docs get small boost, not dominant.<div class="chip">Trade-off: custom scoring logic</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" id="s6c">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#3b0764,#6d28d9)">6C</div>
+    <div><div class="sec-title">Summarization — Automatic Mechanism</div><div class="sec-sub">Diagram 7 đã có ở trên — đây là code walkthrough + key phrases</div></div>
+  </div>
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">SUM</span>
+      <div style="flex:1"><div class="q-en">Show me the Map-Reduce summarization code logic.</div><div class="q-vi">Logic code Map-Reduce summarization?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="code"><span class="ch">// Map-Reduce Summarization — GLOHOW implementation</span>
+<span class="cc">// Input: user query "Summarize last week's maintenance requests"</span>
+
+<span class="ch">// LAYER 1: Auto document selection (NO human)</span>
+<span class="ct">MetadataFilter</span> filter = <span class="ct">MetadataFilter</span>.builder()
+    .type(<span class="cs">"maintenance"</span>)           <span class="cc">// parsed from query</span>
+    .dateRange(lastWeek, today)   <span class="cc">// parsed from "last week"</span>
+    .build();
+<span class="ct">List&lt;Chunk&gt;</span> chunks = qdrant.search(queryVector, filter, topK=<span class="ck">50</span>);
+
+<span class="ch">// LAYER 2: Adaptive strategy by token count</span>
+<span class="ck">int</span> totalTokens = chunks.stream().mapToInt(Chunk::tokens).sum();
+
+<span class="ck">if</span> (totalTokens &lt; <span class="ck">4000</span>) {
+    <span class="cc">// CASE A: Direct — single LLM call</span>
+    <span class="ck">return</span> llm.complete(buildPrompt(chunks));
+
+} <span class="ck">else if</span> (totalTokens &lt; <span class="ck">50000</span>) {
+    <span class="cc">// CASE B: Map-Reduce</span>
+    <span class="ct">List&lt;String&gt;</span> chunkSummaries = chunks.parallelStream() <span class="cc">// MAP parallel</span>
+        .map(c -&gt; llm.complete(<span class="cs">"Summarize: "</span> + c.text()))
+        .collect(toList());
+    <span class="ck">return</span> llm.complete(buildReducePrompt(chunkSummaries)); <span class="cc">// REDUCE</span>
+
+} <span class="ck">else</span> {
+    <span class="cc">// CASE C: Hierarchical</span>
+    <span class="ck">return</span> hierarchicalSummarize(chunks); <span class="cc">// doc→cluster→final</span>
+}
+
+<span class="cc">// LAYER 3: Quality check (automated)</span>
+<span class="ct">GroundednessScore</span> score = groundednessChecker.check(summary, sourceChunks);
+<span class="ck">if</span> (score &lt; <span class="ck">3</span>) regenerateSummary(); <span class="cc">// auto regenerate</span></div>
+      <div class="tip"><div class="tip-t">Key phrase when Mark asks</div><div class="tip-b"><strong style="color:var(--amber)">"The system never has a human select documents. The query itself is the document selector — I parse metadata filters from the user's natural language, then the vector search with those filters picks automatically. The Map-Reduce strategy is chosen programmatically based on token count. It's fully automated end-to-end."</strong></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S7: COMPANY FIT ════ -->
+<section class="section" id="s7">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#064e3b,#065f46)">7</div>
+    <div><div class="sec-title">Company Fit — Bot Management Platform</div><div class="sec-sub">Mark: "High-efficiency traffic pipeline → detect anomalies → mitigate bad bots"</div></div>
+  </div>
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">BTF</span>
+      <div style="flex:1"><div class="q-en">How does your experience map to our bot detection platform?</div><div class="q-vi">Kinh nghiệm của bạn map thế nào vào bot detection?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl bl-a">DIRECT MAP</span><span class="btext">HSC trading pipeline ≈ bot traffic pipeline. Cả hai đều cần: <span class="kt">Kafka</span> buffer cho spike traffic, <span class="kt">low-latency decision engine</span> (&lt;<span class="kn">10ms</span>), <span class="kt">Redis</span> fast lookups, <span class="kt">Cassandra</span> time-series. My exact experience, new domain.</span></div>
+        <div class="bluf-row"><span class="bl bl-w">AI OPPORTUNITIES</span><span class="btext">4 cơ hội AI cụ thể:<ul class="nlist" style="margin-top:8px"><li><span class="nn nn-a">①</span><span class="ni"><span class="kt">ML fingerprinting</span> (XGBoost + LSTM behavioral) — bắt sophisticated bots qua pattern phức tạp</span></li><li><span class="nn nn-a">②</span><span class="ni"><span class="kt">Isolation Forest</span> — zero-day anomaly detection, không cần labeled data</span></li><li><span class="nn nn-a">③</span><span class="ni"><span class="kt">RAG for analysts</span> — query: "Similar attacks from this IP range?" (direct Glohow experience)</span></li><li><span class="nn nn-a">④</span><span class="ni"><span class="kt">LLM config gen</span> — natural language → firewall rules tự động</span></li></ul></span></div>
+        <div class="bluf-row"><span class="bl bl-r">BRIDGE</span><span class="btext">"Kafka WAL buffering, partition parallelism, Redis caching — những pattern tôi build tại HSC — là chính xác những gì một high-efficiency traffic pipeline cần. Domain khác, architecture giống nhau."</span></div>
+      </div>
+      <!-- DIAGRAM 12: Bot Detection Pipeline -->
+      <div class="dbox">
+        <div class="dbox-t">DIAGRAM 12 — BOT DETECTION PIPELINE (applying HSC patterns)</div>
+        <svg viewBox="0 0 820 200" width="100%">
+          <rect x="6" y="14" width="88" height="56" rx="6" fill="#0a1828" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="50" y="36" fill="#00d4ff" font-size="9" text-anchor="middle" font-weight="700">TRAFFIC</text>
+          <text x="50" y="50" fill="#48566a" font-size="7.5" text-anchor="middle">CDN Edge</text>
+          <text x="50" y="62" fill="#48566a" font-size="7.5" text-anchor="middle">PoP agents</text>
+          <line x1="94" y1="42" x2="122" y2="42" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <rect x="124" y="14" width="108" height="56" rx="6" fill="#120d00" stroke="#f5a623" stroke-width="2"/>
+          <text x="178" y="36" fill="#f5a623" font-size="9" text-anchor="middle" font-weight="700">KAFKA</text>
+          <text x="178" y="50" fill="#8896b2" font-size="7.5" text-anchor="middle">Buffer spike traffic</text>
+          <text x="178" y="62" fill="#48566a" font-size="7.5" text-anchor="middle">Partition by IP range</text>
+          <line x1="232" y1="42" x2="258" y2="42" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <rect x="260" y="6" width="156" height="72" rx="6" fill="#0a1828" stroke="#7c5af6" stroke-width="1.5"/>
+          <text x="338" y="26" fill="#a78bfa" font-size="9" text-anchor="middle" font-weight="700">FEATURE EXTRACTION</text>
+          <text x="338" y="40" fill="#8896b2" font-size="7.5" text-anchor="middle">Fast: req rate, UA, IP lookup</text>
+          <text x="338" y="54" fill="#8896b2" font-size="7.5" text-anchor="middle">Medium: behavioral window</text>
+          <text x="338" y="67" fill="#f5a623" font-size="7.5" text-anchor="middle">Target: &lt;10ms total</text>
+          <line x1="416" y1="42" x2="440" y2="42" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <rect x="442" y="6" width="140" height="72" rx="6" fill="#0a1828" stroke="#00d4ff" stroke-width="2"/>
+          <text x="512" y="26" fill="#00d4ff" font-size="9" text-anchor="middle" font-weight="700">DECISION ENGINE</text>
+          <text x="512" y="40" fill="#8896b2" font-size="7.5" text-anchor="middle">Rule-based: known IPs</text>
+          <text x="512" y="53" fill="#8896b2" font-size="7.5" text-anchor="middle">ML score &gt;0.85 → block</text>
+          <text x="512" y="66" fill="#8896b2" font-size="7.5" text-anchor="middle">Combo: rule OR (ml+rate)</text>
+          <line x1="582" y1="42" x2="606" y2="42" stroke="#48566a" stroke-width="1.5" marker-end="url(#a1)"/>
+          <rect x="608" y="6" width="136" height="72" rx="6" fill="#0a1828" stroke="#ff4d6d" stroke-width="1.5"/>
+          <text x="676" y="26" fill="#ff4d6d" font-size="9" text-anchor="middle" font-weight="700">MITIGATION</text>
+          <text x="676" y="42" fill="#ff4d6d" font-size="8" text-anchor="middle">BLOCK → 403</text>
+          <text x="676" y="56" fill="#f5a623" font-size="8" text-anchor="middle">CHALLENGE → CAPTCHA</text>
+          <text x="676" y="70" fill="#00e5a0" font-size="8" text-anchor="middle">THROTTLE / ALLOW</text>
+          <rect x="124" y="96" width="620" height="52" rx="6" fill="#08001a" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4"/>
+          <text x="434" y="116" fill="#a78bfa" font-size="8.5" text-anchor="middle" font-weight="700">ML MODEL — Feedback Loop (AI Opportunity)</text>
+          <text x="434" y="132" fill="#8896b2" font-size="7.5" text-anchor="middle">XGBoost fingerprinting + LSTM behavioral → FP/FN feedback → Retrain</text>
+          <text x="434" y="146" fill="#48566a" font-size="7" text-anchor="middle">Features: mouse entropy · keystroke timing · TLS fingerprint · browser API behavior</text>
+          <rect x="6" y="160" width="806" height="34" rx="6" fill="#001a10" stroke="#00e5a0" stroke-width="1"/>
+          <text x="22" y="178" fill="#00e5a0" font-size="8.5" font-weight="700">SLAs to mention: detection p99 &lt;10ms · false positive &lt;0.1% · throughput 1M+ RPS · availability 99.99%</text>
+          <text x="22" y="189" fill="#48566a" font-size="7.5">Link to HSC (CKPHCM): "Same Kafka WAL pattern — buffer traffic spikes, decouple ingestion from detection"</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S8: LEADERSHIP ════ -->
+<section class="section" id="s8">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#1e3a5f,#1d4ed8)">8</div>
+    <div><div class="sec-title">Leadership &amp; Team</div><div class="sec-sub">CV: "Mentored team · Led code reviews · CI/CD · Cross-functional collaboration"</div></div>
+  </div>
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">CON</span>
+      <div style="flex:1"><div class="q-en">Technical conflict with a team member — how resolved?</div><div class="q-vi">Mâu thuẫn kỹ thuật với team member — giải quyết thế nào?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl" style="color:var(--amber)">SIT.</span><span class="btext">Tại <span class="kt">HSC</span> (CKPHCM), tôi đề xuất dùng <span class="kt">Camunda</span> cho settlement workflow. Senior Engineer phản đối: "Too complex, team doesn't know it, will slow us down."</span></div>
+        <div class="bluf-row"><span class="bl" style="color:var(--amber)">ACT.</span><span class="btext">Organized joint <span class="ka">2-day benchmark spike</span> — both built POC independently. Data: Camunda saves <span class="kn">3 weeks</span> dev time + built-in audit trail for compliance + visual monitoring.</span></div>
+        <div class="bluf-row"><span class="bl bl-r">RES.</span><span class="btext">Senior chose Camunda after seeing data. He became team's Camunda expert. <span class="kk">Principle: resolve technical disagreements with data, not hierarchy.</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S9: BEHAVIORAL ════ -->
+<section class="section" id="s9">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#1e3a5f,#1d4ed8)">9</div>
+    <div><div class="sec-title">Behavioral STAR Questions</div><div class="sec-sub">Failure story · Pressure · Learning</div></div>
+  </div>
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">FAIL</span>
+      <div style="flex:1"><div class="q-en">Tell me about your biggest professional failure and what you learned.</div><div class="q-vi">Thất bại lớn nhất trong sự nghiệp — bài học?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="bluf">
+        <div class="bluf-row"><span class="bl" style="color:var(--amber)">SIT.</span><span class="btext">At Hitachi, underestimated DB migration risk during a major Connected Vehicle release. Didn't do dry-run with production-sized data.</span></div>
+        <div class="bluf-row"><span class="bl" style="color:var(--amber)">IMPACT</span><span class="btext">Migration took <span class="kn">4 hours</span> instead of 30 minutes. Service degraded for automotive partners during peak hours. Had to rollback.</span></div>
+        <div class="bluf-row"><span class="bl bl-r">LESSON</span><span class="btext">Always prepare:<ul class="nlist" style="margin-top:8px"><li><span class="nn nn-g">①</span><span class="ni"><span class="kk">Rollback plan</span> — có procedure đã test sẵn trước khi deploy</span></li><li><span class="nn nn-g">②</span><span class="ni">Dry-run với production-sized data trong staging environment</span></li><li><span class="nn nn-g">③</span><span class="ni">Canary deploy cho schema changes — không hard-cutover</span></li></ul>Applied this rigorously at HSC for every Kafka schema change.</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="qblock">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">BAL</span>
+      <div style="flex:1"><div class="q-en">How do you balance hands-on coding with team leadership as Tech Lead?</div><div class="q-vi">Cân bằng code và lead thế nào?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <ul class="alist">
+        <li><span class="arr">▸</span><span><strong style="color:var(--cyan)">40/60 rule:</strong> 40% IC (hardest problems, POC, architecture), 60% leadership (1:1s, reviews, unblocking).<span class="vi">🇻🇳 40% tự làm phần khó nhất, 60% lead + unblock team.</span></span></li>
+        <li><span class="arr">▸</span><span>Tại <span class="kt">HSC</span>: I personally owned <span class="kt">Kafka architecture</span>, <span class="kt">performance profiling</span>, <span class="kt">Camunda POC</span>. Team handled feature implementation.<span class="vi">🇻🇳 Tôi làm architecture + profiling, team làm feature.</span></span></li>
+        <li><span class="arr">▸</span><span>At Glohow: I built <span class="kt">RAG pipeline core</span> (embedding + retrieval) myself. 3 engineers handled integration + evaluation.<span class="vi">🇻🇳 Tôi build RAG core, team làm integration.</span></span></li>
+        <li><span class="arr">▸</span><span><span class="kk">Key insight:</span> Tech Lead who loses technical depth loses engineer credibility. The 40% IC time maintains that credibility and quality of decisions.<span class="vi">🇻🇳 Mất technical depth = mất credibility với engineer.</span></span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ════ S10: QUESTIONS TO ASK ════ -->
+<section class="section" id="s10">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#312e81,#4338ca)">10</div>
+    <div><div class="sec-title">Câu Hỏi Cho Interviewer</div><div class="sec-sub">Smart candidates ask smart questions — based on what Mark said</div></div>
+  </div>
+  <div class="qblock open">
+    <div class="qhead" onclick="toggleQ(this)">
+      <span class="qnum qn-d">QFI</span>
+      <div style="flex:1"><div class="q-en">Do you have any questions for us?</div><div class="q-vi">Bạn có câu hỏi nào cho chúng tôi không?</div></div>
+      <span class="qtog">›</span>
+    </div>
+    <div class="qbody">
+      <div class="tip"><div class="tip-t">Use what Mark already told you</div><div class="tip-b">Mark said: "exploring architecture and technologies… AI in brainstorming stage… everyone using AI for daily tasks." → Reference these specifically.</div></div>
+      <div class="g2">
+        <div class="card" style="border-color:rgba(0,212,255,.3)"><div class="ct2" style="color:var(--cyan)">Q1 — AI Roadmap</div><div class="cb">"You mentioned the team is exploring how AI can enhance bot detection. What specific use cases are being considered? I'd like to understand where my RAG pipeline experience could have the most impact."</div></div>
+        <div class="card" style="border-color:rgba(0,229,160,.3)"><div class="ct2" style="color:var(--green)">Q2 — Scale Today</div><div class="cb">"What's the current traffic volume the pipeline handles? Are we at millions of RPS today or is that the target we're building toward? I want to understand the scaling challenge ahead."</div></div>
+        <div class="card" style="border-color:rgba(167,139,250,.3)"><div class="ct2" style="color:var(--purple)">Q3 — Team Structure</div><div class="cb">"How is the engineering team structured? Are there separate teams for pipeline infrastructure and ML/detection layer, or is it a full-stack team owning both?"</div></div>
+        <div class="card" style="border-color:rgba(245,166,35,.3)"><div class="ct2" style="color:var(--amber)">Q4 — Success Metric</div><div class="cb">"What does success look like in the first 90 days? Is there a specific system to build or more about understanding and improving the existing pipeline?"</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ FLASHCARDS ════ -->
+<section class="section" id="sfc">
+  <div class="sec-head">
+    <div class="sec-num" style="background:linear-gradient(135deg,#164e63,#0891b2)">🃏</div>
+    <div><div class="sec-title">Flashcards — Ôn Nhanh Trước Phỏng Vấn</div><div class="sec-sub">Click vào card để reveal câu trả lời · 12 cards covering all critical topics</div></div>
+  </div>
+  <div class="fcg">
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">Kafka partition count — tăng sau khi tạo được không?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">CÓ nhưng phá vỡ key-based ordering. Solution: pre-provision 3-9× from Day 1. Tại HSC (CKPHCM): 90 partitions = 9× headroom. "I pre-planned 90 partitions to avoid re-partitioning."</div></div>
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">Consumer count vs partition — hard rule?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">Consumer pods ≤ Partition count. Extra = IDLE, zero benefit. KEDA scales consumers but can never exceed partition count. This is the hard constraint.</div></div>
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">RAG "drafting" — what is it?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">K=20 chunks all at score ~0.65 → LLM no clear signal → hallucinates. Fix: re-rank → keep top 4 only (score &gt;0.7). Prompt: "Say I don't know if not in context."</div></div>
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">Summarization — Map-Reduce khi nào?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">&lt;4K: direct (1 call). 4K-50K: Map-Reduce (parallel MAP chunks → REDUCE synthesize). &gt;50K: hierarchical. System selects automatically based on token count.</div></div>
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">Tech Lead positioning — 1 sentence?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">"40% IC, 60% leadership. I personally own hardest problems — architecture, performance, POC — enable team for feature implementation."</div></div>
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">Camunda 50% — specific numbers?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">Settlement: 800ms → 380ms (52.5% faster). Parallelized Compliance Check + Audit/Notify as async handlers. Only Ledger Update sequential.</div></div>
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">Why Kafka vs RabbitMQ tại HSC (CKPHCM)?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">3 reasons: (1) Replay — crash recovery from offset. (2) Throughput — ~1M msg/s vs ~50K. (3) Partition ordering — sequential matching per symbol. RabbitMQ deletes after ACK = no replay.</div></div>
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">CAP theorem tại HSC (CKPHCM) — apply thế nào?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">Balance = CP (PostgreSQL, strong — money exact). Trade history = AP (Cassandra, eventual — T+2 settlement allows delay). Core trade-off decision.</div></div>
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">Qdrant vs Elasticsearch — each does what?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">Qdrant: vector similarity (semantic: "Project Alpha" ≈ "Alpha project"). Elasticsearch: BM25 keyword (exact: "John", order IDs, codes). Hybrid = RRF merge = best of both.</div></div>
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">Validate 10K TPS — how exactly?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">4 methods: JMeter 15K TPS (1.5×) + chaos kill broker mid-test + 2-week shadow traffic + Grafana p50/p95/p99 alerts. Result: p99=48ms, zero data loss.</div></div>
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">Kafka WAL — why it solves 800ms?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">Before: Order → wait for PostgreSQL write = 800ms blocking. After: Order → write to Kafka (microseconds) → return. DB write happens async downstream. Thread freed immediately.</div></div>
+    <div class="fc" onclick="this.classList.toggle('revealed')"><div class="fc-q">Mục tiêu công việc mới — 3 reasons?</div><div class="fc-hint">▶ Click to reveal</div><div class="fc-ans">(1) Apply Kafka/pipeline experience to new domain (bot detection). (2) Grow AI work in product company with real customer impact. (3) Tech Lead role balancing architecture + leadership — not pure manager.</div></div>
+  </div>
+</section>
+
+<!-- Banner -->
+<div style="margin-top:56px;background:linear-gradient(135deg,#080f1e,#0f1a30);border:1px solid var(--border2);border-radius:var(--r3);padding:36px;text-align:center">
+  <div style="font-size:24px;font-weight:900;font-family:var(--font);margin-bottom:8px">🎯 12 Diagrams · 18 Q&A · 12 Flashcards · Profile Matched · Print Ready</div>
+  <div style="color:var(--text2);font-size:13px;margin-bottom:14px">ANSWER → WHY → TRADE-OFF → RESULT · Every answer has numbers from your CV.</div>
+  <div style="font-family:var(--mono);font-size:10px;color:var(--text3)">Thái Tiểu Lôi · Java 8yr · Kafka 3yr · RAG Qdrant+Elasticsearch+Ollama · HSC (CKPHCM) 10K TPS · Glohow 2025</div>
+</div>
+</div>
+</main>
+</div>
+<div id="totop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<script>
+function toggleQ(h){h.closest('.qblock').classList.toggle('open');}
+// ── SIDEBAR TOGGLE ──
+const SB_WIDTH = 268;
+let sbOpen = true; // desktop: open by default
+
+function toggleDesktopSB(){
+  const sidebar = document.getElementById('sidebar');
+  const main    = document.querySelector('.main');
+  const btn     = document.getElementById('sbtoggle');
+  sbOpen = !sbOpen;
+  if(sbOpen){
+    sidebar.classList.remove('collapsed');
+    main.style.marginLeft = SB_WIDTH + 'px';
+    btn.style.left = SB_WIDTH + 'px';
+    btn.textContent = '‹';
+    btn.title = 'Ẩn menu';
+  } else {
+    sidebar.classList.add('collapsed');
+    main.style.marginLeft = '0px';
+    btn.style.left = '0px';
+    btn.textContent = '›';
+    btn.title = 'Hiện menu';
+  }
+}
+
+function toggleMobileSB(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('ov').classList.toggle('show');
+}
+
+// legacy alias kept for any inline onclick
+function toggleSB(){ toggleMobileSB(); }
+
+function expandAll(){document.querySelectorAll('.qblock').forEach(b=>b.classList.add('open'));}
+function collapseAll(){document.querySelectorAll('.qblock').forEach(b=>b.classList.remove('open'));}
+
+// Search
+document.getElementById('si').addEventListener('input',function(){
+  const q=this.value.toLowerCase().trim();
+  const blocks=document.querySelectorAll('.qblock');
+  const sections=document.querySelectorAll('.section');
+  if(!q){sections.forEach(s=>s.classList.remove('hidden'));blocks.forEach(b=>b.classList.remove('hidden'));return;}
+  blocks.forEach(b=>{
+    const match=b.textContent.toLowerCase().includes(q);
+    b.classList.toggle('hidden',!match);
+    if(match&&!b.classList.contains('open'))b.classList.add('open');
+  });
+  sections.forEach(s=>{
+    const vis=s.querySelectorAll('.qblock:not(.hidden)');
+    s.classList.toggle('hidden',vis.length===0);
+  });
+});
+
+// Active nav + scroll top + progress
+const navLinks=document.querySelectorAll('.nav-a');
+const sections=document.querySelectorAll('.section');
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const pct=Math.round(h.scrollTop/(h.scrollHeight-h.clientHeight)*100);
+  document.getElementById('rp').style.width=pct+'%';
+  let cur='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id;});
+  navLinks.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+cur));
+  document.getElementById('totop').classList.toggle('show',window.scrollY>300);
+});
+
+// Mobile: close sidebar on nav click
+navLinks.forEach(l=>l.addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('ov').classList.remove('show');
+}));
+
+// Open first Q in each section
+sections.forEach(s=>{const f=s.querySelector('.qblock');if(f)f.classList.add('open');});
+</script>
+</body>
+</html>
