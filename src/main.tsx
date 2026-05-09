@@ -22,6 +22,8 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/architecture-vehicle-management" element={<ArchitecturePage />} />
+        <Route path="/architecture-hsc" element={<StaticHtmlPage fileName="architecture-hsc-management.html" />} />
+        <Route path="/architecture-project" element={<StaticHtmlPage fileName="architecture-project-management.html" />} />
         <Route path="/draw-system" element={<DrawSystemPage />} />
         <Route path="/interview-prep" element={<FullScreenStaticHtml fileName="self-interview.html" />} />
         <Route path="/auth-pipeline" element={<StaticHtmlPage fileName="auth-pipeline-job.html" />} />
