@@ -243,6 +243,13 @@ body{background:var(--paper);color:var(--char);font-family:var(--font);font-size
   .hero h1{font-size:32px;}
   .ph-badge{display:none;}
 }
+.cb-green{border-left-color:var(--green);}
+.cb-purple{border-left-color:#6b3a7a;}
+.cb-navy{border-left-color:var(--navy);}
+.qb-navy{background:rgba(26,45,74,.1);color:var(--navy);border-color:rgba(26,45,74,.3);}
+.qb-green{background:rgba(42,110,58,.1);color:var(--green);border-color:rgba(42,110,58,.3);}
+.qb-purple{background:rgba(107,58,122,.1);color:#6b3a7a;border-color:rgba(107,58,122,.3);}
+.pb-teal{background:rgba(26,122,110,.12);color:var(--teal);border-color:rgba(26,122,110,.3);}
 </style>
 </head>
 <body>
@@ -258,6 +265,7 @@ body{background:var(--paper);color:var(--char);font-family:var(--font);font-size
     <a class="ptab" href="#phase3">Hành vi</a>
     <a class="ptab" href="#phase4">Kết thúc</a>
     <a class="ptab" href="#phase5">Rút kinh nghiệm</a>
+    <a class="ptab" href="#phase6">Market Intel</a>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
     <button onclick="expandAll()" style="font-size:10px;font-family:var(--mono);padding:4px 10px;border:1px solid var(--bone);border-radius:4px;background:var(--cream);color:var(--ash);cursor:pointer;" title="Mở tất cả">▼ All</button>
@@ -270,7 +278,7 @@ body{background:var(--paper);color:var(--char);font-family:var(--font);font-size
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-eyebrow">Interview Playbook · v4 Final</div>
+  <div class="hero-eyebrow">Interview Playbook · v5 Final</div>
   <h1>Chuẩn bị<br>Phỏng vấn<br><span class="accent">Tech Lead</span></h1>
   <p class="hero-desc">Tài liệu từ mở đầu đến kết thúc buổi phỏng vấn. Song ngữ Việt–Anh. Kết hợp phân tích transcript thực tế và đề xuất cải thiện.</p>
   <div class="profile-strip">
@@ -325,6 +333,12 @@ body{background:var(--paper);color:var(--char);font-family:var(--font);font-size
       <div class="fs-num">SAU PV</div>
       <div class="fs-label">Rút KN</div>
       <div class="fs-sub">Lessons learned</div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-icon">🎯</div>
+      <div class="fs-num">PHASE 6</div>
+      <div class="fs-label">Market Intel</div>
+      <div class="fs-sub">JD Keywords 2026</div>
     </div>
   </div>
 </div>
@@ -1977,10 +1991,822 @@ body{background:var(--paper);color:var(--char);font-family:var(--font);font-size
   </div>
 </div>
 
+
+<!-- ══════════════════════════════════
+     PHASE 6 — MARKET INTELLIGENCE
+     JD Keyword Analysis 2026
+══════════════════════════════════ -->
+<div id="phase6">
+  <div class="phase-header">
+    <div class="ph-num">6</div>
+    <div class="ph-content">
+      <div class="ph-label">Phân tích 100 JD Senior/Lead Backend 2026</div>
+      <div class="ph-title">Market Intelligence · JD Keywords</div>
+      <div class="ph-sub">Top 6 cụm từ xuất hiện nhiều nhất — chuẩn bị đúng trọng tâm thị trường</div>
+    </div>
+    <div class="ph-badge pb-teal">MARKET INTEL</div>
+  </div>
+
+<!-- JD-SUM: Overview Bar Chart -->
+<div class="card cb-teal" id="JD-SUM">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="ch-left">
+      <span class="q-badge qb-teal">OVERVIEW</span>
+      <div>
+        <div class="q-vi">Tần suất xuất hiện trong 100 JD Senior/Lead Backend</div>
+        <div class="q-en">Keyword Frequency Across 100 JDs · Vietnam Tech Market 2026</div>
+      </div>
+    </div>
+    <span class="ch-icon">+</span>
+  </div>
+  <div class="card-body" style="display:block;">
+    <div class="chart-wrap">
+      <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+        <defs>
+          <linearGradient id="gBar1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#c9962a;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#e8c46a;stop-opacity:1"/>
+          </linearGradient>
+          <linearGradient id="gBar2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#1a7a6e;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#2aaa98;stop-opacity:1"/>
+          </linearGradient>
+          <linearGradient id="gBar3" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#b84a2e;stop-opacity:.9"/>
+            <stop offset="100%" style="stop-color:#e05a38;stop-opacity:.9"/>
+          </linearGradient>
+        </defs>
+        <!-- BG -->
+        <rect width="700" height="320" fill="#f5f3ee" rx="8"/>
+        <!-- Title -->
+        <text x="350" y="28" text-anchor="middle" font-family="'Syne',sans-serif" font-size="13" font-weight="700" fill="#2a241e">Top 6 Keywords · 100 Senior/Lead Backend JD · Vietnam 2026</text>
+        <!-- Grid lines -->
+        <line x1="160" y1="45" x2="660" y2="45" stroke="#d9d3c7" stroke-width="1" stroke-dasharray="3,4"/>
+        <line x1="160" y1="80" x2="660" y2="80" stroke="#d9d3c7" stroke-width="1" stroke-dasharray="3,4"/>
+        <line x1="160" y1="115" x2="660" y2="115" stroke="#d9d3c7" stroke-width="1" stroke-dasharray="3,4"/>
+        <line x1="160" y1="150" x2="660" y2="150" stroke="#d9d3c7" stroke-width="1" stroke-dasharray="3,4"/>
+        <line x1="160" y1="185" x2="660" y2="185" stroke="#d9d3c7" stroke-width="1" stroke-dasharray="3,4"/>
+        <line x1="160" y1="220" x2="660" y2="220" stroke="#d9d3c7" stroke-width="1" stroke-dasharray="3,4"/>
+        <!-- Bar 1 - System Design 94% -->
+        <rect x="160" y="50" width="470" height="22" rx="4" fill="url(#gBar1)"/>
+        <text x="150" y="66" text-anchor="end" font-family="'DM Sans',sans-serif" font-size="11" fill="#2a241e">System Design</text>
+        <text x="638" y="66" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700" fill="#c9962a">94/100</text>
+        <!-- Bar 2 - AWS/K8s 87% -->
+        <rect x="160" y="85" width="435" height="22" rx="4" fill="url(#gBar2)"/>
+        <text x="150" y="101" text-anchor="end" font-family="'DM Sans',sans-serif" font-size="11" fill="#2a241e">AWS / K8s</text>
+        <text x="603" y="101" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700" fill="#1a7a6e">87/100</text>
+        <!-- Bar 3 - AI/LLM/RAG 71% -->
+        <rect x="160" y="120" width="355" height="22" rx="4" fill="url(#gBar3)"/>
+        <text x="150" y="136" text-anchor="end" font-family="'DM Sans',sans-serif" font-size="11" fill="#2a241e">AI / LLM / RAG</text>
+        <text x="523" y="136" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700" fill="#b84a2e">71/100 ↑↑</text>
+        <!-- Bar 4 - CI/CD 68% -->
+        <rect x="160" y="155" width="340" height="22" rx="4" fill="#1a2d4a" opacity=".8"/>
+        <text x="150" y="171" text-anchor="end" font-family="'DM Sans',sans-serif" font-size="11" fill="#2a241e">CI/CD / DevOps</text>
+        <text x="508" y="171" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700" fill="#1a2d4a">68/100</text>
+        <!-- Bar 5 - Trade-off 62% -->
+        <rect x="160" y="190" width="310" height="22" rx="4" fill="#2a6e3a" opacity=".8"/>
+        <text x="150" y="206" text-anchor="end" font-family="'DM Sans',sans-serif" font-size="11" fill="#2a241e">Trade-off / ADR</text>
+        <text x="478" y="206" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700" fill="#2a6e3a">62/100</text>
+        <!-- Bar 6 - Security 48% -->
+        <rect x="160" y="225" width="240" height="22" rx="4" fill="#6b3a7a" opacity=".8"/>
+        <text x="150" y="241" text-anchor="end" font-family="'DM Sans',sans-serif" font-size="11" fill="#2a241e">Security / FinOps</text>
+        <text x="408" y="241" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700" fill="#6b3a7a">48/100 ↑</text>
+        <!-- Legend note -->
+        <text x="350" y="285" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10.5" fill="#6b635a">↑↑ tăng nhanh nhất so với 2025 · Nguồn: phân tích 100 JD Senior/Lead Backend Vietnam</text>
+        <!-- Scale ticks -->
+        <text x="160" y="275" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#a09890">0</text>
+        <text x="285" y="275" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#a09890">25</text>
+        <text x="410" y="275" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#a09890">50</text>
+        <text x="535" y="275" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#a09890">75</text>
+        <text x="660" y="275" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#a09890">100</text>
+      </svg>
+    </div>
+    <div class="ans-block" style="margin-top:12px;">
+      <p><strong>Insight:</strong> Doanh nghiệp 2026 không cần thêm người viết CRUD. Họ cần kỹ sư <em>thiết kế hệ thống chịu tải triệu request, deploy lên cloud, tích hợp AI, và tự chủ production</em>. 5 trong 6 keyword trên đều nằm trong vùng expertise của bạn.</p>
+    </div>
+  </div>
+</div>
+
+<!-- JD-01: System Design / Distributed Systems / Scalability -->
+<div class="card cb-gold" id="JD-01">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="ch-left">
+      <span class="q-badge qb-gold">JD-01 · 94/100</span>
+      <div>
+        <div class="q-vi">System Design / Distributed Systems / Scalability — Thiết kế hệ thống phân tán</div>
+        <div class="q-en">"Experience designing scalable distributed systems" · "System design at scale"</div>
+      </div>
+    </div>
+    <span class="ch-icon">+</span>
+  </div>
+  <div class="card-body">
+    <div class="tip-box">💡 <strong>Cụm từ thường xuất hiện trong JD:</strong> "Experience designing scalable distributed systems", "Khả năng thiết kế hệ thống chịu tải cao", "System design at scale". Doanh nghiệp tìm người hiểu CAP theorem, biết khi nào shard, khi nào cache, biết design pattern phân tán.</div>
+    <div class="ans-block">
+      <p><strong>🇻🇳 Framework trả lời:</strong> Khi được hỏi về System Design, luôn bắt đầu với <strong>BLUF</strong>: nêu throughput target → chọn pattern → giải thích trade-off. Tránh dive sâu ngay vào implementation.</p>
+      <p style="margin-top:8px;"><strong>CAP Theorem trong thực tế:</strong> Không có hệ thống nào đạt cả 3 (Consistency, Availability, Partition Tolerance). Ví dụ tại HSC: hệ thống giao dịch chọn <strong>CP</strong> (ưu tiên consistency khi partition), chấp nhận một số request timeout thay vì trả về dữ liệu stale. Hệ thống notification chọn <strong>AP</strong>.</p>
+      <p style="margin-top:8px;"><strong>Sharding strategy:</strong> Tại HSC (10K TPS), dùng <strong>hash-based sharding</strong> theo user_id để phân phối đều. Vấn đề: hot key khi celebrity post — giải quyết bằng write-fan-out + read aggregation.</p>
+      <p style="margin-top:8px;"><strong>Cache pattern:</strong> Cache-aside + TTL 5 phút cho data ít thay đổi. Write-through cho financial data cần strong consistency. Kết quả: giảm 60% DB load tại HSC.</p>
+    </div>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 700 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+        <rect width="700" height="340" fill="#f5f3ee" rx="8"/>
+        <text x="350" y="24" text-anchor="middle" font-family="'Syne',sans-serif" font-size="13" font-weight="700" fill="#2a241e">System Design Core Concepts · CAP + Sharding + Cache Pattern</text>
+
+        <!-- CAP Triangle -->
+        <text x="130" y="50" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#6b635a">CAP THEOREM</text>
+        <polygon points="130,160 60,280 200,280" fill="none" stroke="#c9962a" stroke-width="2"/>
+        <circle cx="130" cy="160" r="18" fill="#c9962a"/>
+        <text x="130" y="164" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">C</text>
+        <text x="130" y="150" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#6b635a">Consistency</text>
+        <circle cx="60" cy="280" r="18" fill="#1a7a6e"/>
+        <text x="60" y="284" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">A</text>
+        <text x="60" y="308" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#6b635a">Availability</text>
+        <circle cx="200" cy="280" r="18" fill="#b84a2e"/>
+        <text x="200" y="284" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">P</text>
+        <text x="200" y="308" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#6b635a">Partition Tol.</text>
+        <!-- CP zone -->
+        <text x="85" y="220" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#1a2d4a">CP</text>
+        <text x="85" y="230" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="#6b635a">HSC Trading</text>
+        <!-- AP zone -->
+        <text x="175" y="220" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2a6e3a">AP</text>
+        <text x="175" y="230" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="#6b635a">Notification</text>
+
+        <!-- Divider -->
+        <line x1="250" y1="45" x2="250" y2="315" stroke="#d9d3c7" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- Hash Sharding -->
+        <text x="390" y="50" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#6b635a">HASH SHARDING</text>
+        <!-- Central hash function -->
+        <rect x="340" y="60" width="100" height="30" rx="6" fill="#1a7a6e"/>
+        <text x="390" y="79" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">hash(user_id)</text>
+        <!-- Shard boxes -->
+        <rect x="260" y="115" width="70" height="28" rx="4" fill="#2a241e"/>
+        <text x="295" y="133" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="white">Shard 0</text>
+        <rect x="355" y="115" width="70" height="28" rx="4" fill="#2a241e"/>
+        <text x="390" y="133" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="white">Shard 1</text>
+        <rect x="450" y="115" width="70" height="28" rx="4" fill="#2a241e"/>
+        <text x="485" y="133" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="white">Shard 2</text>
+        <!-- Arrows -->
+        <line x1="360" y1="90" x2="295" y2="115" stroke="#c9962a" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="390" y1="90" x2="390" y2="115" stroke="#c9962a" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="420" y1="90" x2="485" y2="115" stroke="#c9962a" stroke-width="1.5" marker-end="url(#arr)"/>
+        <defs><marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c9962a"/></marker></defs>
+        <!-- Note -->
+        <rect x="285" y="160" width="200" height="22" rx="4" fill="#f0e9d9"/>
+        <text x="385" y="175" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#6b635a">Hot key → write fan-out + aggregation</text>
+
+        <!-- Cache Pattern -->
+        <text x="390" y="210" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#6b635a">CACHE-ASIDE PATTERN</text>
+        <rect x="260" y="220" width="80" height="28" rx="4" fill="#1a2d4a"/>
+        <text x="300" y="238" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="white">Client</text>
+        <rect x="360" y="220" width="80" height="28" rx="4" fill="#1a7a6e"/>
+        <text x="400" y="238" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="white">Redis Cache</text>
+        <rect x="460" y="220" width="70" height="28" rx="4" fill="#b84a2e"/>
+        <text x="495" y="238" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="white">Database</text>
+        <!-- arrows hit/miss -->
+        <line x1="340" y1="234" x2="360" y2="234" stroke="#2aaa98" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <text x="350" y="227" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#1a7a6e">GET</text>
+        <line x1="440" y1="240" x2="460" y2="240" stroke="#b84a2e" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr3)"/>
+        <text x="450" y="233" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#b84a2e">MISS</text>
+        <defs><marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2aaa98"/></marker></defs>
+        <defs><marker id="arr3" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b84a2e"/></marker></defs>
+        <text x="385" y="275" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#6b635a">TTL 5min · giảm 60% DB load tại HSC · p99=48ms</text>
+
+        <!-- Scale patterns bottom -->
+        <rect x="262" y="290" width="55" height="22" rx="3" fill="#c9962a" opacity=".15"/>
+        <text x="289" y="305" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#c9962a">CQRS</text>
+        <rect x="322" y="290" width="70" height="22" rx="3" fill="#1a7a6e" opacity=".15"/>
+        <text x="357" y="305" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#1a7a6e">Read Replica</text>
+        <rect x="397" y="290" width="55" height="22" rx="3" fill="#b84a2e" opacity=".15"/>
+        <text x="424" y="305" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#b84a2e">CDN Edge</text>
+        <rect x="457" y="290" width="70" height="22" rx="3" fill="#1a2d4a" opacity=".15"/>
+        <text x="492" y="305" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#1a2d4a">Event Driven</text>
+      </svg>
+    </div>
+    <div class="script-block">
+      <div class="sb-vi">🇻🇳 "Với hệ thống HSC xử lý 10K TPS, tôi áp dụng hash-based sharding theo user_id và cache-aside với Redis TTL 5 phút — kết quả giảm 60% database load. Điều quan trọng là hiểu trade-off: consistency vs availability dựa trên business requirement. Giao dịch tài chính tại HSC cần CP, còn notification có thể chấp nhận AP."</div>
+      <div class="sb-en">🇬🇧 "At HSC handling 10K TPS, I used hash-based sharding on user_id and cache-aside with Redis TTL 5min — achieving 60% DB load reduction. The key is understanding the trade-off: CP for financial transactions at HSC where consistency is non-negotiable, AP for notification services where eventual consistency is acceptable."</div>
+    </div>
+  </div>
+</div>
+
+<!-- JD-02: AWS / Cloud-native / Kubernetes -->
+<div class="card cb-teal" id="JD-02">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="ch-left">
+      <span class="q-badge qb-teal">JD-02 · 87/100</span>
+      <div>
+        <div class="q-vi">AWS / Cloud-native / Kubernetes — Hạ tầng đám mây thế hệ mới</div>
+        <div class="q-en">"Hands-on with AWS (VPC, Lambda, ECS, RDS)", "Container orchestration with Kubernetes", "IaC (Terraform)"</div>
+      </div>
+    </div>
+    <span class="ch-icon">+</span>
+  </div>
+  <div class="card-body">
+    <div class="tip-box">💡 <strong>Insight từ JD:</strong> Năm 2026, không có hệ thống lớn nào còn chạy trên một con VPS. Cloud-native là yêu cầu mặc định, không phải "nice to have". Senior Engineer phải tự deploy được — không chờ ops team.</div>
+    <div class="ans-block">
+      <p><strong>AWS Core Services:</strong> VPC (network isolation) → ALB (load balancing) → EKS (managed K8s) → RDS Multi-AZ (managed DB) → ElastiCache (Redis) → MSK (managed Kafka) → S3 (object storage) → CloudWatch (observability).</p>
+      <p style="margin-top:8px;"><strong>Kubernetes Essentials:</strong> HPA (Horizontal Pod Autoscaler) — scale based on CPU/custom metrics. KEDA — event-driven scaling từ Kafka lag. Resource requests/limits để tránh noisy neighbor. PodDisruptionBudget để đảm bảo rolling update an toàn.</p>
+      <p style="margin-top:8px;"><strong>Terraform IaC:</strong> Toàn bộ infra dưới dạng code — version controlled, reviewable, reproducible. Module pattern: network → compute → data → monitoring. Remote state với S3 + DynamoDB lock.</p>
+    </div>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+        <rect width="700" height="320" fill="#f5f3ee" rx="8"/>
+        <text x="350" y="24" text-anchor="middle" font-family="'Syne',sans-serif" font-size="13" font-weight="700" fill="#2a241e">AWS Production Architecture · EKS + RDS + MSK + Observability</text>
+
+        <!-- VPC boundary -->
+        <rect x="20" y="35" width="660" height="245" rx="8" fill="none" stroke="#1a7a6e" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <text x="30" y="50" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1a7a6e">VPC · 10.0.0.0/16</text>
+
+        <!-- Public Subnet -->
+        <rect x="30" y="55" width="200" height="215" rx="6" fill="rgba(26,122,110,.06)" stroke="#2aaa98" stroke-width="1"/>
+        <text x="130" y="72" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1a7a6e">PUBLIC SUBNET</text>
+        <!-- WAF -->
+        <rect x="55" y="80" width="80" height="24" rx="4" fill="#b84a2e"/>
+        <text x="95" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">WAF</text>
+        <!-- ALB -->
+        <rect x="55" y="115" width="150" height="24" rx="4" fill="#c9962a"/>
+        <text x="130" y="131" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">ALB (Load Balancer)</text>
+        <!-- NAT -->
+        <rect x="55" y="150" width="80" height="24" rx="4" fill="#2a241e"/>
+        <text x="95" y="166" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="white">NAT GW</text>
+        <!-- Internet -->
+        <rect x="55" y="220" width="150" height="24" rx="4" fill="#6b635a"/>
+        <text x="130" y="236" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="white">Internet Gateway</text>
+        <!-- Route53 -->
+        <rect x="55" y="185" width="80" height="24" rx="4" fill="#1a2d4a"/>
+        <text x="95" y="201" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="white">Route53</text>
+
+        <!-- Private Subnet -->
+        <rect x="245" y="55" width="255" height="215" rx="6" fill="rgba(26,45,74,.06)" stroke="#1a2d4a" stroke-width="1"/>
+        <text x="372" y="72" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1a2d4a">PRIVATE SUBNET · EKS</text>
+        <!-- K8s pods -->
+        <rect x="258" y="80" width="80" height="24" rx="4" fill="#1a2d4a"/>
+        <text x="298" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">Pod: API x3</text>
+        <rect x="355" y="80" width="80" height="24" rx="4" fill="#1a2d4a"/>
+        <text x="395" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">Pod: Worker x5</text>
+        <!-- HPA -->
+        <rect x="258" y="115" width="175" height="22" rx="4" fill="#1a7a6e" opacity=".8"/>
+        <text x="345" y="130" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">HPA / KEDA (Kafka lag)</text>
+        <!-- RDS -->
+        <rect x="258" y="150" width="80" height="24" rx="4" fill="#b84a2e"/>
+        <text x="298" y="166" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">RDS Multi-AZ</text>
+        <!-- ElastiCache -->
+        <rect x="355" y="150" width="80" height="24" rx="4" fill="#c9962a"/>
+        <text x="395" y="166" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">ElastiCache</text>
+        <!-- MSK -->
+        <rect x="258" y="185" width="175" height="22" rx="4" fill="#6b3a7a" opacity=".9"/>
+        <text x="345" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">MSK Kafka (Event Bus)</text>
+        <!-- Terraform badge -->
+        <rect x="268" y="222" width="155" height="22" rx="4" fill="#f0e9d9" stroke="#c9962a" stroke-width="1"/>
+        <text x="345" y="237" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#c9962a">Terraform IaC · GitOps</text>
+
+        <!-- Observability column -->
+        <rect x="515" y="55" width="155" height="215" rx="6" fill="rgba(201,150,42,.06)" stroke="#c9962a" stroke-width="1"/>
+        <text x="592" y="72" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#c9962a">OBSERVABILITY</text>
+        <rect x="525" y="80" width="135" height="24" rx="4" fill="#c9962a"/>
+        <text x="592" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">CloudWatch Metrics</text>
+        <rect x="525" y="115" width="135" height="24" rx="4" fill="#1a7a6e"/>
+        <text x="592" y="131" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">Grafana · Prometheus</text>
+        <rect x="525" y="150" width="135" height="24" rx="4" fill="#b84a2e"/>
+        <text x="592" y="166" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">Jaeger / X-Ray Traces</text>
+        <rect x="525" y="185" width="135" height="24" rx="4" fill="#1a2d4a"/>
+        <text x="592" y="201" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">CloudWatch Logs</text>
+        <rect x="525" y="222" width="135" height="22" rx="4" fill="#2a6e3a"/>
+        <text x="592" y="237" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">S3 · Glacier Archive</text>
+
+        <!-- Arrows ALB → pods -->
+        <line x1="205" y1="127" x2="258" y2="105" stroke="#c9962a" stroke-width="1.5" marker-end="url(#arr4)"/>
+        <defs><marker id="arr4" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c9962a"/></marker></defs>
+        <!-- Pods → Kafka -->
+        <line x1="395" y1="104" x2="395" y2="185" stroke="#6b3a7a" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr5)"/>
+        <defs><marker id="arr5" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6b3a7a"/></marker></defs>
+
+        <!-- Footer -->
+        <text x="350" y="305" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9.5" fill="#6b635a">Production-grade · Multi-AZ · Auto-scaling · IaC managed · Zero single point of failure</text>
+      </svg>
+    </div>
+    <div class="script-block">
+      <div class="sb-vi">🇻🇳 "Tôi có kinh nghiệm deploy lên EKS với HPA và KEDA scale theo Kafka consumer lag. Toàn bộ infra được quản lý bằng Terraform — version controlled, peer reviewed. Architecture đảm bảo Multi-AZ, không có single point of failure. Senior tự chủ deploy — không phụ thuộc ops team."</div>
+      <div class="sb-en">🇬🇧 "I have hands-on experience deploying on EKS with HPA and KEDA scaling based on Kafka consumer lag. All infrastructure is managed via Terraform — version controlled and peer reviewed. The architecture ensures Multi-AZ redundancy with no single point of failure. I own the deployment end-to-end."</div>
+    </div>
+  </div>
+</div>
+
+<!-- JD-03: AI Integration / LLM / RAG / Agent -->
+<div class="card cb-rust" id="JD-03">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="ch-left">
+      <span class="q-badge qb-rust">JD-03 · 71/100 ↑↑</span>
+      <div>
+        <div class="q-vi">AI Integration / LLM / RAG / Agent — Tích hợp AI thực thụ vào production</div>
+        <div class="q-en">"Build RAG pipeline", "AI Agent development", "Vector database (pgvector, Pinecone)"</div>
+      </div>
+    </div>
+    <span class="ch-icon">+</span>
+  </div>
+  <div class="card-body">
+    <div class="tip-box">🔥 <strong>Fastest growing keyword 2026:</strong> Doanh nghiệp không tìm "người dùng ChatGPT". Họ tìm kỹ sư build được hệ thống AI thực thụ — RAG Agent, function calling, prompt engineering ở tầng kiến trúc. Theo TopCV 2025-2026, AI Engineer là 1 trong 3 vị trí khó tuyển nhất Việt Nam — không phải vì thiếu người, mà vì thiếu người làm được việc thật.</div>
+    <div class="ans-block">
+      <p><strong>RAG Pipeline (5 bước):</strong> (1) Ingest documents → (2) Chunk + embed → (3) Store in vector DB (pgvector/Pinecone) → (4) Query → semantic search → retrieve context → (5) Augment prompt → LLM generate → guardrails.</p>
+      <p style="margin-top:8px;"><strong>AI Agent với Tool Use:</strong> Orchestrator LLM quyết định action → gọi tools (search, function call, memory) → synthesize kết quả → guardrails (toxicity filter, PII detection, hallucination check) → trả về user.</p>
+      <p style="margin-top:8px;"><strong>Production concerns:</strong> Latency (streaming response), cost (token caching, batching), reliability (fallback model), observability (LangSmith/Langfuse trace), security (prompt injection defense).</p>
+    </div>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+        <rect width="700" height="300" fill="#f5f3ee" rx="8"/>
+        <text x="350" y="24" text-anchor="middle" font-family="'Syne',sans-serif" font-size="13" font-weight="700" fill="#2a241e">AI Agent Architecture · RAG + Tool Use + Guardrails</text>
+
+        <!-- User box -->
+        <rect x="20" y="110" width="80" height="40" rx="6" fill="#1a2d4a"/>
+        <text x="60" y="128" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="white">👤 User</text>
+        <text x="60" y="142" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.7)">Input / Query</text>
+
+        <!-- Arrow user → orchestrator -->
+        <line x1="100" y1="130" x2="160" y2="130" stroke="#c9962a" stroke-width="1.5" marker-end="url(#arr6)"/>
+        <defs><marker id="arr6" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c9962a"/></marker></defs>
+
+        <!-- Orchestrator LLM -->
+        <rect x="160" y="90" width="130" height="80" rx="8" fill="#b84a2e"/>
+        <text x="225" y="115" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" font-weight="700" fill="white">🧠 Orchestrator</text>
+        <text x="225" y="130" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="rgba(255,255,255,.9)">LLM (GPT-4o / Claude)</text>
+        <text x="225" y="147" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.7)">Decide → Plan → Act</text>
+        <text x="225" y="162" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.7)">Tool selection</text>
+
+        <!-- Tool arrows -->
+        <line x1="290" y1="110" x2="360" y2="75" stroke="#1a7a6e" stroke-width="1.5" marker-end="url(#arr7)"/>
+        <line x1="290" y1="130" x2="360" y2="130" stroke="#1a7a6e" stroke-width="1.5" marker-end="url(#arr7)"/>
+        <line x1="290" y1="150" x2="360" y2="185" stroke="#1a7a6e" stroke-width="1.5" marker-end="url(#arr7)"/>
+        <defs><marker id="arr7" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1a7a6e"/></marker></defs>
+
+        <!-- Tool 1: RAG Search -->
+        <rect x="360" y="55" width="120" height="40" rx="6" fill="#1a7a6e"/>
+        <text x="420" y="72" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">🔍 RAG Search</text>
+        <text x="420" y="86" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.8)">pgvector / Pinecone</text>
+        <!-- Tool 2: Function Call -->
+        <rect x="360" y="110" width="120" height="40" rx="6" fill="#1a2d4a"/>
+        <text x="420" y="127" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">⚡ Function Call</text>
+        <text x="420" y="141" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.8)">APIs / DB / Services</text>
+        <!-- Tool 3: Memory -->
+        <rect x="360" y="165" width="120" height="40" rx="6" fill="#c9962a"/>
+        <text x="420" y="182" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">🧩 Memory</text>
+        <text x="420" y="196" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.8)">Short + Long term</text>
+
+        <!-- Tool results → Synthesize -->
+        <line x1="480" y1="75" x2="510" y2="120" stroke="#6b635a" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr8)"/>
+        <line x1="480" y1="130" x2="510" y2="130" stroke="#6b635a" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr8)"/>
+        <line x1="480" y1="185" x2="510" y2="140" stroke="#6b635a" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr8)"/>
+        <defs><marker id="arr8" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6b635a"/></marker></defs>
+
+        <!-- Synthesize box -->
+        <rect x="510" y="105" width="85" height="50" rx="6" fill="#2a6e3a"/>
+        <text x="552" y="126" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">Synthesize</text>
+        <text x="552" y="141" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.8)">Compose response</text>
+        <text x="552" y="153" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.8)">+ citations</text>
+
+        <!-- Arrow to Guardrails -->
+        <line x1="595" y1="130" x2="615" y2="130" stroke="#b84a2e" stroke-width="1.5" marker-end="url(#arr9)"/>
+        <defs><marker id="arr9" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b84a2e"/></marker></defs>
+
+        <!-- Guardrails -->
+        <rect x="615" y="90" width="75" height="100" rx="6" fill="#b84a2e" opacity=".9"/>
+        <text x="652" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">🛡️ Guard-</text>
+        <text x="652" y="125" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">rails</text>
+        <text x="652" y="143" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.8)">Toxicity</text>
+        <text x="652" y="155" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.8)">PII detect</text>
+        <text x="652" y="167" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.8)">Hallucination</text>
+        <text x="652" y="179" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.8)">Prompt inject</text>
+
+        <!-- Observability bar bottom -->
+        <rect x="20" y="240" width="660" height="30" rx="6" fill="#1a2d4a" opacity=".85"/>
+        <text x="350" y="255" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">📊 LangSmith / Langfuse · Token cost tracking · Latency p99 · Fallback model routing</text>
+        <text x="350" y="268" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.6)">Production Observability Layer — trace every agent step</text>
+      </svg>
+    </div>
+    <div class="script-block">
+      <div class="sb-vi">🇻🇳 "Tôi đã build RAG pipeline production-ready với pgvector — từ document ingestion, chunking strategy, đến semantic search và guardrails chống prompt injection. Điểm khác biệt: tôi thiết kế ở tầng kiến trúc, không chỉ gọi API. Agent có fallback model, streaming response, và trace đầy đủ qua Langfuse."</div>
+      <div class="sb-en">🇬🇧 "I've built production-grade RAG pipelines with pgvector — from document ingestion and chunking strategy to semantic search and guardrails against prompt injection. The differentiator: I design at the architecture layer, not just API calls. The agent includes fallback model routing, streaming responses, and full tracing via Langfuse."</div>
+    </div>
+  </div>
+</div>
+
+<!-- JD-04: CI/CD / DevOps / Observability -->
+<div class="card cb-navy" id="JD-04">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="ch-left">
+      <span class="q-badge qb-navy">JD-04 · 68/100</span>
+      <div>
+        <div class="q-vi">CI/CD / DevOps / Observability — Production sense là kỹ năng bắt buộc</div>
+        <div class="q-en">"Set up CI/CD pipelines (Jenkins, GitHub Actions)", "Monitoring with Grafana/Prometheus"</div>
+      </div>
+    </div>
+    <span class="ch-icon">+</span>
+  </div>
+  <div class="card-body">
+    <div class="tip-box">💡 <strong>Insight từ JD:</strong> Senior Engineer giờ được kỳ vọng tự deploy được sản phẩm của mình — không chờ ops team. Production sense là kỹ năng bắt buộc, không phải bonus. "You build it, you run it."</div>
+    <div class="ans-block">
+      <p><strong>CI/CD Pipeline stages:</strong> Source (PR) → Build (compile, lint, test) → Security scan (SAST/DAST, dependency check) → Container build (Docker multi-stage) → Push to registry → Deploy (canary/blue-green) → Smoke test → Monitor.</p>
+      <p style="margin-top:8px;"><strong>Deployment strategies:</strong> Canary: 5% → 25% → 100% với auto-rollback nếu error rate vượt threshold. Blue-green: zero-downtime với instant rollback. Rolling: gradual pod replacement với readiness probe.</p>
+      <p style="margin-top:8px;"><strong>Observability 3 pillars:</strong> Metrics (Prometheus/Grafana — throughput, latency, error rate) · Logs (structured JSON → CloudWatch/ELK) · Traces (Jaeger/X-Ray — distributed tracing end-to-end). SLO: p99 latency &lt; 200ms, error rate &lt; 0.1%.</p>
+    </div>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 700 330" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+        <rect width="700" height="330" fill="#f5f3ee" rx="8"/>
+        <text x="350" y="24" text-anchor="middle" font-family="'Syne',sans-serif" font-size="13" font-weight="700" fill="#2a241e">CI/CD Pipeline · Deploy Strategies · Observability Pillars</text>
+
+        <!-- Pipeline stages -->
+        <text x="350" y="50" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#6b635a">GITHUB ACTIONS PIPELINE</text>
+        <!-- Stage boxes -->
+        <rect x="15" y="60" width="80" height="36" rx="5" fill="#1a2d4a"/>
+        <text x="55" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">📝 Source</text>
+        <text x="55" y="89" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.7)">PR → main</text>
+
+        <rect x="108" y="60" width="80" height="36" rx="5" fill="#1a7a6e"/>
+        <text x="148" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">🔨 Build</text>
+        <text x="148" y="89" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.7)">lint · test · compile</text>
+
+        <rect x="201" y="60" width="80" height="36" rx="5" fill="#b84a2e"/>
+        <text x="241" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">🛡️ Sec Scan</text>
+        <text x="241" y="89" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.7)">SAST · Trivy</text>
+
+        <rect x="294" y="60" width="80" height="36" rx="5" fill="#c9962a"/>
+        <text x="334" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">🐳 Docker</text>
+        <text x="334" y="89" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.7)">multi-stage build</text>
+
+        <rect x="387" y="60" width="80" height="36" rx="5" fill="#6b3a7a"/>
+        <text x="427" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">📦 Push ECR</text>
+        <text x="427" y="89" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.7)">tag: sha-12345</text>
+
+        <rect x="480" y="60" width="80" height="36" rx="5" fill="#2a6e3a"/>
+        <text x="520" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">🚀 Deploy</text>
+        <text x="520" y="89" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.7)">Canary / B-G</text>
+
+        <rect x="573" y="60" width="110" height="36" rx="5" fill="#1a7a6e"/>
+        <text x="628" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">📊 Monitor</text>
+        <text x="628" y="89" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.7)">SLO · alert · rollback</text>
+
+        <!-- Arrows between stages -->
+        <line x1="95" y1="78" x2="108" y2="78" stroke="#6b635a" stroke-width="1.5" marker-end="url(#arrP)"/>
+        <line x1="188" y1="78" x2="201" y2="78" stroke="#6b635a" stroke-width="1.5" marker-end="url(#arrP)"/>
+        <line x1="281" y1="78" x2="294" y2="78" stroke="#6b635a" stroke-width="1.5" marker-end="url(#arrP)"/>
+        <line x1="374" y1="78" x2="387" y2="78" stroke="#6b635a" stroke-width="1.5" marker-end="url(#arrP)"/>
+        <line x1="467" y1="78" x2="480" y2="78" stroke="#6b635a" stroke-width="1.5" marker-end="url(#arrP)"/>
+        <line x1="560" y1="78" x2="573" y2="78" stroke="#6b635a" stroke-width="1.5" marker-end="url(#arrP)"/>
+        <defs><marker id="arrP" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6b635a"/></marker></defs>
+
+        <!-- Divider -->
+        <line x1="20" y1="110" x2="680" y2="110" stroke="#d9d3c7" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- Canary deploy -->
+        <text x="175" y="130" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#2a6e3a">CANARY DEPLOY</text>
+        <rect x="25" y="140" width="100" height="28" rx="4" fill="#2a6e3a" opacity=".15" stroke="#2a6e3a" stroke-width="1"/>
+        <text x="75" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2a6e3a">5% traffic</text>
+        <line x1="125" y1="154" x2="145" y2="154" stroke="#2a6e3a" stroke-width="1.5" marker-end="url(#arrC)"/>
+        <rect x="145" y="140" width="100" height="28" rx="4" fill="#2a6e3a" opacity=".3" stroke="#2a6e3a" stroke-width="1"/>
+        <text x="195" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2a6e3a">25% traffic</text>
+        <line x1="245" y1="154" x2="265" y2="154" stroke="#2a6e3a" stroke-width="1.5" marker-end="url(#arrC)"/>
+        <rect x="265" y="140" width="100" height="28" rx="4" fill="#2a6e3a" opacity=".7" stroke="#2a6e3a" stroke-width="1"/>
+        <text x="315" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="white">100% ✓</text>
+        <defs><marker id="arrC" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2a6e3a"/></marker></defs>
+        <!-- Auto rollback note -->
+        <rect x="25" y="175" width="340" height="18" rx="3" fill="#b84a2e" opacity=".1"/>
+        <text x="195" y="188" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#b84a2e">⚡ Auto-rollback nếu error rate &gt; 1% hoặc p99 latency &gt; 500ms</text>
+
+        <!-- Observability 3 pillars -->
+        <text x="565" y="130" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#6b635a">3 PILLARS</text>
+        <rect x="395" y="140" width="105" height="65" rx="6" fill="#c9962a" opacity=".9"/>
+        <text x="447" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">📈 Metrics</text>
+        <text x="447" y="173" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.9)">Prometheus</text>
+        <text x="447" y="186" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.9)">Grafana dashboard</text>
+        <text x="447" y="199" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.8)">throughput · p99</text>
+
+        <rect x="510" y="140" width="105" height="65" rx="6" fill="#1a7a6e" opacity=".9"/>
+        <text x="562" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="white">📋 Logs</text>
+        <text x="562" y="173" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.9)">Structured JSON</text>
+        <text x="562" y="186" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.9)">CloudWatch / ELK</text>
+        <text x="562" y="199" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.8)">correlationId</text>
+
+        <rect x="625" y="140" width="62" height="65" rx="6" fill="#b84a2e" opacity=".9"/>
+        <text x="656" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="700" fill="white">🔍 Traces</text>
+        <text x="656" y="173" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.9)">Jaeger</text>
+        <text x="656" y="186" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.9)">X-Ray</text>
+        <text x="656" y="199" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.8)">end-to-end</text>
+
+        <!-- SLO bottom bar -->
+        <rect x="20" y="225" width="660" height="30" rx="5" fill="#1a2d4a"/>
+        <text x="350" y="242" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">SLO: p99 latency &lt; 200ms · error rate &lt; 0.1% · availability 99.9% · error budget alert</text>
+        <text x="350" y="255" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.6)">Khi error budget cạn → freeze feature release, focus reliability</text>
+
+        <!-- Footer note -->
+        <text x="350" y="290" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9.5" fill="#6b635a">You build it, you run it · Senior tự chủ production · không phụ thuộc ops team</text>
+        <text x="350" y="308" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#a09890">GitHub Actions + ArgoCD GitOps · Slack alert integration · PagerDuty on-call</text>
+      </svg>
+    </div>
+    <div class="script-block">
+      <div class="sb-vi">🇻🇳 "Tôi thiết lập CI/CD pipeline hoàn chỉnh với GitHub Actions — từ linting, unit test, security scan (Trivy), đến canary deploy với auto-rollback khi error rate vượt 1%. Observability stack: Prometheus/Grafana cho metrics, structured logging với correlationId, Jaeger cho distributed tracing. SLO p99 &lt; 200ms, uptime 99.9%."</div>
+      <div class="sb-en">🇬🇧 "I've set up full CI/CD pipelines with GitHub Actions — from linting, unit tests, security scanning (Trivy), to canary deployments with auto-rollback when error rate exceeds 1%. Observability stack: Prometheus/Grafana for metrics, structured logging with correlationId, Jaeger for distributed tracing. SLO: p99 &lt; 200ms, 99.9% uptime."</div>
+    </div>
+  </div>
+</div>
+
+<!-- JD-05: Trade-off / Architecture Decision / Technical Leadership -->
+<div class="card cb-green" id="JD-05">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="ch-left">
+      <span class="q-badge qb-green">JD-05 · 62/100</span>
+      <div>
+        <div class="q-vi">Trade-off / Architecture Decision / Technical Leadership — Người có "voice" kỹ thuật</div>
+        <div class="q-en">"Make architecture decisions with clear trade-offs", "Write ADRs", "Lead technical discussions"</div>
+      </div>
+    </div>
+    <span class="ch-icon">+</span>
+  </div>
+  <div class="card-body">
+    <div class="tip-box">💡 <strong>Insight từ JD:</strong> Doanh nghiệp tìm người có voice trong kỹ thuật — viết được tài liệu thiết kế, defend được lựa chọn, dẫn được technical discussion. Không phải người chờ task. ADR (Architecture Decision Record) là artifact thể hiện rõ nhất tư duy Senior.</div>
+    <div class="ans-block">
+      <p><strong>ADR Format:</strong> (1) Context — tình huống hiện tại và vấn đề cần giải quyết. (2) Options considered — ít nhất 3 lựa chọn với pros/cons. (3) Decision — lựa chọn cuối cùng và lý do. (4) Consequences — trade-off đã chấp nhận, risks cần monitor. (5) Status — Proposed / Accepted / Superseded.</p>
+      <p style="margin-top:8px;"><strong>Trade-off muscle:</strong> Mọi quyết định kiến trúc đều có trade-off. Không có "best solution" — chỉ có "best fit cho context". Ví dụ: Microservices vs Monolith — tùy team size, deployment frequency, domain complexity.</p>
+      <p style="margin-top:8px;"><strong>Technical Leadership:</strong> Run effective RFC (Request for Comments) → gather feedback → synthesize → decide → document. Mentor junior qua code review — teach pattern, not just fix bug. Build team's technical intuition.</p>
+    </div>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 700 310" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+        <rect width="700" height="310" fill="#f5f3ee" rx="8"/>
+        <text x="350" y="24" text-anchor="middle" font-family="'Syne',sans-serif" font-size="13" font-weight="700" fill="#2a241e">ADR Flow · Trade-off Analysis · Monolith vs Microservices</text>
+
+        <!-- ADR Flow left side -->
+        <text x="150" y="46" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#6b635a">ADR LIFECYCLE</text>
+
+        <!-- ADR step boxes -->
+        <rect x="25" y="56" width="250" height="28" rx="5" fill="#1a2d4a"/>
+        <text x="150" y="74" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">① Context · Problem Statement</text>
+        <line x1="150" y1="84" x2="150" y2="96" stroke="#c9962a" stroke-width="1.5" marker-end="url(#arrA)"/>
+
+        <rect x="25" y="96" width="250" height="28" rx="5" fill="#1a7a6e"/>
+        <text x="150" y="114" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">② Options · Pros / Cons Table</text>
+        <line x1="150" y1="124" x2="150" y2="136" stroke="#c9962a" stroke-width="1.5" marker-end="url(#arrA)"/>
+
+        <rect x="25" y="136" width="250" height="28" rx="5" fill="#c9962a"/>
+        <text x="150" y="154" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">③ Decision · Rationale</text>
+        <line x1="150" y1="164" x2="150" y2="176" stroke="#c9962a" stroke-width="1.5" marker-end="url(#arrA)"/>
+
+        <rect x="25" y="176" width="250" height="28" rx="5" fill="#b84a2e"/>
+        <text x="150" y="194" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">④ Consequences · Risks</text>
+        <line x1="150" y1="204" x2="150" y2="216" stroke="#c9962a" stroke-width="1.5" marker-end="url(#arrA)"/>
+
+        <rect x="25" y="216" width="250" height="28" rx="5" fill="#2a6e3a"/>
+        <text x="150" y="234" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">⑤ Status · Review Date</text>
+        <defs><marker id="arrA" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c9962a"/></marker></defs>
+
+        <!-- Status badges -->
+        <rect x="25" y="255" width="70" height="20" rx="10" fill="#1a7a6e" opacity=".8"/>
+        <text x="60" y="269" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">Proposed</text>
+        <rect x="102" y="255" width="70" height="20" rx="10" fill="#2a6e3a" opacity=".8"/>
+        <text x="137" y="269" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">Accepted</text>
+        <rect x="179" y="255" width="90" height="20" rx="10" fill="#b84a2e" opacity=".8"/>
+        <text x="224" y="269" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="white">Superseded</text>
+
+        <!-- Divider -->
+        <line x1="295" y1="42" x2="295" y2="290" stroke="#d9d3c7" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- Trade-off comparison: Monolith vs Microservices -->
+        <text x="500" y="46" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#6b635a">TRADE-OFF ANALYSIS</text>
+
+        <!-- Header row -->
+        <rect x="310" y="56" width="175" height="28" rx="5" fill="#1a2d4a"/>
+        <text x="397" y="74" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">Monolith</text>
+        <rect x="495" y="56" width="185" height="28" rx="5" fill="#1a7a6e"/>
+        <text x="587" y="74" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">Microservices</text>
+
+        <!-- Row 1 -->
+        <rect x="310" y="90" width="370" height="22" rx="0" fill="#f0e9d9"/>
+        <text x="397" y="105" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">Simple deploy</text>
+        <line x1="495" y1="90" x2="495" y2="112" stroke="#d9d3c7" stroke-width="1"/>
+        <text x="587" y="105" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">Independent deploy</text>
+        <!-- Row 2 -->
+        <rect x="310" y="112" width="370" height="22" rx="0" fill="white"/>
+        <text x="397" y="127" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#b84a2e">Tightly coupled</text>
+        <line x1="495" y1="112" x2="495" y2="134" stroke="#d9d3c7" stroke-width="1"/>
+        <text x="587" y="127" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a6e3a">Loose coupling</text>
+        <!-- Row 3 -->
+        <rect x="310" y="134" width="370" height="22" rx="0" fill="#f0e9d9"/>
+        <text x="397" y="149" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a6e3a">Easy debug / trace</text>
+        <line x1="495" y1="134" x2="495" y2="156" stroke="#d9d3c7" stroke-width="1"/>
+        <text x="587" y="149" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#b84a2e">Complex distributed trace</text>
+        <!-- Row 4 -->
+        <rect x="310" y="156" width="370" height="22" rx="0" fill="white"/>
+        <text x="397" y="171" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#b84a2e">Scale whole app</text>
+        <line x1="495" y1="156" x2="495" y2="178" stroke="#d9d3c7" stroke-width="1"/>
+        <text x="587" y="171" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a6e3a">Scale per service</text>
+        <!-- Row 5 -->
+        <rect x="310" y="178" width="370" height="22" rx="0" fill="#f0e9d9"/>
+        <text x="397" y="193" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a6e3a">Good for small team</text>
+        <line x1="495" y1="178" x2="495" y2="200" stroke="#d9d3c7" stroke-width="1"/>
+        <text x="587" y="193" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">Need DevOps maturity</text>
+        <!-- Row 6 -->
+        <rect x="310" y="200" width="370" height="22" rx="0" fill="white"/>
+        <text x="397" y="215" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">Tech debt accumulates</text>
+        <line x1="495" y1="200" x2="495" y2="222" stroke="#d9d3c7" stroke-width="1"/>
+        <text x="587" y="215" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">API contract drift</text>
+
+        <!-- Decision framework -->
+        <rect x="310" y="230" width="370" height="45" rx="5" fill="#1a2d4a"/>
+        <text x="495" y="248" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="#c9962a">DECIDE BASED ON:</text>
+        <text x="495" y="262" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.85)">Team &lt;8 + startup → Monolith first, extract later</text>
+        <text x="495" y="273" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="rgba(255,255,255,.85)">Domain clear + scale need + CI/CD mature → Microservices</text>
+      </svg>
+    </div>
+    <div class="script-block">
+      <div class="sb-vi">🇻🇳 "Mỗi quyết định kiến trúc tôi đều document bằng ADR — Context, Options với trade-off rõ ràng, Decision và Consequences. Ví dụ: tại HSC tôi quyết định giữ monolith cho core trading engine vì team 6 người, deployment frequency thấp. Sau 18 tháng mới extract thành microservices khi domain đủ clear. Không có silver bullet — chỉ có lựa chọn phù hợp context."</div>
+      <div class="sb-en">🇬🇧 "Every architecture decision I document via ADR — Context, Options with explicit trade-offs, Decision, and Consequences. Example: at HSC I decided to keep a monolith for the core trading engine given a team of 6 and low deployment frequency. Only after 18 months did we extract microservices when the domain became clear. No silver bullet — only the best fit for context."</div>
+    </div>
+  </div>
+</div>
+
+<!-- JD-06: Security / OWASP / FinOps -->
+<div class="card cb-purple" id="JD-06">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="ch-left">
+      <span class="q-badge qb-purple">JD-06 · 48/100 ↑</span>
+      <div>
+        <div class="q-vi">Security / OWASP / FinOps — Build an toàn và tiết kiệm chi phí</div>
+        <div class="q-en">"Understanding of OWASP Top 10", "Cost optimization on cloud (FinOps)", "Security best practices in production"</div>
+      </div>
+    </div>
+    <span class="ch-icon">+</span>
+  </div>
+  <div class="card-body">
+    <div class="tip-box">📈 <strong>Growing fast:</strong> Senior không chỉ build được — phải build an toàn và tiết kiệm chi phí. Một quyết định kiến trúc sai có thể tốn doanh nghiệp hàng tỷ đồng/năm. Security và FinOps là hai chiều của "responsible engineering".</div>
+    <div class="ans-block">
+      <p><strong>OWASP Top 10 cần biết khi phỏng vấn:</strong> A01 Broken Access Control (JWT, RBAC) · A02 Cryptographic Failures (bcrypt, TLS 1.3) · A03 Injection (parameterized query, ORM) · A07 Auth failures (rate limiting, MFA) · A09 Logging failures (audit trail, PII masking).</p>
+      <p style="margin-top:8px;"><strong>Shift-left Security:</strong> Security không phải giai đoạn cuối — tích hợp vào CI/CD: SAST (SonarQube/CodeQL), dependency check (OWASP Dependency-Check/Snyk), container scan (Trivy), secret detection (Gitleaks). "Fail fast in pipeline, not in production."</p>
+      <p style="margin-top:8px;"><strong>FinOps tactics:</strong> Reserved Instances (1-3yr) cho baseline workload — tiết kiệm 40-60%. Spot Instances cho batch jobs. Right-sizing EC2/RDS (thường over-provisioned 3-4x). S3 Intelligent-Tiering. Auto-scaling với schedule. Budget alerts với AWS Cost Anomaly Detection.</p>
+    </div>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+        <rect width="700" height="320" fill="#f5f3ee" rx="8"/>
+        <text x="350" y="24" text-anchor="middle" font-family="'Syne',sans-serif" font-size="13" font-weight="700" fill="#2a241e">Security Defense-in-Depth · FinOps Cost Optimization</text>
+
+        <!-- Defense in Depth onion left -->
+        <text x="160" y="48" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#b84a2e">DEFENSE IN DEPTH</text>
+        <!-- Outer rings -->
+        <ellipse cx="160" cy="175" rx="135" ry="110" fill="none" stroke="#b84a2e" stroke-width="1.5" opacity=".3"/>
+        <text x="160" y="72" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#b84a2e">Network (WAF · VPC · SG)</text>
+        <ellipse cx="160" cy="175" rx="108" ry="87" fill="none" stroke="#c9962a" stroke-width="1.5" opacity=".4"/>
+        <text x="160" y="96" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#c9962a">Platform (IAM · RBAC · MFA)</text>
+        <ellipse cx="160" cy="175" rx="82" ry="65" fill="none" stroke="#1a7a6e" stroke-width="1.5" opacity=".5"/>
+        <text x="160" y="120" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#1a7a6e">App (OWASP · Input val · JWT)</text>
+        <ellipse cx="160" cy="175" rx="56" ry="44" fill="none" stroke="#1a2d4a" stroke-width="1.5" opacity=".6"/>
+        <text x="160" y="143" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#1a2d4a">Data (Encryption · TLS 1.3)</text>
+        <!-- Core -->
+        <ellipse cx="160" cy="175" rx="35" ry="28" fill="#2a241e"/>
+        <text x="160" y="171" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="700" fill="#c9962a">ASSETS</text>
+        <text x="160" y="183" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7.5" fill="rgba(255,255,255,.8)">Data · Keys</text>
+        <!-- Shift-left label -->
+        <rect x="30" y="248" width="260" height="22" rx="4" fill="#b84a2e" opacity=".1" stroke="#b84a2e" stroke-width="1"/>
+        <text x="160" y="263" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#b84a2e">Shift-left: SAST · Trivy · Gitleaks in CI</text>
+
+        <!-- Divider -->
+        <line x1="320" y1="42" x2="320" y2="290" stroke="#d9d3c7" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- FinOps right side -->
+        <text x="510" y="48" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#1a7a6e">FINOPS OPTIMIZATION</text>
+
+        <!-- Cost breakdown bars -->
+        <text x="400" y="68" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#6b635a">Compute (EC2/EKS)</text>
+        <rect x="490" y="57" width="180" height="18" rx="3" fill="#d9d3c7"/>
+        <rect x="490" y="57" width="180" height="18" rx="3" fill="#b84a2e" opacity=".7"/>
+        <text x="676" y="70" font-family="'JetBrains Mono',monospace" font-size="8" fill="#b84a2e">45%</text>
+
+        <text x="400" y="92" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#6b635a">Database (RDS)</text>
+        <rect x="490" y="81" width="120" height="18" rx="3" fill="#d9d3c7"/>
+        <rect x="490" y="81" width="120" height="18" rx="3" fill="#c9962a" opacity=".7"/>
+        <text x="616" y="94" font-family="'JetBrains Mono',monospace" font-size="8" fill="#c9962a">30%</text>
+
+        <text x="400" y="116" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#6b635a">Storage (S3)</text>
+        <rect x="490" y="105" width="60" height="18" rx="3" fill="#d9d3c7"/>
+        <rect x="490" y="105" width="60" height="18" rx="3" fill="#1a7a6e" opacity=".7"/>
+        <text x="556" y="118" font-family="'JetBrains Mono',monospace" font-size="8" fill="#1a7a6e">15%</text>
+
+        <text x="400" y="140" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#6b635a">Network / Other</text>
+        <rect x="490" y="129" width="40" height="18" rx="3" fill="#d9d3c7"/>
+        <rect x="490" y="129" width="40" height="18" rx="3" fill="#6b635a" opacity=".7"/>
+        <text x="536" y="142" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6b635a">10%</text>
+
+        <!-- Optimization tactics -->
+        <rect x="335" y="162" width="350" height="115" rx="6" fill="#f0f8f5"/>
+        <text x="510" y="178" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="#1a7a6e">OPTIMIZATION TACTICS</text>
+        <text x="345" y="195" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">✅ Reserved Instances (1yr)</text>
+        <text x="510" y="195" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#2a6e3a">→ -40~60% cost</text>
+        <text x="345" y="213" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">✅ Spot Instances (batch jobs)</text>
+        <text x="510" y="213" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#2a6e3a">→ -70~90% cost</text>
+        <text x="345" y="231" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">✅ Right-sizing EC2/RDS</text>
+        <text x="510" y="231" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#2a6e3a">→ -30~50% cost</text>
+        <text x="345" y="249" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">✅ S3 Intelligent-Tiering</text>
+        <text x="510" y="249" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#2a6e3a">→ auto-tier cold data</text>
+        <text x="345" y="267" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">✅ Cost Anomaly Detection</text>
+        <text x="510" y="267" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#2a6e3a">→ alert spike &gt;20%</text>
+
+        <!-- Footer -->
+        <text x="350" y="305" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9.5" fill="#6b635a">Responsible engineering: build secure · build cost-efficient · own the full lifecycle</text>
+      </svg>
+    </div>
+    <div class="script-block">
+      <div class="sb-vi">🇻🇳 "Security tôi áp dụng defense-in-depth: WAF + VPC ở tầng network, RBAC + JWT với short-lived token ở tầng platform, parameterized query + input validation ở tầng app, TLS 1.3 + encryption at rest cho data. Toàn bộ tích hợp vào CI/CD — Trivy scan container, Gitleaks detect secrets. FinOps: Reserved Instances tiết kiệm 45% compute cost, Spot Instance cho batch job giảm 70%."</div>
+      <div class="sb-en">🇬🇧 "I apply defense-in-depth: WAF + VPC at network layer, RBAC + short-lived JWT at platform layer, parameterized queries + input validation at app layer, TLS 1.3 + encryption at rest for data. All integrated into CI/CD — Trivy for container scanning, Gitleaks for secret detection. FinOps: Reserved Instances save 45% compute cost, Spot Instances for batch jobs reduce costs by 70%."</div>
+    </div>
+  </div>
+</div>
+
+<!-- JD Self-Assessment -->
+<div class="card cb-teal" id="JD-ASSESS">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="ch-left">
+      <span class="q-badge qb-teal">SELF-CHECK</span>
+      <div>
+        <div class="q-vi">Readiness Matrix — Đánh giá bản thân theo 6 JD keywords</div>
+        <div class="q-en">Honest self-assessment · Know your STRONG / GROW / BRIDGE zones</div>
+      </div>
+    </div>
+    <span class="ch-icon">+</span>
+  </div>
+  <div class="card-body">
+    <div class="chart-wrap">
+      <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+        <rect width="700" height="260" fill="#f5f3ee" rx="8"/>
+        <text x="350" y="26" text-anchor="middle" font-family="'Syne',sans-serif" font-size="13" font-weight="700" fill="#2a241e">JD Keyword Readiness Matrix · Lôi Thái Tiểu</text>
+
+        <!-- Header -->
+        <rect x="20" y="38" width="200" height="24" rx="4" fill="#2a241e"/>
+        <text x="120" y="54" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">TOPIC</text>
+        <rect x="225" y="38" width="80" height="24" rx="4" fill="#2a6e3a"/>
+        <text x="265" y="54" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">LEVEL</text>
+        <rect x="310" y="38" width="370" height="24" rx="4" fill="#1a2d4a"/>
+        <text x="495" y="54" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="white">EVIDENCE / GAP</text>
+
+        <!-- Row 1: System Design - STRONG -->
+        <rect x="20" y="66" width="660" height="26" rx="0" fill="#f0e9d9"/>
+        <text x="120" y="83" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#2a241e">System Design / Distributed</text>
+        <rect x="230" y="69" width="70" height="18" rx="9" fill="#2a6e3a"/>
+        <text x="265" y="81" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="700" fill="white">STRONG</text>
+        <text x="495" y="83" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">HSC 10K TPS · p99=48ms · HSC 60% DB load reduction</text>
+
+        <!-- Row 2: AWS/K8s - GROW -->
+        <rect x="20" y="92" width="660" height="26" rx="0" fill="white"/>
+        <text x="120" y="109" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#2a241e">AWS / Cloud-native / K8s</text>
+        <rect x="230" y="95" width="70" height="18" rx="9" fill="#c9962a"/>
+        <text x="265" y="107" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="700" fill="white">GROW</text>
+        <text x="495" y="109" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">EKS + Terraform hands-on · CKA certification path</text>
+
+        <!-- Row 3: AI/RAG - STRONG -->
+        <rect x="20" y="118" width="660" height="26" rx="0" fill="#f0e9d9"/>
+        <text x="120" y="135" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#2a241e">AI Integration / LLM / RAG</text>
+        <rect x="230" y="121" width="70" height="18" rx="9" fill="#2a6e3a"/>
+        <text x="265" y="133" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="700" fill="white">STRONG</text>
+        <text x="495" y="135" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">RAG pipeline production · AI Agent with tool use · pgvector</text>
+
+        <!-- Row 4: CI/CD - STRONG -->
+        <rect x="20" y="144" width="660" height="26" rx="0" fill="white"/>
+        <text x="120" y="161" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#2a241e">CI/CD / DevOps / Observability</text>
+        <rect x="230" y="147" width="70" height="18" rx="9" fill="#2a6e3a"/>
+        <text x="265" y="159" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="700" fill="white">STRONG</text>
+        <text x="495" y="161" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">GitHub Actions · canary deploy · Grafana/Prometheus · p99 SLO</text>
+
+        <!-- Row 5: Trade-off - STRONG -->
+        <rect x="20" y="170" width="660" height="26" rx="0" fill="#f0e9d9"/>
+        <text x="120" y="187" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#2a241e">Trade-off / ADR / Tech Lead</text>
+        <rect x="230" y="173" width="70" height="18" rx="9" fill="#2a6e3a"/>
+        <text x="265" y="185" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="700" fill="white">STRONG</text>
+        <text x="495" y="187" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">ADR authored · RFC led · mentored 4 juniors · tech decisions owned</text>
+
+        <!-- Row 6: Security/FinOps - GROW -->
+        <rect x="20" y="196" width="660" height="26" rx="0" fill="white"/>
+        <text x="120" y="213" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#2a241e">Security / OWASP / FinOps</text>
+        <rect x="230" y="199" width="70" height="18" rx="9" fill="#c9962a"/>
+        <text x="265" y="211" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="700" fill="white">GROW</text>
+        <text x="495" y="213" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#2a241e">OWASP basics applied · FinOps Reserved Instances · deepen CSPM</text>
+
+        <!-- Legend -->
+        <rect x="20" y="232" width="65" height="18" rx="9" fill="#2a6e3a" opacity=".15" stroke="#2a6e3a" stroke-width="1"/>
+        <text x="52" y="244" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2a6e3a">STRONG</text>
+        <rect x="92" y="232" width="55" height="18" rx="9" fill="#c9962a" opacity=".15" stroke="#c9962a" stroke-width="1"/>
+        <text x="119" y="244" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#c9962a">GROW</text>
+        <rect x="154" y="232" width="55" height="18" rx="9" fill="#b84a2e" opacity=".15" stroke="#b84a2e" stroke-width="1"/>
+        <text x="181" y="244" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#b84a2e">BRIDGE</text>
+        <text x="350" y="248" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8.5" fill="#6b635a">4/6 STRONG · 2/6 GROW · 0 BRIDGE — overall strong market fit</text>
+      </svg>
+    </div>
+    <div class="ans-block" style="margin-top:12px;">
+      <p><strong>Action plan cho GROW areas:</strong> AWS/K8s — hoàn thành hands-on labs EKS + Terraform trong 4 tuần; target CKA certification. Security/FinOps — deep dive OWASP ASVS Level 2, thực hành AWS Cost Explorer + Compute Optimizer analysis trên account hiện tại.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end phase6 -->
+
 <!-- FOOTER -->
 <div style="margin-top:56px;background:var(--char);border-radius:var(--r3);padding:36px;text-align:center;">
-  <div style="font-family:var(--display);font-size:20px;font-weight:800;color:var(--paper);margin-bottom:8px;">Lôi Thái Tiểu · Interview Playbook v4</div>
-  <div style="font-size:12.5px;color:rgba(255,255,255,.5);margin-bottom:16px;">5 Phases · 18 Q&A · Transcript Analysis · Bilingual Vi/En</div>
+  <div style="font-family:var(--display);font-size:20px;font-weight:800;color:var(--paper);margin-bottom:8px;">Lôi Thái Tiểu · Interview Playbook v5</div>
+  <div style="font-size:12.5px;color:rgba(255,255,255,.5);margin-bottom:16px;">6 Phases · 28+ Q&A · JD Market Intel · Bilingual Vi/En</div>
   <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:8px;">
     <span style="font-size:11px;background:rgba(201,150,42,.15);border:1px solid rgba(201,150,42,.3);border-radius:4px;padding:3px 10px;color:var(--gold-lt);">Java 8yr · Spring Boot</span>
     <span style="font-size:11px;background:rgba(201,150,42,.15);border:1px solid rgba(201,150,42,.3);border-radius:4px;padding:3px 10px;color:var(--gold-lt);">Kafka 3yr · 10K TPS</span>
@@ -2009,7 +2835,7 @@ window.addEventListener('scroll',()=>{
   document.getElementById('prog').style.width=pct+'%';
   document.getElementById('totop').style.opacity=window.scrollY>300?'1':'0';
   // Active tab
-  const ids=['phase0','phase1','phase2','phase3','phase4','phase5'];
+  const ids=['phase0','phase1','phase2','phase3','phase4','phase5','phase6'];
   let cur='phase0';
   ids.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-80)cur=id;});
   document.querySelectorAll('.ptab').forEach(t=>{
