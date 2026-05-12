@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-Commerce Microservices + RBAC Architecture</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh}
+.topbar{background:#161b22;border-bottom:1px solid #30363d;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.topbar h1{font-size:15px;font-weight:700;color:#fff}
+.topbar h1 span{color:#58a6ff}
+.tags{display:flex;gap:5px;flex-wrap:wrap}
+.pill{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:600;border:1px solid}
+.t1{background:#1f3a6e;color:#79c0ff;border-color:#388bfd}
+.t2{background:#2d1d5e;color:#d2a8ff;border-color:#8957e5}
+.t3{background:#1a3a2a;color:#56d364;border-color:#238636}
+.t4{background:#3d2208;color:#ffa657;border-color:#f0883e}
+.t5{background:#3d1c1c;color:#ff7b72;border-color:#e33d3d}
+.t6{background:#3d3308;color:#e3b341;border-color:#d29922}
+.t7{background:#0d2e2e;color:#3fb950;border-color:#2ea043}
+.t8{background:#1a0e2e;color:#e879f9;border-color:#a855f7}
+.tabs{display:flex;background:#161b22;border-bottom:1px solid #30363d;padding:0 24px;overflow-x:auto}
+.tab{padding:10px 16px;font-size:12px;font-weight:600;color:#7d8590;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s}
+.tab:hover{color:#e6edf3}
+.tab.active{color:#79c0ff;border-bottom-color:#388bfd}
+.panel{display:none;padding:24px}
+.panel.active{display:block}
+#tooltip{position:fixed;pointer-events:none;background:#21262d;border:1px solid #388bfd;border-radius:8px;padding:10px 14px;font-size:11px;color:#e6edf3;max-width:300px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.6);display:none;line-height:1.6}
+#tooltip strong{color:#79c0ff;display:block;margin-bottom:3px;font-size:12px}
+.diagram-wrap{background:#161b22;border:1px solid #30363d;border-radius:12px;overflow:auto;padding:16px}
+.steps{display:flex;flex-direction:column;gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;background:#161b22;border-radius:10px;padding:12px 16px;border-left:3px solid}
+.step-num{min-width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.step-body{font-size:12px;color:#c9d1d9;line-height:1.7}
+.step-body strong{color:#fff}
+.step-body code{background:#0d1117;padding:1px 5px;border-radius:3px;color:#ffa657;font-size:11px}
+.step-title{font-size:13px;font-weight:700;margin-bottom:2px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#21262d;color:#8b949e;text-align:left;padding:8px 12px;font-size:10px;letter-spacing:.5px;text-transform:uppercase}
+td{padding:8px 12px;border-bottom:1px solid #21262d;color:#c9d1d9;vertical-align:top}
+tr:hover td{background:#161b22}
+.badge{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;white-space:nowrap}
+a{color:#388bfd;text-decoration:none}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.tcard{background:#0d1117;border-left:3px solid;border-radius:8px;padding:10px 14px}
+.tcard .tc-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px}
+.tcard .tc-desc{font-size:11px;color:#7d8590;line-height:1.5}
+pre{background:#0d1117;border-radius:8px;padding:14px;font-size:11px;color:#c9d1d9;overflow:auto;line-height:1.8;border:1px solid #21262d}
+.role-pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin:1px}
+.r-super{background:#1a0e2e;color:#e879f9;border:1px solid #a855f7}
+.r-admin{background:#1f3a6e;color:#79c0ff;border:1px solid #388bfd}
+.r-vendor{background:#1a3a2a;color:#56d364;border:1px solid #238636}
+.r-customer{background:#3d2208;color:#ffa657;border:1px solid #f0883e}
+</style>
+</head>
+<body>
+<div id="tooltip"></div>
+
+<div class="topbar">
+  <h1>E-Commerce <span>Microservices + RBAC</span> Architecture</h1>
+  <div class="tags">
+    <span class="pill t8">RBAC 4-Role</span>
+    <span class="pill t2">Keycloak</span>
+    <span class="pill t1">Kong</span>
+    <span class="pill t3">Kafka</span>
+    <span class="pill t5">Redis</span>
+    <span class="pill t4">PostgreSQL</span>
+    <span class="pill t7">ELK + Zipkin</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab(this,'diagram')">Architecture Diagram</div>
+  <div class="tab" onclick="showTab(this,'rbac')">RBAC Matrix</div>
+  <div class="tab" onclick="showTab(this,'flow')">Request Flow</div>
+  <div class="tab" onclick="showTab(this,'ports')">Ports + Commands</div>
+  <div class="tab" onclick="showTab(this,'stack')">Tech Stack</div>
+</div>
+
+<!-- TAB 1: DIAGRAM -->
+<div class="panel active" id="tab-diagram">
+<div class="diagram-wrap">
+<svg viewBox="0 0 1060 960" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:900px;display:block">
+<defs>
+  <marker id="a1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#388bfd"/></marker>
+  <marker id="a2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#3fb950"/></marker>
+  <marker id="a3" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#d29922"/></marker>
+  <marker id="a4" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#8957e5"/></marker>
+  <marker id="a5" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#e33d3d"/></marker>
+  <marker id="a6" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#f0883e"/></marker>
+  <marker id="a7" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#a855f7"/></marker>
+</defs>
+
+<!-- ZONE 1: CLIENT & GATEWAY -->
+<rect x="16" y="14" width="1028" height="118" rx="11" fill="#0d1525" stroke="#1f6feb" stroke-width="1" stroke-dasharray="5,3"/>
+<text x="30" y="33" fill="#388bfd" font-size="9.5" font-weight="700" letter-spacing="1.5">&#9312; CLIENT &amp; GATEWAY LAYER</text>
+
+<!-- ZONE 2: AUTH + RBAC -->
+<rect x="16" y="148" width="1028" height="130" rx="11" fill="#130a1e" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="5,3"/>
+<text x="30" y="167" fill="#a855f7" font-size="9.5" font-weight="700" letter-spacing="1.5">&#9313; AUTHENTICATION &amp; RBAC LAYER  —  Keycloak issues JWT with realm_access.roles claim</text>
+
+<!-- ZONE 3: SERVICES -->
+<rect x="16" y="294" width="1028" height="234" rx="11" fill="#0c1a10" stroke="#238636" stroke-width="1" stroke-dasharray="5,3"/>
+<text x="30" y="312" fill="#238636" font-size="9.5" font-weight="700" letter-spacing="1.5">&#9314; BUSINESS SERVICES  —  @PreAuthorize enforces RBAC at method level (defense in depth)</text>
+
+<!-- ZONE 4: DATA -->
+<rect x="16" y="544" width="1028" height="148" rx="11" fill="#140f06" stroke="#f0883e" stroke-width="1" stroke-dasharray="5,3"/>
+<text x="30" y="562" fill="#f0883e" font-size="9.5" font-weight="700" letter-spacing="1.5">&#9315; DATA &amp; MESSAGING LAYER</text>
+
+<!-- ZONE 5: OBSERVABILITY -->
+<rect x="16" y="708" width="1028" height="242" rx="11" fill="#060f0a" stroke="#2ea043" stroke-width="1" stroke-dasharray="5,3"/>
+<text x="30" y="726" fill="#2ea043" font-size="9.5" font-weight="700" letter-spacing="1.5">&#9316; OBSERVABILITY &amp; MONITORING</text>
+
+<!-- ── ZONE 1 NODES ── -->
+
+<!-- CLIENT -->
+<g class="ng" data-t="Web / Mobile Client — sends HTTPS request with Bearer JWT token obtained from Keycloak. Token contains realm_access.roles claim with user's roles (SUPER_ADMIN / ADMIN / VENDOR / CUSTOMER).">
+  <rect x="40" y="38" width="140" height="80" rx="9" fill="#111d2e" stroke="#388bfd" stroke-width="1.5"/>
+  <text x="110" y="62" text-anchor="middle" font-size="20">&#127760;</text>
+  <text x="110" y="82" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Web / Mobile</text>
+  <text x="110" y="95" text-anchor="middle" fill="#7d8590" font-size="9">Bearer JWT (with roles claim)</text>
+  <rect x="66" y="106" width="88" height="11" rx="4" fill="#1f3a6e"/>
+  <text x="110" y="115" text-anchor="middle" fill="#79c0ff" font-size="8.5" font-weight="600">HTTPS + JWT</text>
+</g>
+
+<!-- KONG -->
+<g class="ng" data-t="Kong 3.6 — Sole API Gateway. First RBAC checkpoint: validates JWT signature via Keycloak JWKS. Rejects invalid/expired tokens with 401. Does NOT check roles (role enforcement is in services). Rate limiting, CORS, Zipkin tracing. Port 8000/8001.">
+  <rect x="242" y="26" width="600" height="100" rx="10" fill="#0e1f3d" stroke="#388bfd" stroke-width="2.5"/>
+  <text x="542" y="54" text-anchor="middle" font-size="20">&#128257;</text>
+  <text x="542" y="74" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Kong 3.6 — API Gateway</text>
+  <text x="542" y="89" text-anchor="middle" fill="#7d8590" font-size="9.5">RBAC Layer 1: JWT signature validation via Keycloak JWKS — rejects 401 if invalid</text>
+  <text x="542" y="103" text-anchor="middle" fill="#7d8590" font-size="9">Rate Limiting / CORS / Zipkin Plugin / Routes directly to services</text>
+  <rect x="366" y="114" width="352" height="12" rx="4" fill="#1f3a6e"/>
+  <text x="542" y="124" text-anchor="middle" fill="#79c0ff" font-size="8.5" font-weight="600">:8000 Proxy / :8001 Admin — Nginx + LuaJIT</text>
+</g>
+
+<!-- ── ZONE 2 NODES ── -->
+
+<!-- KEYCLOAK -->
+<g class="ng" data-t="Keycloak 24 — Issues JWT with realm_access.roles claim. 4 roles: SUPER_ADMIN (full), ADMIN (manage), VENDOR (own products), CUSTOMER (own orders). Kong validates JWT signature. Services extract roles from claim and enforce RBAC via @PreAuthorize. Port 8180.">
+  <rect x="30" y="172" width="220" height="92" rx="9" fill="#1a0e2e" stroke="#a855f7" stroke-width="2"/>
+  <text x="140" y="198" text-anchor="middle" font-size="20">&#128274;</text>
+  <text x="140" y="218" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Keycloak 24</text>
+  <text x="140" y="233" text-anchor="middle" fill="#7d8590" font-size="9">Issues JWT with realm_access.roles</text>
+  <text x="140" y="246" text-anchor="middle" fill="#7d8590" font-size="9">OAuth2 / OIDC / RS256</text>
+  <rect x="56" y="255" width="168" height="11" rx="4" fill="#2d1d5e"/>
+  <text x="140" y="264" text-anchor="middle" fill="#d2a8ff" font-size="8.5" font-weight="600">Realm: ecommerce / :8180</text>
+</g>
+
+<!-- RBAC ROLES BOX -->
+<g class="ng" data-t="RBAC Role Hierarchy: SUPER_ADMIN inherits all permissions. ADMIN manages products+orders. VENDOR manages own products. CUSTOMER places own orders. Roles extracted from JWT claim realm_access.roles by KeycloakJwtAuthConverter in each service.">
+  <rect x="268" y="162" width="776" height="106" rx="9" fill="#0e0818" stroke="#a855f7" stroke-width="1.5"/>
+  <text x="656" y="182" text-anchor="middle" fill="#e879f9" font-size="10" font-weight="700" letter-spacing="1">RBAC ROLE HIERARCHY</text>
+
+  <!-- SUPER_ADMIN -->
+  <rect x="284" y="190" width="170" height="66" rx="7" fill="#1a0e2e" stroke="#a855f7" stroke-width="1"/>
+  <text x="369" y="207" text-anchor="middle" fill="#e879f9" font-size="10" font-weight="700">SUPER_ADMIN</text>
+  <text x="369" y="221" text-anchor="middle" fill="#c4b5fd" font-size="8">Full system access</text>
+  <text x="369" y="233" text-anchor="middle" fill="#7d8590" font-size="8">Delete orders, all ops</text>
+  <text x="369" y="246" text-anchor="middle" fill="#7d8590" font-size="8">Platform operators only</text>
+
+  <!-- ADMIN -->
+  <rect x="468" y="190" width="170" height="66" rx="7" fill="#1a2332" stroke="#388bfd" stroke-width="1"/>
+  <text x="553" y="207" text-anchor="middle" fill="#79c0ff" font-size="10" font-weight="700">ADMIN</text>
+  <text x="553" y="221" text-anchor="middle" fill="#93c5fd" font-size="8">Manage all products</text>
+  <text x="553" y="233" text-anchor="middle" fill="#7d8590" font-size="8">Update order status</text>
+  <text x="553" y="246" text-anchor="middle" fill="#7d8590" font-size="8">View all orders</text>
+
+  <!-- VENDOR -->
+  <rect x="652" y="190" width="170" height="66" rx="7" fill="#0a1a0c" stroke="#238636" stroke-width="1"/>
+  <text x="737" y="207" text-anchor="middle" fill="#56d364" font-size="10" font-weight="700">VENDOR</text>
+  <text x="737" y="221" text-anchor="middle" fill="#86efac" font-size="8">Create / edit own products</text>
+  <text x="737" y="233" text-anchor="middle" fill="#7d8590" font-size="8">Cannot delete products</text>
+  <text x="737" y="246" text-anchor="middle" fill="#7d8590" font-size="8">Place own orders</text>
+
+  <!-- CUSTOMER -->
+  <rect x="836" y="190" width="192" height="66" rx="7" fill="#1c1208" stroke="#f0883e" stroke-width="1"/>
+  <text x="932" y="207" text-anchor="middle" fill="#ffa657" font-size="10" font-weight="700">CUSTOMER</text>
+  <text x="932" y="221" text-anchor="middle" fill="#fdba74" font-size="8">Browse all products</text>
+  <text x="932" y="233" text-anchor="middle" fill="#7d8590" font-size="8">Place + view own orders</text>
+  <text x="932" y="246" text-anchor="middle" fill="#7d8590" font-size="8">No write on products</text>
+</g>
+
+<!-- ── ZONE 3 NODES ── -->
+
+<!-- PRODUCT SERVICE -->
+<g class="ng" data-t="Product Service — RBAC Layer 2 (defense in depth). KeycloakJwtAuthConverter extracts realm_access.roles from JWT. SecurityConfig enforces URL-level rules. @PreAuthorize on methods. Ownership: VENDOR can only update/delete own products (vendorId check). DB: product_db. Port 8081.">
+  <rect x="30" y="320" width="300" height="192" rx="9" fill="#0a1a0c" stroke="#238636" stroke-width="2"/>
+  <text x="180" y="346" text-anchor="middle" font-size="18">&#128717;</text>
+  <text x="180" y="366" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Product Service</text>
+  <text x="180" y="381" text-anchor="middle" fill="#56d364" font-size="9" font-weight="600">RBAC Layer 2 — @PreAuthorize</text>
+
+  <rect x="46" y="390" width="268" height="11" rx="4" fill="#0e1f0e" stroke="#238636" stroke-width="1"/>
+  <text x="180" y="399" text-anchor="middle" fill="#86efac" font-size="8" font-weight="600">GET /api/products/**  →  ALL authenticated</text>
+
+  <rect x="46" y="406" width="268" height="11" rx="4" fill="#0e1f0e" stroke="#238636" stroke-width="1"/>
+  <text x="180" y="415" text-anchor="middle" fill="#86efac" font-size="8" font-weight="600">POST /api/products  →  VENDOR | ADMIN | SUPER_ADMIN</text>
+
+  <rect x="46" y="422" width="268" height="11" rx="4" fill="#0e1f0e" stroke="#238636" stroke-width="1"/>
+  <text x="180" y="431" text-anchor="middle" fill="#86efac" font-size="8" font-weight="600">PUT /api/products/{id}  →  VENDOR (own) | ADMIN | SUPER</text>
+
+  <rect x="46" y="438" width="268" height="11" rx="4" fill="#0e1f0e" stroke="#238636" stroke-width="1"/>
+  <text x="180" y="447" text-anchor="middle" fill="#86efac" font-size="8" font-weight="600">DELETE /api/products/{id}  →  ADMIN | SUPER_ADMIN</text>
+
+  <rect x="46" y="454" width="268" height="11" rx="4" fill="#0e1f0e" stroke="#238636" stroke-width="1"/>
+  <text x="180" y="463" text-anchor="middle" fill="#86efac" font-size="8" font-weight="600">GraphQL mutations  →  @PreAuthorize on resolver</text>
+
+  <rect x="46" y="472" width="130" height="11" rx="4" fill="#1a3a2a"/>
+  <text x="111" y="481" text-anchor="middle" fill="#56d364" font-size="8" font-weight="700">REST :8081</text>
+  <rect x="184" y="472" width="130" height="11" rx="4" fill="#1a3a2a"/>
+  <text x="249" y="481" text-anchor="middle" fill="#56d364" font-size="8" font-weight="700">GraphQL /graphql</text>
+
+  <rect x="46" y="488" width="268" height="14" rx="4" fill="#0d1117"/>
+  <text x="180" y="498" text-anchor="middle" fill="#7d8590" font-size="8">Redis Cache + Kafka Producer + JWT RS</text>
+</g>
+
+<!-- ORDER SERVICE -->
+<g class="ng" data-t="Order Service — RBAC Layer 2. Ownership: customers can only GET/create their own orders. ADMIN can view/update all. SUPER_ADMIN can delete. getOrderById() checks customerId vs JWT subject. OpenFeign calls Product-Service. Resilience4j Circuit Breaker. DB: order_db. Port 8082.">
+  <rect x="360" y="320" width="300" height="192" rx="9" fill="#0a1525" stroke="#1f6feb" stroke-width="2"/>
+  <text x="510" y="346" text-anchor="middle" font-size="18">&#128230;</text>
+  <text x="510" y="366" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Order Service</text>
+  <text x="510" y="381" text-anchor="middle" fill="#79c0ff" font-size="9" font-weight="600">RBAC Layer 2 — Ownership checks in service layer</text>
+
+  <rect x="376" y="390" width="268" height="11" rx="4" fill="#0a1525" stroke="#1f6feb" stroke-width="1"/>
+  <text x="510" y="399" text-anchor="middle" fill="#93c5fd" font-size="8" font-weight="600">POST /api/orders  →  CUSTOMER | VENDOR | ADMIN | SUPER</text>
+
+  <rect x="376" y="406" width="268" height="11" rx="4" fill="#0a1525" stroke="#1f6feb" stroke-width="1"/>
+  <text x="510" y="415" text-anchor="middle" fill="#93c5fd" font-size="8" font-weight="600">GET /api/orders/my-orders  →  ALL (own orders only)</text>
+
+  <rect x="376" y="422" width="268" height="11" rx="4" fill="#0a1525" stroke="#1f6feb" stroke-width="1"/>
+  <text x="510" y="431" text-anchor="middle" fill="#93c5fd" font-size="8" font-weight="600">GET /api/orders/{id}  →  Owner | ADMIN | SUPER_ADMIN</text>
+
+  <rect x="376" y="438" width="268" height="11" rx="4" fill="#0a1525" stroke="#1f6feb" stroke-width="1"/>
+  <text x="510" y="447" text-anchor="middle" fill="#93c5fd" font-size="8" font-weight="600">GET /api/orders (all)  →  ADMIN | SUPER_ADMIN</text>
+
+  <rect x="376" y="454" width="268" height="11" rx="4" fill="#0a1525" stroke="#1f6feb" stroke-width="1"/>
+  <text x="510" y="463" text-anchor="middle" fill="#93c5fd" font-size="8" font-weight="600">PUT /api/orders/{id}/status  →  ADMIN | SUPER_ADMIN</text>
+
+  <rect x="376" y="470" width="268" height="11" rx="4" fill="#0a1525" stroke="#1f6feb" stroke-width="1"/>
+  <text x="510" y="479" text-anchor="middle" fill="#93c5fd" font-size="8" font-weight="600">DELETE /api/orders/{id}  →  SUPER_ADMIN only</text>
+
+  <rect x="376" y="488" width="268" height="14" rx="4" fill="#0d1117"/>
+  <text x="510" y="498" text-anchor="middle" fill="#7d8590" font-size="8">Feign to Product / Redis Cache / Resilience4j / Kafka</text>
+</g>
+
+<!-- NOTIFICATION SERVICE -->
+<g class="ng" data-t="Notification Service — Kafka Consumer only. No HTTP endpoints exposed. No JWT needed — listens to internal Kafka events (order-created, order-status-changed, product-created). Sends email via MailHog. Fully async. Port 8083.">
+  <rect x="690" y="320" width="250" height="192" rx="9" fill="#071a0d" stroke="#2ea043" stroke-width="2"/>
+  <text x="815" y="346" text-anchor="middle" font-size="18">&#128276;</text>
+  <text x="815" y="366" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Notification Service</text>
+  <text x="815" y="381" text-anchor="middle" fill="#3fb950" font-size="9" font-weight="600">No RBAC needed — internal Kafka consumer</text>
+
+  <rect x="706" y="392" width="218" height="12" rx="4" fill="#0d2e1a" stroke="#2ea043" stroke-width="1"/>
+  <text x="815" y="402" text-anchor="middle" fill="#86efac" font-size="8.5" font-weight="600">topic: order-created</text>
+
+  <rect x="706" y="410" width="218" height="12" rx="4" fill="#0d2e1a" stroke="#2ea043" stroke-width="1"/>
+  <text x="815" y="420" text-anchor="middle" fill="#86efac" font-size="8.5" font-weight="600">topic: order-status-changed</text>
+
+  <rect x="706" y="428" width="218" height="12" rx="4" fill="#0d2e1a" stroke="#2ea043" stroke-width="1"/>
+  <text x="815" y="438" text-anchor="middle" fill="#86efac" font-size="8.5" font-weight="600">topic: product-created</text>
+
+  <rect x="706" y="450" width="218" height="12" rx="4" fill="#0d1117"/>
+  <text x="815" y="460" text-anchor="middle" fill="#7d8590" font-size="8">Email via MailHog SMTP</text>
+  <rect x="706" y="466" width="218" height="12" rx="4" fill="#0d1117"/>
+  <text x="815" y="476" text-anchor="middle" fill="#7d8590" font-size="8">Fully async / No JWT needed</text>
+
+  <rect x="706" y="486" width="218" height="14" rx="4" fill="#0d2e1a"/>
+  <text x="815" y="496" text-anchor="middle" fill="#3fb950" font-size="8" font-weight="700">:8083 / Async Consumer</text>
+</g>
+
+<!-- Feign A→B -->
+<line x1="330" y1="416" x2="358" y2="416" stroke="#79c0ff" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#a1)"/>
+<rect x="294" y="404" width="66" height="11" rx="4" fill="#0d1117"/>
+<text x="327" y="413" text-anchor="middle" fill="#79c0ff" font-size="8" font-weight="700">Feign HTTP</text>
+
+<!-- ── ZONE 4 NODES ── -->
+
+<!-- POSTGRESQL -->
+<g class="ng" data-t="PostgreSQL 16 — product_db (now with vendor_id column for ownership). order_db. notification_db. keycloak_db. Port 5432.">
+  <rect x="34" y="572" width="160" height="106" rx="9" fill="#150f06" stroke="#f0883e" stroke-width="2"/>
+  <text x="114" y="596" text-anchor="middle" font-size="18">&#128196;</text>
+  <text x="114" y="614" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">PostgreSQL 16</text>
+  <text x="114" y="628" text-anchor="middle" fill="#7d8590" font-size="9">product_db (+ vendor_id)</text>
+  <text x="114" y="641" text-anchor="middle" fill="#7d8590" font-size="9">order_db / keycloak_db</text>
+  <rect x="58" y="652" width="112" height="11" rx="4" fill="#3d2208"/>
+  <text x="114" y="661" text-anchor="middle" fill="#ffa657" font-size="8.5" font-weight="600">:5432</text>
+</g>
+
+<!-- REDIS -->
+<g class="ng" data-t="Redis 7 — Product cache TTL 10 min. Order cache TTL 5 min by customerId. LRU 256MB. @CacheEvict on update. Port 6379.">
+  <rect x="222" y="572" width="155" height="106" rx="9" fill="#200f0f" stroke="#e33d3d" stroke-width="2"/>
+  <text x="299" y="596" text-anchor="middle" font-size="18">&#9889;</text>
+  <text x="299" y="614" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Redis 7</text>
+  <text x="299" y="628" text-anchor="middle" fill="#7d8590" font-size="9">Product cache (10 min)</text>
+  <text x="299" y="641" text-anchor="middle" fill="#7d8590" font-size="9">Order cache (5 min)</text>
+  <rect x="246" y="652" width="106" height="11" rx="4" fill="#3d1c1c"/>
+  <text x="299" y="661" text-anchor="middle" fill="#ff7b72" font-size="8.5" font-weight="600">:6379 / LRU</text>
+</g>
+
+<!-- KAFKA -->
+<g class="ng" data-t="Apache Kafka — event backbone. order-created, order-status-changed, product-created. Port 9092 / UI 9080.">
+  <rect x="406" y="564" width="248" height="114" rx="9" fill="#131006" stroke="#d29922" stroke-width="2"/>
+  <text x="530" y="588" text-anchor="middle" font-size="18">&#128232;</text>
+  <text x="530" y="607" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Apache Kafka</text>
+  <rect x="418" y="614" width="100" height="12" rx="5" fill="#3d3308"/>
+  <text x="468" y="623" text-anchor="middle" fill="#e3b341" font-size="8.5" font-weight="700">order-created</text>
+  <rect x="526" y="614" width="116" height="12" rx="5" fill="#3d3308"/>
+  <text x="584" y="623" text-anchor="middle" fill="#e3b341" font-size="8.5" font-weight="700">order-status-changed</text>
+  <rect x="462" y="630" width="96" height="12" rx="5" fill="#3d3308"/>
+  <text x="510" y="639" text-anchor="middle" fill="#e3b341" font-size="8.5" font-weight="700">product-created</text>
+  <rect x="418" y="648" width="68" height="11" rx="4" fill="#1c1a0a" stroke="#d29922" stroke-width="1"/>
+  <text x="452" y="657" text-anchor="middle" fill="#e3b341" font-size="8" font-weight="600">:9092</text>
+  <rect x="494" y="648" width="72" height="11" rx="4" fill="#1c1a0a" stroke="#d29922" stroke-width="1"/>
+  <text x="530" y="657" text-anchor="middle" fill="#e3b341" font-size="8" font-weight="600">UI :9080</text>
+</g>
+
+<!-- MAILHOG -->
+<g class="ng" data-t="MailHog — Dev SMTP. Receives emails from Notification Service. Web UI to inspect. Port SMTP 1025 / UI 8025.">
+  <rect x="714" y="572" width="160" height="106" rx="9" fill="#071a10" stroke="#3fb950" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="794" y="596" text-anchor="middle" font-size="18">&#128140;</text>
+  <text x="794" y="614" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">MailHog</text>
+  <text x="794" y="628" text-anchor="middle" fill="#7d8590" font-size="9">Dev SMTP Server</text>
+  <text x="794" y="641" text-anchor="middle" fill="#7d8590" font-size="9">Email capture + Web UI</text>
+  <rect x="736" y="652" width="116" height="11" rx="4" fill="#0d2e1a"/>
+  <text x="794" y="661" text-anchor="middle" fill="#3fb950" font-size="8.5" font-weight="600">SMTP :1025 / UI :8025</text>
+</g>
+
+<!-- ── ZONE 5 NODES ── -->
+<rect x="244" y="718" width="820" height="224" rx="9" fill="#040d06" stroke="#2ea043" stroke-width="1" stroke-dasharray="3,4"/>
+<text x="260" y="736" fill="#2ea043" font-size="9" font-weight="700" letter-spacing="1">ELK STACK</text>
+
+<!-- ZIPKIN -->
+<g class="ng" data-t="Zipkin 3 — distributed tracing. Traces include userId and role from JWT for audit purposes. Kong plugin + Micrometer Brave. 100% sampling. Port 9411.">
+  <rect x="30" y="726" width="180" height="210" rx="9" fill="#071210" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="120" y="760" text-anchor="middle" font-size="26">&#128269;</text>
+  <text x="120" y="782" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Zipkin</text>
+  <text x="120" y="797" text-anchor="middle" fill="#7d8590" font-size="10">Distributed Tracing</text>
+  <text x="120" y="811" text-anchor="middle" fill="#7d8590" font-size="9">100% sampling</text>
+  <text x="120" y="824" text-anchor="middle" fill="#7d8590" font-size="9">Kong plugin enabled</text>
+  <rect x="62" y="836" width="116" height="11" rx="4" fill="#0d2e1a"/>
+  <text x="120" y="845" text-anchor="middle" fill="#3fb950" font-size="9" font-weight="600">:9411</text>
+  <rect x="46" y="912" width="148" height="16" rx="5" fill="#0d2e1a" stroke="#3fb950" stroke-width="1"/>
+  <text x="120" y="923" text-anchor="middle" fill="#3fb950" font-size="9.5" font-weight="700">localhost:9411</text>
+</g>
+
+<!-- LOGSTASH -->
+<g class="ng" data-t="Logstash 8.13 — JSON log ingestion. Parses traceId, spanId, service name, user role from logs. TCP :5000. Sends to Elasticsearch.">
+  <rect x="258" y="740" width="190" height="182" rx="9" fill="#0a160a" stroke="#2ea043" stroke-width="1.5"/>
+  <text x="353" y="771" text-anchor="middle" font-size="22">&#9881;&#65039;</text>
+  <text x="353" y="793" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Logstash</text>
+  <text x="353" y="808" text-anchor="middle" fill="#7d8590" font-size="9">Log Ingestion Pipeline</text>
+  <text x="353" y="821" text-anchor="middle" fill="#7d8590" font-size="9">JSON + traceId + role</text>
+  <rect x="284" y="832" width="138" height="11" rx="4" fill="#0d2e1a"/>
+  <text x="353" y="841" text-anchor="middle" fill="#3fb950" font-size="8.5" font-weight="600">:5000 TCP / :5044 Beats</text>
+  <rect x="274" y="908" width="158" height="14" rx="5" fill="#0d2e1a" stroke="#3fb950" stroke-width="1"/>
+  <text x="353" y="919" text-anchor="middle" fill="#3fb950" font-size="9" font-weight="700">tcp://localhost:5000</text>
+</g>
+
+<!-- ELASTICSEARCH -->
+<g class="ng" data-t="Elasticsearch 8.13 — log storage. Index ecommerce-logs-*. Port 9200.">
+  <rect x="476" y="740" width="190" height="182" rx="9" fill="#0a160a" stroke="#2ea043" stroke-width="1.5"/>
+  <text x="571" y="771" text-anchor="middle" font-size="22">&#128270;</text>
+  <text x="571" y="793" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Elasticsearch</text>
+  <text x="571" y="808" text-anchor="middle" fill="#7d8590" font-size="9">Log Storage + Search</text>
+  <text x="571" y="821" text-anchor="middle" fill="#7d8590" font-size="9">ecommerce-logs-* daily</text>
+  <rect x="503" y="832" width="136" height="11" rx="4" fill="#0d2e1a"/>
+  <text x="571" y="841" text-anchor="middle" fill="#3fb950" font-size="8.5" font-weight="600">:9200 / v8.13</text>
+  <rect x="491" y="908" width="160" height="14" rx="5" fill="#0d2e1a" stroke="#3fb950" stroke-width="1"/>
+  <text x="571" y="919" text-anchor="middle" fill="#3fb950" font-size="9" font-weight="700">localhost:9200</text>
+</g>
+
+<!-- KIBANA -->
+<g class="ng" data-t="Kibana 8.13 — dashboards and analytics. Can filter logs by role for audit trails. Port 5601.">
+  <rect x="694" y="740" width="190" height="182" rx="9" fill="#0a160a" stroke="#2ea043" stroke-width="1.5"/>
+  <text x="789" y="771" text-anchor="middle" font-size="22">&#128202;</text>
+  <text x="789" y="793" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Kibana</text>
+  <text x="789" y="808" text-anchor="middle" fill="#7d8590" font-size="9">Dashboard + Analytics</text>
+  <text x="789" y="821" text-anchor="middle" fill="#7d8590" font-size="9">Filter by role / traceId</text>
+  <rect x="721" y="832" width="136" height="11" rx="4" fill="#0d2e1a"/>
+  <text x="789" y="841" text-anchor="middle" fill="#3fb950" font-size="8.5" font-weight="600">:5601 / v8.13</text>
+  <rect x="709" y="908" width="160" height="14" rx="5" fill="#0d2e1a" stroke="#3fb950" stroke-width="1"/>
+  <text x="789" y="919" text-anchor="middle" fill="#3fb950" font-size="9" font-weight="700">localhost:5601</text>
+</g>
+
+<!-- ── CONNECTIONS ── -->
+<line x1="180" y1="78" x2="240" y2="78" stroke="#388bfd" stroke-width="2.5" marker-end="url(#a1)"/>
+<rect x="182" y="65" width="56" height="11" rx="4" fill="#0d1117"/>
+<text x="210" y="74" text-anchor="middle" fill="#388bfd" font-size="8" font-weight="700">JWT Bearer</text>
+
+<!-- Kong JWKS to Keycloak -->
+<path d="M 310 128 Q 250 152 142 170" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#a7)"/>
+<rect x="188" y="138" width="76" height="11" rx="4" fill="#0d1117"/>
+<text x="226" y="147" text-anchor="middle" fill="#a855f7" font-size="8">JWKS verify</text>
+
+<!-- Kong to services -->
+<line x1="400" y1="128" x2="176" y2="318" stroke="#3fb950" stroke-width="2" marker-end="url(#a2)"/>
+<line x1="530" y1="128" x2="510" y2="318" stroke="#3fb950" stroke-width="2" marker-end="url(#a2)"/>
+<line x1="660" y1="128" x2="780" y2="318" stroke="#3fb950" stroke-width="1.5" marker-end="url(#a2)"/>
+<rect x="338" y="224" width="70" height="11" rx="4" fill="#0d1117"/>
+<text x="373" y="233" text-anchor="middle" fill="#3fb950" font-size="8" font-weight="700">direct route</text>
+
+<!-- Services validate JWT from Keycloak -->
+<line x1="30" y1="420" x2="250" y2="240" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#a7)" opacity=".7"/>
+<line x1="360" y1="420" x2="266" y2="270" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#a7)" opacity=".5"/>
+<rect x="100" y="318" width="86" height="11" rx="4" fill="#0d1117"/>
+<text x="143" y="327" text-anchor="middle" fill="#a855f7" font-size="8">extract roles</text>
+
+<!-- Product to Postgres -->
+<line x1="114" y1="512" x2="114" y2="570" stroke="#f0883e" stroke-width="1.5" marker-end="url(#a6)"/>
+<!-- Order to Postgres -->
+<line x1="450" y1="512" x2="194" y2="570" stroke="#f0883e" stroke-width="1.5" marker-end="url(#a6)"/>
+<!-- Product to Redis -->
+<line x1="180" y1="512" x2="272" y2="570" stroke="#e33d3d" stroke-width="1.5" marker-end="url(#a5)"/>
+<!-- Order to Redis -->
+<line x1="510" y1="512" x2="376" y2="570" stroke="#e33d3d" stroke-width="1.5" marker-end="url(#a5)"/>
+<!-- Product to Kafka -->
+<line x1="250" y1="490" x2="430" y2="562" stroke="#d29922" stroke-width="1.5" marker-end="url(#a3)"/>
+<!-- Order to Kafka -->
+<line x1="510" y1="512" x2="516" y2="562" stroke="#d29922" stroke-width="2" marker-end="url(#a3)"/>
+<!-- Kafka to Notification -->
+<line x1="654" y1="616" x2="750" y2="512" stroke="#d29922" stroke-width="2" stroke-dasharray="7,3" marker-end="url(#a3)"/>
+<rect x="668" y="548" width="56" height="13" rx="4" fill="#0d1117"/>
+<text x="696" y="558" text-anchor="middle" fill="#e3b341" font-size="8.5" font-weight="700">consume</text>
+<!-- Notification to MailHog -->
+<line x1="815" y1="512" x2="810" y2="570" stroke="#3fb950" stroke-width="1.5" marker-end="url(#a2)"/>
+<!-- Keycloak to Postgres -->
+<line x1="70" y1="264" x2="70" y2="570" stroke="#a855f7" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#a7)"/>
+<!-- Services to Zipkin -->
+<line x1="100" y1="512" x2="105" y2="724" stroke="#3fb950" stroke-width="1" stroke-dasharray="2,4" marker-end="url(#a2)" opacity=".5"/>
+<line x1="500" y1="512" x2="126" y2="724" stroke="#3fb950" stroke-width="1" stroke-dasharray="2,4" marker-end="url(#a2)" opacity=".4"/>
+<line x1="300" y1="128" x2="108" y2="724" stroke="#3fb950" stroke-width="1" stroke-dasharray="2,5" marker-end="url(#a2)" opacity=".35"/>
+<text x="50" y="606" fill="#3fb950" font-size="8" opacity=".7">traces</text>
+<!-- Services to Logstash -->
+<line x1="140" y1="512" x2="340" y2="738" stroke="#3fb950" stroke-width="1" stroke-dasharray="2,4" marker-end="url(#a2)" opacity=".5"/>
+<line x1="520" y1="512" x2="366" y2="738" stroke="#3fb950" stroke-width="1" stroke-dasharray="2,4" marker-end="url(#a2)" opacity=".4"/>
+<text x="296" y="614" fill="#3fb950" font-size="8" opacity=".7">logs</text>
+<!-- ELK chain -->
+<line x1="448" y1="831" x2="474" y2="831" stroke="#3fb950" stroke-width="1.5" marker-end="url(#a2)"/>
+<line x1="666" y1="831" x2="692" y2="831" stroke="#3fb950" stroke-width="1.5" marker-end="url(#a2)"/>
+
+<!-- Labels -->
+<rect x="390" y="552" width="42" height="11" rx="3" fill="#0d1117"/>
+<text x="411" y="561" text-anchor="middle" fill="#f0883e" font-size="7.5">JPA/SQL</text>
+<rect x="286" y="540" width="38" height="11" rx="3" fill="#0d1117"/>
+<text x="305" y="549" text-anchor="middle" fill="#e33d3d" font-size="7.5">cache</text>
+<rect x="340" y="540" width="44" height="11" rx="3" fill="#0d1117"/>
+<text x="362" y="549" text-anchor="middle" fill="#e3b341" font-size="7.5">publish</text>
+</svg>
+</div>
+<p style="margin-top:10px;font-size:11px;color:#7d8590;text-align:center">Hover vao tung node de xem chi tiet — RBAC enforcement o Layer 1 (Kong) va Layer 2 (Spring Security)</p>
+</div>
+
+<!-- TAB 2: RBAC MATRIX -->
+<div class="panel" id="tab-rbac">
+<h2 style="font-size:15px;font-weight:700;color:#e879f9;margin-bottom:6px">RBAC Matrix</h2>
+<p style="font-size:12px;color:#7d8590;margin-bottom:20px">2-layer enforcement: Kong validates JWT signature (Layer 1) — Spring Security enforces roles + ownership (Layer 2)</p>
+
+<h3 style="font-size:13px;font-weight:700;color:#79c0ff;margin-bottom:10px">Role Hierarchy</h3>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:24px">
+  <div style="background:#1a0e2e;border:1px solid #a855f7;border-radius:9px;padding:12px">
+    <div style="font-size:12px;font-weight:700;color:#e879f9;margin-bottom:6px">SUPER_ADMIN</div>
+    <div style="font-size:11px;color:#c4b5fd;line-height:1.7">Full system access<br>Delete orders &amp; products<br>All admin operations<br>Platform operators only</div>
+  </div>
+  <div style="background:#1a2332;border:1px solid #388bfd;border-radius:9px;padding:12px">
+    <div style="font-size:12px;font-weight:700;color:#79c0ff;margin-bottom:6px">ADMIN</div>
+    <div style="font-size:11px;color:#93c5fd;line-height:1.7">Create/edit/delete products<br>View + update all orders<br>Cannot delete orders<br>Back-office staff</div>
+  </div>
+  <div style="background:#0a1a0c;border:1px solid #238636;border-radius:9px;padding:12px">
+    <div style="font-size:12px;font-weight:700;color:#56d364;margin-bottom:6px">VENDOR</div>
+    <div style="font-size:11px;color:#86efac;line-height:1.7">Create/edit <strong style="color:#fff">own</strong> products<br>Cannot delete products<br>Place and view own orders<br>Marketplace sellers</div>
+  </div>
+  <div style="background:#1c1208;border:1px solid #f0883e;border-radius:9px;padding:12px">
+    <div style="font-size:12px;font-weight:700;color:#ffa657;margin-bottom:6px">CUSTOMER</div>
+    <div style="font-size:11px;color:#fdba74;line-height:1.7">Browse all products (read)<br>Place own orders<br>View own orders only<br>End users</div>
+  </div>
+</div>
+
+<h3 style="font-size:13px;font-weight:700;color:#79c0ff;margin-bottom:10px">Product Service Permissions</h3>
+<table style="margin-bottom:24px">
+  <thead><tr><th>Endpoint</th><th>Method</th><th>SUPER_ADMIN</th><th>ADMIN</th><th>VENDOR</th><th>CUSTOMER</th><th>Enforcement</th></tr></thead>
+  <tbody>
+    <tr><td><code>/api/products</code></td><td>GET</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td><span class="badge r-vendor">YES</span></td><td><span class="badge r-customer">YES</span></td>
+      <td style="color:#7d8590;font-size:11px">SecurityConfig URL rule</td></tr>
+    <tr><td><code>/api/products/{id}</code></td><td>GET</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td><span class="badge r-vendor">YES</span></td><td><span class="badge r-customer">YES</span></td>
+      <td style="color:#7d8590;font-size:11px">SecurityConfig URL rule</td></tr>
+    <tr><td><code>/api/products</code></td><td>POST</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td><span class="badge r-vendor">YES</span></td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td>
+      <td style="color:#7d8590;font-size:11px">@PreAuthorize IS_VENDOR_OR_ABOVE</td></tr>
+    <tr><td><code>/api/products/{id}</code></td><td>PUT</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td style="color:#ffa657;font-size:11px">own only</td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td>
+      <td style="color:#7d8590;font-size:11px">@PreAuthorize + vendorId ownership check</td></tr>
+    <tr><td><code>/api/products/{id}</code></td><td>DELETE</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td>
+      <td style="color:#7d8590;font-size:11px">@PreAuthorize IS_ADMIN_OR_SUPER</td></tr>
+    <tr><td><code>/graphql</code> queries</td><td>POST</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td><span class="badge r-vendor">YES</span></td><td><span class="badge r-customer">YES</span></td>
+      <td style="color:#7d8590;font-size:11px">@PreAuthorize IS_AUTHENTICATED</td></tr>
+    <tr><td><code>/graphql</code> mutations</td><td>POST</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td><span class="badge r-vendor">YES</span></td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td>
+      <td style="color:#7d8590;font-size:11px">@PreAuthorize on each resolver</td></tr>
+  </tbody>
+</table>
+
+<h3 style="font-size:13px;font-weight:700;color:#79c0ff;margin-bottom:10px">Order Service Permissions</h3>
+<table>
+  <thead><tr><th>Endpoint</th><th>Method</th><th>SUPER_ADMIN</th><th>ADMIN</th><th>VENDOR</th><th>CUSTOMER</th><th>Enforcement</th></tr></thead>
+  <tbody>
+    <tr><td><code>/api/orders</code></td><td>POST</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td><span class="badge r-vendor">YES</span></td><td><span class="badge r-customer">YES</span></td>
+      <td style="color:#7d8590;font-size:11px">hasAnyRole in SecurityConfig</td></tr>
+    <tr><td><code>/api/orders/my-orders</code></td><td>GET</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td><span class="badge r-vendor">YES</span></td><td><span class="badge r-customer">YES</span></td>
+      <td style="color:#7d8590;font-size:11px">Filtered by JWT subject (own only)</td></tr>
+    <tr><td><code>/api/orders/{id}</code></td><td>GET</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td style="color:#ffa657;font-size:11px">own only</td><td style="color:#ffa657;font-size:11px">own only</td>
+      <td style="color:#7d8590;font-size:11px">customerId == JWT subject check in service</td></tr>
+    <tr><td><code>/api/orders</code> (all)</td><td>GET</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td>
+      <td style="color:#7d8590;font-size:11px">@PreAuthorize IS_ADMIN_OR_SUPER</td></tr>
+    <tr><td><code>/api/orders/{id}/status</code></td><td>PUT</td>
+      <td><span class="badge r-super">YES</span></td><td><span class="badge r-admin">YES</span></td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td>
+      <td style="color:#7d8590;font-size:11px">@PreAuthorize IS_ADMIN_OR_SUPER</td></tr>
+    <tr><td><code>/api/orders/{id}</code></td><td>DELETE</td>
+      <td><span class="badge r-super">YES</span></td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td><td style="color:#e33d3d;font-size:11px">&#10005; 403</td>
+      <td style="color:#7d8590;font-size:11px">@PreAuthorize IS_SUPER_ADMIN only</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- TAB 3: FLOW -->
+<div class="panel" id="tab-flow">
+<h2 style="font-size:15px;font-weight:700;color:#79c0ff;margin-bottom:18px">RBAC Request Flow — POST /api/orders (CUSTOMER role)</h2>
+<div class="steps">
+  <div class="step" style="border-color:#a855f7">
+    <div class="step-num" style="background:#1a0e2e;color:#e879f9">1</div>
+    <div class="step-body"><div class="step-title" style="color:#e879f9">Client gets JWT from Keycloak</div>
+    <code>POST /realms/ecommerce/protocol/openid-connect/token</code> with credentials. Keycloak returns JWT containing <code>realm_access.roles: ["CUSTOMER"]</code>.</div>
+  </div>
+  <div class="step" style="border-color:#388bfd">
+    <div class="step-num" style="background:#1f3a6e;color:#79c0ff">2</div>
+    <div class="step-body"><div class="step-title" style="color:#79c0ff">Kong — Layer 1 JWT validation</div>
+    <code>POST /api/orders</code> + <code>Authorization: Bearer JWT</code>. Kong JWT plugin calls Keycloak JWKS endpoint, verifies signature and expiry. <strong>Passes if valid (does NOT check roles at this layer)</strong>. Returns 401 if invalid.</div>
+  </div>
+  <div class="step" style="border-color:#1f6feb">
+    <div class="step-num" style="background:#1a2332;color:#79c0ff">3</div>
+    <div class="step-body"><div class="step-title" style="color:#79c0ff">Order Service — Layer 2 RBAC</div>
+    <strong>KeycloakJwtAuthConverter</strong> extracts <code>realm_access.roles</code> from JWT and maps to Spring <code>ROLE_CUSTOMER</code>. <strong>SecurityConfig</strong> checks <code>hasAnyRole('CUSTOMER','VENDOR','ADMIN','SUPER_ADMIN')</code> → passes. Controller calls service.</div>
+  </div>
+  <div class="step" style="border-color:#1f6feb">
+    <div class="step-num" style="background:#1a2332;color:#79c0ff">4</div>
+    <div class="step-body"><div class="step-title" style="color:#79c0ff">Order-Service (A) calls Product-Service (B)</div>
+    Feign HTTP. Product-Service also validates JWT (defense in depth). <code>reduceStock</code> endpoint requires <code>authenticated()</code> — any valid token passes.</div>
+  </div>
+  <div class="step" style="border-color:#e33d3d">
+    <div class="step-num" style="background:#3d1c1c;color:#ff7b72">5</div>
+    <div class="step-body"><div class="step-title" style="color:#ff7b72">RBAC Ownership — Service Layer</div>
+    Order saved with <code>customerId = jwt.getSubject()</code>. When CUSTOMER calls <code>GET /api/orders/{id}</code>, service checks <code>order.customerId == requesterId</code>. Returns <strong>403 Forbidden</strong> if they try to access another customer's order.</div>
+  </div>
+  <div class="step" style="border-color:#d29922">
+    <div class="step-num" style="background:#3d3308;color:#e3b341">6</div>
+    <div class="step-body"><div class="step-title" style="color:#e3b341">Kafka async — no RBAC needed</div>
+    <code>order-created</code> published. Notification-Service consumes from internal Kafka topic — no JWT, no RBAC, fully internal event-driven.</div>
+  </div>
+  <div class="step" style="border-color:#3fb950">
+    <div class="step-num" style="background:#0d2e2e;color:#3fb950">7</div>
+    <div class="step-body"><div class="step-title" style="color:#3fb950">Observability — RBAC audit trail</div>
+    Logs include <code>traceId</code>, <code>service</code>, and user <code>role</code>. Kibana dashboard can filter denied requests (403) by role for security audit.</div>
+  </div>
+</div>
+</div>
+
+<!-- TAB 4: PORTS -->
+<div class="panel" id="tab-ports">
+<h2 style="font-size:15px;font-weight:700;color:#79c0ff;margin-bottom:18px">Services and Ports</h2>
+<table>
+  <thead><tr><th>Service</th><th>Port</th><th>Layer</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Kong Proxy</strong></td><td><code>8000</code></td><td><span class="badge t1">Gateway</span></td><td>RBAC Layer 1 — JWT validation</td></tr>
+    <tr><td><strong>Kong Admin</strong></td><td><code>8001</code></td><td><span class="badge t1">Gateway</span></td><td>Route management</td></tr>
+    <tr><td><strong>Keycloak</strong></td><td><code>8180</code></td><td><span class="badge t8">Auth/RBAC</span></td><td>admin/admin123 — issues JWT with roles</td></tr>
+    <tr><td><strong>Product Service</strong></td><td><code>8081</code></td><td><span class="badge t3">Service</span></td><td>RBAC Layer 2 — @PreAuthorize + ownership</td></tr>
+    <tr><td><strong>GraphiQL</strong></td><td><code>8081</code></td><td><span class="badge t3">Service</span></td><td><a href="http://localhost:8081/graphiql">localhost:8081/graphiql</a></td></tr>
+    <tr><td><strong>Order Service</strong></td><td><code>8082</code></td><td><span class="badge t3">Service</span></td><td>RBAC Layer 2 — ownership checks</td></tr>
+    <tr><td><strong>Notification</strong></td><td><code>8083</code></td><td><span class="badge t3">Service</span></td><td>No RBAC — internal Kafka consumer</td></tr>
+    <tr><td><strong>PostgreSQL</strong></td><td><code>5432</code></td><td><span class="badge t4">Data</span></td><td>ecommerce / ecommerce123</td></tr>
+    <tr><td><strong>Redis</strong></td><td><code>6379</code></td><td><span class="badge t5">Cache</span></td><td>LRU 256MB</td></tr>
+    <tr><td><strong>Kafka</strong></td><td><code>29092</code></td><td><span class="badge t6">Kafka</span></td><td>PLAINTEXT_HOST</td></tr>
+    <tr><td><strong>Kafka UI</strong></td><td><code>9080</code></td><td><span class="badge t6">Kafka</span></td><td><a href="http://localhost:9080">localhost:9080</a></td></tr>
+    <tr><td><strong>Zipkin</strong></td><td><code>9411</code></td><td><span class="badge t7">Monitor</span></td><td><a href="http://localhost:9411">localhost:9411</a></td></tr>
+    <tr><td><strong>Elasticsearch</strong></td><td><code>9200</code></td><td><span class="badge t7">Monitor</span></td><td><a href="http://localhost:9200">localhost:9200</a></td></tr>
+    <tr><td><strong>Kibana</strong></td><td><code>5601</code></td><td><span class="badge t7">Monitor</span></td><td><a href="http://localhost:5601">localhost:5601</a></td></tr>
+    <tr><td><strong>MailHog UI</strong></td><td><code>8025</code></td><td><span class="badge t7">Mail</span></td><td><a href="http://localhost:8025">localhost:8025</a></td></tr>
+  </tbody>
+</table>
+<h3 style="font-size:13px;font-weight:700;color:#79c0ff;margin:22px 0 10px">Test RBAC Quick Commands</h3>
+<pre># Get token for each role
+get_token() {
+  curl -s -X POST http://localhost:8180/realms/ecommerce/protocol/openid-connect/token \
+    -d "client_id=ecommerce-frontend&username=$1&password=$2&grant_type=password" \
+    | python3 -m json.tool | grep access_token
+}
+
+get_token superadmin super123    # SUPER_ADMIN
+get_token admin1     admin123    # ADMIN
+get_token vendor1    vendor123   # VENDOR
+get_token customer1  customer123 # CUSTOMER
+
+# Test: CUSTOMER can read products
+curl http://localhost:8000/api/products -H "Authorization: Bearer $CUSTOMER_TOKEN"
+# → 200 OK
+
+# Test: CUSTOMER cannot create product → 403
+curl -X POST http://localhost:8000/api/products \
+  -H "Authorization: Bearer $CUSTOMER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test","price":10.0,"stock":100,"category":"Electronics"}'
+# → 403 Forbidden
+
+# Test: VENDOR can create product
+curl -X POST http://localhost:8000/api/products \
+  -H "Authorization: Bearer $VENDOR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"My Product","price":99.99,"stock":50,"category":"Books"}'
+# → 201 Created (vendorId set from JWT subject)
+
+# Test: VENDOR cannot delete → 403
+curl -X DELETE http://localhost:8000/api/products/{id} \
+  -H "Authorization: Bearer $VENDOR_TOKEN"
+# → 403 Forbidden
+
+# Test: ADMIN can view all orders
+curl http://localhost:8000/api/orders -H "Authorization: Bearer $ADMIN_TOKEN"
+# → 200 OK with all orders
+
+# Test: CUSTOMER can only see own orders
+curl http://localhost:8000/api/orders/{other_customer_order_id} \
+  -H "Authorization: Bearer $CUSTOMER_TOKEN"
+# → 403 Forbidden</pre>
+</div>
+
+<!-- TAB 5: STACK -->
+<div class="panel" id="tab-stack">
+<h2 style="font-size:15px;font-weight:700;color:#79c0ff;margin-bottom:18px">Technology Stack</h2>
+<div class="tgrid">
+  <div class="tcard" style="border-color:#a855f7"><div class="tc-name">RBAC — 2-Layer Enforcement</div><div class="tc-desc">Layer 1: Kong JWT plugin (401 if invalid). Layer 2: Spring @PreAuthorize + KeycloakJwtAuthConverter + ownership checks in service</div></div>
+  <div class="tcard" style="border-color:#a855f7"><div class="tc-name">Keycloak 24 — 4 Roles</div><div class="tc-desc">SUPER_ADMIN / ADMIN / VENDOR / CUSTOMER. realm_access.roles in JWT. ProtocolMapper auto-includes roles in access token</div></div>
+  <div class="tcard" style="border-color:#a855f7"><div class="tc-name">KeycloakJwtAuthConverter</div><div class="tc-desc">Extracts realm_access.roles. Filters Keycloak internals (default-roles, offline_access). Maps to ROLE_XXX GrantedAuthority</div></div>
+  <div class="tcard" style="border-color:#1f6feb"><div class="tc-name">Kong 3.6 (Sole Gateway)</div><div class="tc-desc">JWT plugin validates signature via JWKS. Does not enforce roles — defers to services. Rate limiting, CORS, Zipkin</div></div>
+  <div class="tcard" style="border-color:#238636"><div class="tc-name">Product Service RBAC</div><div class="tc-desc">SecurityConfig URL rules + @PreAuthorize(Roles.IS_VENDOR_OR_ABOVE). VendorId ownership: VENDOR can only edit own products</div></div>
+  <div class="tcard" style="border-color:#1f6feb"><div class="tc-name">Order Service RBAC</div><div class="tc-desc">Ownership check: customerId == jwt.getSubject(). @PreAuthorize IS_ADMIN_OR_SUPER for admin ops. IS_SUPER_ADMIN for delete</div></div>
+  <div class="tcard" style="border-color:#238636"><div class="tc-name">Product Service</div><div class="tc-desc">Spring Boot 3.2. REST + GraphQL. vendorId on Product entity. @Cacheable Redis. Kafka Producer. Gradle</div></div>
+  <div class="tcard" style="border-color:#1f6feb"><div class="tc-name">Order Service</div><div class="tc-desc">OpenFeign to Product-Service. Resilience4j CB. Redis Cache. Kafka Producer. updateOrderStatus endpoint</div></div>
+  <div class="tcard" style="border-color:#2ea043"><div class="tc-name">Notification Service</div><div class="tc-desc">Kafka Consumer 3 topics. No RBAC needed — internal. Spring Mail. MailHog SMTP</div></div>
+  <div class="tcard" style="border-color:#f0883e"><div class="tc-name">PostgreSQL 16</div><div class="tc-desc">product_db (+ vendor_id column). order_db. notification_db. keycloak_db. Port 5432</div></div>
+  <div class="tcard" style="border-color:#e33d3d"><div class="tc-name">Redis 7</div><div class="tc-desc">Product cache TTL 10 min. Order cache by customerId TTL 5 min. LRU 256MB</div></div>
+  <div class="tcard" style="border-color:#d29922"><div class="tc-name">Apache Kafka 7.6</div><div class="tc-desc">3 topics. order-created, order-status-changed, product-created. Kafka UI :9080</div></div>
+  <div class="tcard" style="border-color:#388bfd"><div class="tc-name">Resilience4j</div><div class="tc-desc">Circuit Breaker on Feign. Fallback to PENDING order. SlidingWindow 10. 50% threshold</div></div>
+  <div class="tcard" style="border-color:#56d364"><div class="tc-name">Zipkin 3</div><div class="tc-desc">Traces include role context for audit. Micrometer Brave. Kong plugin. Port 9411</div></div>
+  <div class="tcard" style="border-color:#3fb950"><div class="tc-name">ELK Stack 8.13</div><div class="tc-desc">Logstash parses role from JSON logs. Kibana filter 403 errors by role for security audit</div></div>
+  <div class="tcard" style="border-color:#7d8590"><div class="tc-name">Docker Compose + .env</div><div class="tc-desc">17 containers. .env for runtime config. Health checks. Named volumes. Bridge network</div></div>
+</div>
+</div>
+
+<script>
+function showTab(el, name) {
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+var tip = document.getElementById('tooltip');
+document.querySelectorAll('.ng').forEach(function(g) {
+  g.style.cursor = 'pointer';
+  g.addEventListener('mouseenter', function() { tip.innerHTML = g.dataset.t; tip.style.display = 'block'; });
+  g.addEventListener('mousemove', function(e) {
+    var x = e.clientX + 16, y = e.clientY + 10;
+    if (x + 306 > window.innerWidth) { x = e.clientX - 312; }
+    if (y + 180 > window.innerHeight) { y = e.clientY - 190; }
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  });
+  g.addEventListener('mouseleave', function() { tip.style.display = 'none'; });
+});
+</script>
+</body>
+</html>

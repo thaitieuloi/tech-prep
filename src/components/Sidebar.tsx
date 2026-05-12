@@ -1,6 +1,6 @@
 import { Category } from '../data';
 import { cn, slugify } from '../lib/utils';
-import { Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { 
   Database, 
   Server, 
@@ -20,7 +20,8 @@ import {
   ShieldCheck,
   Binary,
   PenTool,
-  Target
+  Target,
+  Award
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -49,6 +50,23 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 export function Sidebar({ categories, selectedCategory }: SidebarProps) {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const isTopicActive = (topic: string) => {
+    return currentPath === `/topic/${slugify(topic)}` || selectedCategory === topic;
+  };
+
+  const getLinkClasses = (to: string, exact = true) => {
+    const isActive = exact ? currentPath === to : currentPath.startsWith(to);
+    return cn(
+      "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
+      isActive
+        ? "bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100 font-bold"
+        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+    );
+  };
+
   return (
     <aside className="w-64 bg-white border-r border-slate-200 h-screen sticky top-0 overflow-y-auto flex-shrink-0">
       <div className="p-6">
@@ -60,12 +78,7 @@ export function Sidebar({ categories, selectedCategory }: SidebarProps) {
         <nav className="space-y-1">
           <Link
             to="/"
-            className={cn(
-              "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
-              selectedCategory === 'All'
-                ? "bg-indigo-50 text-indigo-700"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-            )}
+            className={getLinkClasses("/", true)}
           >
             {iconMap['All']}
             All Topics
@@ -73,39 +86,55 @@ export function Sidebar({ categories, selectedCategory }: SidebarProps) {
           
           <Link
             to="/architecture-vehicle-management"
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            className={getLinkClasses("/architecture-vehicle-management")}
           >
             <Server className="w-5 h-5" />
-            System Architecture
+            Vehicle Architecture
           </Link>
-
+ 
           <Link
-            to="/draw-system"
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            to="/architecture-best-practice"
+            className={getLinkClasses("/architecture-best-practice")}
           >
-            <PenTool className="w-5 h-5" />
-            Canvas Architect
+            <Award className="w-5 h-5" />
+            Architecture Best Practice
           </Link>
-
+ 
+          <Link
+            to="/architecture-hsc"
+            className={getLinkClasses("/architecture-hsc")}
+          >
+            <ShieldCheck className="w-5 h-5" />
+            HSC Architecture
+          </Link>
+ 
+          <Link
+            to="/architecture-project"
+            className={getLinkClasses("/architecture-project")}
+          >
+            <Target className="w-5 h-5" />
+            Project Architecture
+          </Link>
+ 
           <Link
             to="/interview-prep"
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-indigo-600 bg-indigo-50/50 hover:bg-indigo-50 font-bold border border-indigo-100 shadow-sm"
+            className={getLinkClasses("/interview-prep")}
           >
             <Target className="w-5 h-5" />
             Interview Preparation
           </Link>
-
+ 
           <Link
             to="/auth-pipeline"
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            className={getLinkClasses("/auth-pipeline")}
           >
             <GitBranch className="w-5 h-5" />
             Auth Pipeline Job
           </Link>
-
+ 
           <Link
             to="/de-interview"
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            className={getLinkClasses("/de-interview")}
           >
             <BrainCircuit className="w-5 h-5" />
             DE Interview Ques
@@ -123,8 +152,8 @@ export function Sidebar({ categories, selectedCategory }: SidebarProps) {
               to={`/topic/${slugify(category)}`}
               className={cn(
                 "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
-                selectedCategory === category
-                  ? "bg-indigo-50 text-indigo-700"
+                isTopicActive(category)
+                  ? "bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100 font-bold"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               )}
             >
