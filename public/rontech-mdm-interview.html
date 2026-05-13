@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MDM Technical Lead — Interview Prep Kit</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&amp;family=DM+Mono:wght@300;400;500&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #080c17;
+  --bg2:     #0d1120;
+  --bg3:     #111826;
+  --surface: #161e30;
+  --sur2:    #1c2640;
+  --border:  #243050;
+  --b-dim:   #1a2438;
+  --accent:  #4f8ef7;
+  --a2:      #7c3aed;
+  --a3:      #06d6a0;
+  --a4:      #f59e0b;
+  --a5:      #ef4444;
+  --a6:      #ec4899;
+  --text:    #e8edf8;
+  --text2:   #8fa3c8;
+  --text3:   #4a5a7a;
+  --code:    #0f1825;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font-size:13.5px;line-height:1.75}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ── NOISE ── */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox%3D%220 0 200 200%22 xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter id%3D%22n%22%3E%3CfeTurbulence type%3D%22fractalNoise%22 baseFrequency%3D%220.85%22 numOctaves%3D%224%22 stitchTiles%3D%22stitch%22%2F%3E%3C%2Ffilter%3E%3Crect width%3D%22100%25%22 height%3D%22100%25%22 filter%3D%22url%28%23n%29%22 opacity%3D%220.025%22%2F%3E%3C%2Fsvg%3E");pointer-events:none;z-index:0;opacity:.5}
+
+/* ── LAYOUT ── */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ── SIDEBAR ── */
+.sidebar{width:260px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 0 40px}
+.sidebar-logo{padding:0 20px 24px;border-bottom:1px solid var(--b-dim)}
+.sidebar-logo .tag{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--a3);border:1px solid var(--a3);padding:2px 8px;border-radius:2px;display:inline-block;margin-bottom:10px}
+.sidebar-logo h2{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text);line-height:1.3}
+.sidebar-logo .sub{font-size:10px;color:var(--text3);margin-top:4px}
+
+.nav-section{padding:18px 20px 4px}
+.nav-section-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:4px;cursor:pointer;font-size:11.5px;color:var(--text2);margin-bottom:2px;transition:all .15s;text-decoration:none;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--surface);color:var(--text)}
+.nav-item.active{background:rgba(79,142,247,.1);color:var(--accent);border:1px solid rgba(79,142,247,.2)}
+.nav-item .num{font-size:9px;color:var(--text3);margin-left:auto;font-family:'DM Mono',monospace}
+
+.sidebar-stats{margin:20px;padding:14px;background:var(--surface);border-radius:6px;border:1px solid var(--border)}
+.stat-row{display:flex;justify-content:space-between;margin-bottom:8px;font-size:11px}
+.stat-row:last-child{margin-bottom:0}
+.stat-val{color:var(--a3);font-weight:500}
+
+/* ── MAIN ── */
+.main{flex:1;padding:40px 48px 80px;min-width:0}
+
+/* ── HERO ── */
+.hero{padding:20px 0 48px;border-bottom:1px solid var(--border);margin-bottom:48px}
+.hero-eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--a3);margin-bottom:16px}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,52px);font-weight:800;letter-spacing:-.03em;line-height:1.05;color:var(--text);margin-bottom:10px}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-family:'Instrument Serif',serif;font-style:italic;font-size:17px;color:var(--text2);margin-bottom:28px}
+.hero-badges{display:flex;flex-wrap:wrap;gap:10px}
+.hbadge{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px 12px;font-size:11px;color:var(--text2)}
+.hbadge .dot{width:5px;height:5px;border-radius:50%}
+
+/* ── SECTION HEADER ── */
+.sec-header{display:flex;align-items:center;gap:14px;margin:52px 0 24px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.sec-icon{width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sec-info h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--text)}
+.sec-info p{font-size:11px;color:var(--text3);margin-top:2px}
+.sec-count{margin-left:auto;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;background:var(--surface);border:1px solid var(--border);padding:3px 10px;border-radius:3px}
+
+/* ── GLOBAL CONTROLS ── */
+.global-controls{display:flex;gap:8px;margin-bottom:20px}
+.ctrl-btn{background:var(--surface);border:1px solid var(--border);color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;padding:6px 14px;border-radius:4px;cursor:pointer;transition:all .15s}
+.ctrl-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── Q&A CARD ── */
+.qa-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:14px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.qa-card:hover{border-color:rgba(79,142,247,.4);box-shadow:0 0 20px rgba(79,142,247,.05)}
+.qa-card.open{border-color:rgba(79,142,247,.5)}
+
+.qa-head{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;cursor:pointer;user-select:none}
+.qa-num{font-family:'Syne',sans-serif;font-size:10px;font-weight:800;color:var(--accent);background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.25);border-radius:3px;padding:2px 8px;flex-shrink:0;margin-top:2px;white-space:nowrap}
+.qa-q{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--text);flex:1;line-height:1.4}
+.qa-meta{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-top:2px}
+.qa-tag{font-size:9px;padding:2px 7px;border-radius:2px;font-family:'DM Mono',monospace}
+.tag-arch{background:rgba(6,214,160,.08);color:var(--a3);border:1px solid rgba(6,214,160,.2)}
+.tag-lead{background:rgba(79,142,247,.08);color:var(--accent);border:1px solid rgba(79,142,247,.2)}
+.tag-sec{background:rgba(239,68,68,.08);color:var(--a5);border:1px solid rgba(239,68,68,.2)}
+.tag-cloud{background:rgba(245,158,11,.08);color:var(--a4);border:1px solid rgba(245,158,11,.2)}
+.tag-sit{background:rgba(124,58,237,.08);color:#a78bfa;border:1px solid rgba(124,58,237,.2)}
+.qa-arrow{font-size:16px;color:var(--text3);transition:transform .3s,color .3s;flex-shrink:0;margin-top:2px}
+.qa-card.open .qa-arrow{transform:rotate(45deg);color:var(--accent)}
+
+.qa-body{display:none;padding:22px 22px 24px;border-top:1px solid var(--b-dim)}
+.qa-card.open .qa-body{display:block}
+
+/* ── ANSWER CONTENT ── */
+.jd-ref{font-size:10px;color:var(--text3);margin-bottom:14px;padding:6px 10px;background:rgba(79,142,247,.04);border-left:2px solid rgba(79,142,247,.3);border-radius:0 3px 3px 0}
+.jd-ref span{color:var(--accent)}
+.ans-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--a3);margin-bottom:10px}
+.ans-text{color:var(--text2);margin-bottom:16px;font-size:13px}
+.ans-text strong{color:var(--text);font-weight:500}
+.ans-text code{background:var(--code);border:1px solid var(--b-dim);padding:1px 5px;border-radius:3px;font-size:12px;color:var(--a3)}
+
+/* ── BULLET LISTS ── */
+.ans-list{list-style:none;margin:8px 0 16px;display:flex;flex-direction:column;gap:6px}
+.ans-list li{display:flex;gap:10px;color:var(--text2);font-size:13px;align-items:flex-start}
+.ans-list li::before{content:'▸';color:var(--accent);flex-shrink:0;margin-top:1px}
+.ans-list li strong{color:var(--text);font-weight:500}
+
+/* ── FLOW STEPS ── */
+.flow{display:flex;flex-direction:column;gap:0;margin:14px 0}
+.flow-item{display:flex;gap:12px;padding:11px 14px;background:var(--bg3);border:1px solid var(--border);border-bottom:none;font-size:12.5px;align-items:flex-start}
+.flow-item:first-child{border-radius:6px 6px 0 0}
+.flow-item:last-child{border-bottom:1px solid var(--border);border-radius:0 0 6px 6px}
+.flow-n{width:20px;height:20px;background:var(--accent);color:var(--bg);border-radius:50%;font-family:'Syne',sans-serif;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.flow-c{color:var(--text2)}
+.flow-c strong{color:var(--a3)}
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:12px}
+th{background:var(--sur2);color:var(--accent);font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:9px 12px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:9px 12px;color:var(--text2);border-bottom:1px solid rgba(36,48,80,.5);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(79,142,247,.03)}
+
+/* ── CODE ── */
+.code-block{background:var(--code);border:1px solid var(--border);border-left:3px solid var(--a2);border-radius:4px;padding:14px 18px;margin:14px 0;overflow-x:auto;font-size:12px;line-height:1.65}
+.kw{color:#c792ea}.str{color:var(--a3)}.cm{color:var(--text3);font-style:italic}.fn{color:var(--accent)}.num{color:var(--a4)}.op{color:#89ddff}
+
+/* ── DIAGRAM ── */
+.dg-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:20px;margin:16px 0;overflow-x:auto}
+.dg-title{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.dg-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.dg-svg{width:100%;height:auto;min-width:600px}
+
+/* ── CHIPS ── */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.chip{font-size:10px;padding:3px 9px;border-radius:3px;font-family:'DM Mono',monospace;border:1px solid}
+.c-blue{color:var(--accent);border-color:rgba(79,142,247,.35);background:rgba(79,142,247,.07)}
+.c-green{color:var(--a3);border-color:rgba(6,214,160,.35);background:rgba(6,214,160,.07)}
+.c-purple{color:#a78bfa;border-color:rgba(167,139,250,.35);background:rgba(167,139,250,.07)}
+.c-amber{color:var(--a4);border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.07)}
+.c-red{color:var(--a5);border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.07)}
+.c-pink{color:var(--a6);border-color:rgba(236,72,153,.35);background:rgba(236,72,153,.07)}
+
+/* ── KPI ROW ── */
+.kpi-row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.kpi{flex:1;min-width:120px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px}
+.kpi .v{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--a3);display:block;margin-bottom:3px}
+.kpi .l{font-size:10px;color:var(--text3)}
+
+/* ── NOTE / WARN ── */
+.note{border-left:3px solid var(--a4);background:rgba(245,158,11,.05);padding:10px 14px;border-radius:0 4px 4px 0;margin:12px 0;font-size:12.5px;color:var(--text2)}
+.note strong{color:var(--a4)}
+.warn{border-left:3px solid var(--a5);background:rgba(239,68,68,.05);padding:10px 14px;border-radius:0 4px 4px 0;margin:12px 0;font-size:12.5px;color:var(--text2)}
+.warn strong{color:var(--a5)}
+.tip{border-left:3px solid var(--a3);background:rgba(6,214,160,.05);padding:10px 14px;border-radius:0 4px 4px 0;margin:12px 0;font-size:12.5px;color:var(--text2)}
+.tip strong{color:var(--a3)}
+
+/* ── STAR BOX ── */
+.star-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.star-item{background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:12px 14px}
+.star-item .sl{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+.star-item p{font-size:12px;color:var(--text2)}
+
+/* ── TIPS SECTION ── */
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+.tip-card{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px 16px}
+.tip-card .ti{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.tip-card p{font-size:12px;color:var(--text2);line-height:1.6}
+
+/* ── PROGRESS TRACKER ── */
+.progress-wrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:24px}
+.progress-label{font-size:11px;color:var(--text2);margin-bottom:8px;display:flex;justify-content:space-between}
+.progress-label span{color:var(--a3);font-weight:500}
+.progress-bar{height:4px;background:var(--b-dim);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--a3));border-radius:2px;transition:width .4s}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:48px 0 0;border-top:1px solid var(--border);margin-top:60px;color:var(--text3);font-size:11px}
+
+/* ── SVG ARROW MARKERS ── */
+/* defined inline in SVGs */
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .main{padding:24px 20px 60px}
+  .star-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="tag">Interview Kit</div>
+    <h2>MDM Technical Lead</h2>
+    <div class="sub">30 Q&A · Architecture Diagrams</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Sections</div>
+    <a class="nav-item active" href="#s1">🏗 System Architecture <span class="num">Q1–8</span></a>
+    <a class="nav-item" href="#s2">👨‍💻 Technical Leadership <span class="num">Q9–16</span></a>
+    <a class="nav-item" href="#s3">🔐 Security & Protocols <span class="num">Q17–21</span></a>
+    <a class="nav-item" href="#s4">☁️ Cloud & Infra <span class="num">Q22–26</span></a>
+    <a class="nav-item" href="#s5">🤔 Behavioral <span class="num">Q27–30</span></a>
+    <a class="nav-item" href="#tips">💡 Interview Tips</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">KPIs to Know</div>
+  </div>
+  <div class="sidebar-stats">
+    <div class="stat-row"><span>Uptime</span><span class="stat-val">≥ 99.5%</span></div>
+    <div class="stat-row"><span>API Response</span><span class="stat-val">&lt; 200ms</span></div>
+    <div class="stat-row"><span>Code Coverage</span><span class="stat-val">≥ 80%</span></div>
+    <div class="stat-row"><span>Sprint Velocity</span><span class="stat-val">≥ 85%</span></div>
+    <div class="stat-row"><span>Critical Bugs</span><span class="stat-val">&lt; 2/month</span></div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Toolstack</div>
+  </div>
+  <div class="sidebar-stats">
+    <div class="stat-row"><span>AI Coding</span><span class="stat-val">Cursor + Copilot</span></div>
+    <div class="stat-row"><span>AI Arch</span><span class="stat-val">Claude Pro</span></div>
+    <div class="stat-row"><span>Source</span><span class="stat-val">GitHub Team</span></div>
+    <div class="stat-row"><span>PM</span><span class="stat-val">Jira</span></div>
+    <div class="stat-row"><span>Monitor</span><span class="stat-val">Datadog+Sentry</span></div>
+    <div class="stat-row"><span>Quality</span><span class="stat-val">SonarCloud</span></div>
+  </div>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Complete Interview Preparation Kit</div>
+    <h1>MDM <em>Technical Lead</em><br>Interview Prep</h1>
+    <p class="hero-sub">30 câu Q&A chuyên sâu · Architecture Diagrams · Bám sát 100% Job Description</p>
+    <div class="hero-badges">
+      <div class="hbadge"><span class="dot" style="background:var(--a3)"></span>30 Questions</div>
+      <div class="hbadge"><span class="dot" style="background:var(--accent)"></span>System Diagrams</div>
+      <div class="hbadge"><span class="dot" style="background:var(--a2)"></span>Code Examples</div>
+      <div class="hbadge"><span class="dot" style="background:var(--a4)"></span>KPI-Aligned</div>
+      <div class="hbadge"><span class="dot" style="background:var(--a5)"></span>JD-Referenced</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 1 — SYSTEM ARCHITECTURE
+  ═══════════════════════════════════════════ -->
+  <div id="s1" class="sec-header">
+    <div class="sec-icon" style="background:rgba(6,214,160,.1);border:1px solid rgba(6,214,160,.25)">🏗</div>
+    <div class="sec-info">
+      <h3>System Architecture</h3>
+      <p>Backend API · Mobile Agent · Admin Console · Push Notification · MDM Protocols</p>
+    </div>
+    <span class="sec-count">Q1 – Q8</span>
+  </div>
+
+  <div class="global-controls">
+    <button class="ctrl-btn" onclick="toggleSection('s1',true)">Expand All</button>
+    <button class="ctrl-btn" onclick="toggleSection('s1',false)">Collapse All</button>
+  </div>
+
+  <!-- Q1 -->
+  <div class="qa-card open" data-section="s1">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q1</span>
+      <span class="qa-q">Thiết kế kiến trúc tổng thể hệ thống MDM: Backend API, Mobile Agent, Admin Console, Push Notification từ đầu?</span>
+      <div class="qa-meta"><span class="qa-tag tag-arch">Architecture</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Thiết kế kiến trúc hệ thống MDM: backend API, mobile agent, admin console, push notification"</span></div>
+      <div class="ans-label">▸ Model Answer</div>
+      <p class="ans-text">Tôi thiết kế theo <strong>Microservices trên AWS</strong> — mỗi domain tách riêng, giao tiếp qua Event Bus. Ưu tiên <strong>scalable, fault-tolerant, zero-trust security</strong> từ ngày đầu.</p>
+      <div class="dg-wrap">
+        <div class="dg-title">MDM Overall System Architecture — Microservices on AWS</div>
+        <svg viewBox="0 0 920 560" xmlns="http://www.w3.org/2000/svg" class="dg-svg">
+          <defs>
+            <marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4f8ef7"/></marker>
+            <marker id="a2g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#06d6a0"/></marker>
+            <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <rect width="920" height="560" fill="#080c17" rx="8"/>
+          <!-- Devices -->
+          <text x="30" y="26" fill="#4a5a7a" font-family="monospace" font-size="9" letter-spacing="2">DEVICE LAYER</text>
+          <rect x="18" y="38" width="88" height="64" rx="5" fill="#111826" stroke="#243050" stroke-width="1"/>
+          <rect x="30" y="46" width="64" height="40" rx="3" fill="#080c17" stroke="#4f8ef7" stroke-width=".5"/>
+          <circle cx="62" cy="94" r="4" fill="#4f8ef7"/>
+          <text x="62" y="114" fill="#8fa3c8" font-family="monospace" font-size="9" text-anchor="middle">Android</text>
+          <text x="62" y="126" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Agent (Kotlin)</text>
+          <rect x="118" y="38" width="88" height="64" rx="5" fill="#111826" stroke="#243050" stroke-width="1"/>
+          <rect x="130" y="46" width="64" height="40" rx="3" fill="#080c17" stroke="#a78bfa" stroke-width=".5"/>
+          <circle cx="162" cy="94" r="4" fill="#a78bfa"/>
+          <text x="162" y="114" fill="#8fa3c8" font-family="monospace" font-size="9" text-anchor="middle">iOS</text>
+          <text x="162" y="126" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Agent (Swift)</text>
+          <!-- arrow devices → GW -->
+          <line x1="210" y1="70" x2="286" y2="70" stroke="#4f8ef7" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#a1)"/>
+          <text x="248" y="63" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">mTLS</text>
+          <!-- Admin Console top -->
+          <text x="18" y="166" fill="#4a5a7a" font-family="monospace" font-size="9" letter-spacing="2">ADMIN</text>
+          <rect x="18" y="178" width="200" height="52" rx="5" fill="#161e30" stroke="#4f8ef7" stroke-width="1.5" filter="url(#glow)"/>
+          <text x="118" y="200" fill="#4f8ef7" font-family="'Syne',sans-serif" font-weight="700" font-size="11" text-anchor="middle">Admin Console</text>
+          <text x="118" y="216" fill="#8fa3c8" font-family="monospace" font-size="8" text-anchor="middle">React/Next.js + GraphQL · CloudFront CDN</text>
+          <text x="118" y="228" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Policy Builder · Device Mgmt · Reports</text>
+          <line x1="218" y1="204" x2="286" y2="110" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#a1)"/>
+          <!-- API GATEWAY -->
+          <text x="290" y="26" fill="#4a5a7a" font-family="monospace" font-size="9" letter-spacing="2">API GATEWAY</text>
+          <rect x="290" y="38" width="150" height="64" rx="6" fill="#1c2640" stroke="#4f8ef7" stroke-width="1.5" filter="url(#glow)"/>
+          <text x="365" y="63" fill="#4f8ef7" font-family="'Syne',sans-serif" font-weight="700" font-size="12" text-anchor="middle">API Gateway</text>
+          <text x="365" y="79" fill="#8fa3c8" font-family="monospace" font-size="9" text-anchor="middle">Kong / AWS ALB</text>
+          <text x="365" y="93" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">OAuth2 · JWT · Rate Limit · Routing</text>
+          <!-- arrows GW → services -->
+          <line x1="440" y1="58" x2="480" y2="58" stroke="#4f8ef7" stroke-width="1" marker-end="url(#a1)"/>
+          <line x1="440" y1="70" x2="480" y2="140" stroke="#4f8ef7" stroke-width="1" marker-end="url(#a1)"/>
+          <line x1="440" y1="70" x2="480" y2="222" stroke="#4f8ef7" stroke-width="1" marker-end="url(#a1)"/>
+          <line x1="440" y1="70" x2="480" y2="304" stroke="#4f8ef7" stroke-width="1" marker-end="url(#a1)"/>
+          <!-- SERVICES -->
+          <text x="484" y="26" fill="#4a5a7a" font-family="monospace" font-size="9" letter-spacing="2">MICROSERVICES (Go / Node.js)</text>
+          <rect x="484" y="38" width="140" height="56" rx="5" fill="#111826" stroke="#06d6a0" stroke-width="1"/>
+          <text x="498" y="60" fill="#06d6a0" font-family="monospace" font-size="10" font-weight="bold">Enrollment Svc</text>
+          <text x="498" y="76" fill="#4a5a7a" font-family="monospace" font-size="8">CSR · Certificate · SCEP</text>
+          <text x="498" y="88" fill="#4a5a7a" font-family="monospace" font-size="8">DEP / Android Enterprise</text>
+          <rect x="484" y="122" width="140" height="56" rx="5" fill="#111826" stroke="#a78bfa" stroke-width="1"/>
+          <text x="498" y="144" fill="#a78bfa" font-family="monospace" font-size="10" font-weight="bold">Policy Engine</text>
+          <text x="498" y="160" fill="#4a5a7a" font-family="monospace" font-size="8">Declarative · Versioning</text>
+          <text x="498" y="172" fill="#4a5a7a" font-family="monospace" font-size="8">Compliance Evaluation</text>
+          <rect x="484" y="206" width="140" height="56" rx="5" fill="#111826" stroke="#f59e0b" stroke-width="1"/>
+          <text x="498" y="228" fill="#f59e0b" font-family="monospace" font-size="10" font-weight="bold">Command Dispatcher</text>
+          <text x="498" y="244" fill="#4a5a7a" font-family="monospace" font-size="8">Wipe · Lock · Install · Kiosk</text>
+          <text x="498" y="256" fill="#4a5a7a" font-family="monospace" font-size="8">Geofence Trigger</text>
+          <rect x="484" y="290" width="140" height="56" rx="5" fill="#111826" stroke="#ef4444" stroke-width="1"/>
+          <text x="498" y="312" fill="#ef4444" font-family="monospace" font-size="10" font-weight="bold">Push Gateway</text>
+          <text x="498" y="328" fill="#4a5a7a" font-family="monospace" font-size="8">APNs (iOS) · FCM (Android)</text>
+          <text x="498" y="340" fill="#4a5a7a" font-family="monospace" font-size="8">Silent Push · Retry Queue</text>
+          <!-- Event Bus -->
+          <line x1="624" y1="66" x2="660" y2="195" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="624" y1="150" x2="660" y2="205" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="624" y1="234" x2="660" y2="215" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="624" y1="318" x2="660" y2="225" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="3,3"/>
+          <rect x="650" y="165" width="120" height="100" rx="5" fill="#1c2640" stroke="#7c3aed" stroke-width="1.5" filter="url(#glow)"/>
+          <text x="710" y="194" fill="#a78bfa" font-family="'Syne',sans-serif" font-weight="700" font-size="11" text-anchor="middle">Event Bus</text>
+          <text x="710" y="210" fill="#4a5a7a" font-family="monospace" font-size="9" text-anchor="middle">Kafka (MSK)</text>
+          <text x="710" y="226" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">device.enrolled</text>
+          <text x="710" y="240" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">policy.updated</text>
+          <text x="710" y="254" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">command.dispatched</text>
+          <!-- Data Layer -->
+          <text x="18" y="278" fill="#4a5a7a" font-family="monospace" font-size="9" letter-spacing="2">DATA LAYER</text>
+          <rect x="18" y="290" width="100" height="52" rx="5" fill="#111826" stroke="#243050" stroke-width="1"/>
+          <text x="68" y="312" fill="#4f8ef7" font-family="monospace" font-size="10" text-anchor="middle" font-weight="bold">PostgreSQL</text>
+          <text x="68" y="328" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">RDS Multi-AZ</text>
+          <text x="68" y="340" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Device·Policy·Audit</text>
+          <rect x="132" y="290" width="80" height="52" rx="5" fill="#111826" stroke="#243050" stroke-width="1"/>
+          <text x="172" y="312" fill="#ef4444" font-family="monospace" font-size="10" text-anchor="middle" font-weight="bold">Redis</text>
+          <text x="172" y="328" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">ElastiCache</text>
+          <text x="172" y="340" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Cache·Session</text>
+          <rect x="226" y="290" width="90" height="52" rx="5" fill="#111826" stroke="#243050" stroke-width="1"/>
+          <text x="271" y="312" fill="#f59e0b" font-family="monospace" font-size="10" text-anchor="middle" font-weight="bold">MongoDB</text>
+          <text x="271" y="328" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">DocumentDB</text>
+          <text x="271" y="340" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Logs·Events</text>
+          <rect x="330" y="290" width="70" height="52" rx="5" fill="#111826" stroke="#243050" stroke-width="1"/>
+          <text x="365" y="312" fill="#06d6a0" font-family="monospace" font-size="10" text-anchor="middle" font-weight="bold">S3</text>
+          <text x="365" y="328" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">AWS S3</text>
+          <text x="365" y="340" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">APK·Config</text>
+          <!-- Monitoring -->
+          <rect x="660" y="290" width="240" height="62" rx="5" fill="#111826" stroke="#243050" stroke-width="1"/>
+          <text x="780" y="312" fill="#8fa3c8" font-family="monospace" font-size="10" text-anchor="middle" font-weight="bold">Observability Stack</text>
+          <text x="780" y="328" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Datadog APM · Sentry · SonarCloud</text>
+          <text x="780" y="342" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">GitHub Actions · Docker · Kubernetes (EKS)</text>
+          <!-- HashiCorp Vault -->
+          <rect x="660" y="370" width="240" height="52" rx="5" fill="#111826" stroke="#243050" stroke-width="1"/>
+          <text x="780" y="392" fill="#a78bfa" font-family="monospace" font-size="10" text-anchor="middle" font-weight="bold">Security Layer</text>
+          <text x="780" y="408" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">HashiCorp Vault · AWS KMS · Cert Manager</text>
+          <text x="780" y="420" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">mTLS · OAuth2 · RBAC · AES-256</text>
+          <!-- Legend -->
+          <line x1="18" y1="430" x2="40" y2="430" stroke="#4f8ef7" stroke-width="1.5"/>
+          <text x="44" y="434" fill="#4a5a7a" font-family="monospace" font-size="8">REST/GraphQL</text>
+          <line x1="130" y1="430" x2="152" y2="430" stroke="#4f8ef7" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="156" y="434" fill="#4a5a7a" font-family="monospace" font-size="8">Kafka Event</text>
+          <line x1="230" y1="430" x2="252" y2="430" stroke="#06d6a0" stroke-width="1.5"/>
+          <text x="256" y="434" fill="#4a5a7a" font-family="monospace" font-size="8">Push (APNs/FCM)</text>
+        </svg>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi"><span class="v">99.5%</span><span class="l">Uptime — Multi-AZ</span></div>
+        <div class="kpi"><span class="v">&lt;200ms</span><span class="l">API — Redis Cache</span></div>
+        <div class="kpi"><span class="v">Go + K8s</span><span class="l">Core Stack</span></div>
+        <div class="kpi"><span class="v">Zero Trust</span><span class="l">Security Model</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="qa-card" data-section="s1">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q2</span>
+      <span class="qa-q">Làm thế nào để đạt uptime ≥ 99.5% — Circuit Breaker, Blue-Green, Multi-AZ?</span>
+      <div class="qa-meta"><span class="qa-tag tag-arch">Architecture</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 KPI 1: <span>System Uptime ≥ 99.5%</span></div>
+      <ul class="ans-list">
+        <li><strong>Multi-AZ Deployment</strong>: AWS RDS Multi-AZ, EKS nodes spread across ≥ 3 AZ. Không có single point of failure.</li>
+        <li><strong>HPA + PDB</strong>: Kubernetes HorizontalPodAutoscaler scale theo custom metrics (active device connections). PodDisruptionBudget đảm bảo ≥ 2 replicas luôn running khi rolling update.</li>
+        <li><strong>Circuit Breaker</strong>: Golang service dùng <code>sony/gobreaker</code> — nếu upstream fail &gt; threshold, stop gọi ngay, tránh cascade failure.</li>
+        <li><strong>Blue-Green Deploy</strong>: traffic switch qua ALB weighted routing. Rollback trong 30 giây nếu error rate tăng sau deploy.</li>
+        <li><strong>Runbook + On-Call</strong>: Datadog alert → PagerDuty → on-call engineer. Mỗi loại incident có runbook chuẩn bị sẵn.</li>
+        <li><strong>RTO/RPO</strong>: RTO &lt; 15 phút, RPO &lt; 1 giờ. PostgreSQL Point-in-Time Recovery, S3 Cross-Region Replication.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="qa-card" data-section="s1">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q3</span>
+      <span class="qa-q">Device Enrollment Protocol — Android Enterprise vs iOS Apple MDM chi tiết?</span>
+      <div class="qa-meta"><span class="qa-tag tag-arch">MDM Protocol</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Thiết kế hệ thống MDM protocols: device enrollment"</span></div>
+      <div class="dg-wrap">
+        <div class="dg-title">Enrollment Flow — Android Enterprise (trái) vs iOS Apple MDM (phải)</div>
+        <svg viewBox="0 0 840 400" xmlns="http://www.w3.org/2000/svg" class="dg-svg">
+          <defs><marker id="ae" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#4a5a7a"/></marker></defs>
+          <rect width="840" height="400" fill="#080c17" rx="8"/>
+          <!-- Android -->
+          <rect x="10" y="10" width="400" height="376" rx="6" fill="#0d1120" stroke="#243050" stroke-width="1"/>
+          <text x="210" y="32" fill="#06d6a0" font-family="'Syne',sans-serif" font-weight="700" font-size="12" text-anchor="middle">Android Enterprise Enrollment</text>
+          <rect x="26" y="44" width="368" height="40" rx="4" fill="#111826" stroke="#06d6a0" stroke-width=".8"/>
+          <text x="210" y="61" fill="#06d6a0" font-family="monospace" font-size="10" text-anchor="middle" font-weight="bold">① Admin tạo Enrollment Token</text>
+          <text x="210" y="76" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">POST /api/enrollment/token → QR Code / ZeroTouch config JSON</text>
+          <line x1="210" y1="84" x2="210" y2="98" stroke="#243050" stroke-width="1.5" marker-end="url(#ae)"/>
+          <rect x="26" y="100" width="368" height="40" rx="4" fill="#111826" stroke="#243050" stroke-width=".8"/>
+          <text x="210" y="117" fill="#8fa3c8" font-family="monospace" font-size="10" text-anchor="middle">② Device scan QR / ZeroTouch provisioning</text>
+          <text x="210" y="132" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">DPC (Device Policy Controller) cài tự động qua Google Play</text>
+          <line x1="210" y1="140" x2="210" y2="154" stroke="#243050" stroke-width="1.5" marker-end="url(#ae)"/>
+          <rect x="26" y="156" width="368" height="40" rx="4" fill="#111826" stroke="#243050" stroke-width=".8"/>
+          <text x="210" y="173" fill="#8fa3c8" font-family="monospace" font-size="10" text-anchor="middle">③ DPC gửi CSR lên MDM Server (SCEP)</text>
+          <text x="210" y="188" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Certificate Signing Request — device identity</text>
+          <line x1="210" y1="196" x2="210" y2="210" stroke="#243050" stroke-width="1.5" marker-end="url(#ae)"/>
+          <rect x="26" y="212" width="368" height="40" rx="4" fill="#111826" stroke="#243050" stroke-width=".8"/>
+          <text x="210" y="229" fill="#8fa3c8" font-family="monospace" font-size="10" text-anchor="middle">④ Server ký → trả Device Certificate</text>
+          <text x="210" y="244" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Unique per-device cert, lưu Android Keystore (hardware-backed)</text>
+          <line x1="210" y1="252" x2="210" y2="266" stroke="#243050" stroke-width="1.5" marker-end="url(#ae)"/>
+          <rect x="26" y="268" width="368" height="40" rx="4" fill="#111826" stroke="#243050" stroke-width=".8"/>
+          <text x="210" y="285" fill="#8fa3c8" font-family="monospace" font-size="10" text-anchor="middle">⑤ DPC tạo Work Profile + apply policy</text>
+          <text x="210" y="300" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">DevicePolicyManager.setProfileEnabled() — sandbox corporate data</text>
+          <line x1="210" y1="308" x2="210" y2="322" stroke="#243050" stroke-width="1.5" marker-end="url(#ae)"/>
+          <rect x="26" y="324" width="368" height="50" rx="4" fill="#1c2640" stroke="#06d6a0" stroke-width="1.2"/>
+          <text x="210" y="344" fill="#06d6a0" font-family="monospace" font-size="10" text-anchor="middle" font-weight="bold">⑥ ENROLLED — FCM token registered</text>
+          <text x="210" y="360" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Server stores: device_id · cert_thumbprint · fcm_token · org_id</text>
+          <text x="210" y="374" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Status: compliance_check_pending</text>
+          <!-- iOS -->
+          <rect x="430" y="10" width="400" height="376" rx="6" fill="#0d1120" stroke="#243050" stroke-width="1"/>
+          <text x="630" y="32" fill="#a78bfa" font-family="'Syne',sans-serif" font-weight="700" font-size="12" text-anchor="middle">iOS Apple MDM Enrollment</text>
+          <rect x="446" y="44" width="368" height="40" rx="4" fill="#111826" stroke="#a78bfa" stroke-width=".8"/>
+          <text x="630" y="61" fill="#a78bfa" font-family="monospace" font-size="10" text-anchor="middle" font-weight="bold">① Admin tạo .mobileconfig Profile</text>
+          <text x="630" y="76" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Signed XML: MDMPayload + SCEPPayload + AccessRights bitmask</text>
+          <line x1="630" y1="84" x2="630" y2="98" stroke="#243050" stroke-width="1.5" marker-end="url(#ae)"/>
+          <rect x="446" y="100" width="368" height="40" rx="4" fill="#111826" stroke="#243050" stroke-width=".8"/>
+          <text x="630" y="117" fill="#8fa3c8" font-family="monospace" font-size="10" text-anchor="middle">② User cài profile qua OTA link / Apple DEP</text>
+          <text x="630" y="132" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">DEP = zero-touch cho corporate iOS fleet</text>
+          <line x1="630" y1="140" x2="630" y2="154" stroke="#243050" stroke-width="1.5" marker-end="url(#ae)"/>
+          <rect x="446" y="156" width="368" height="40" rx="4" fill="#111826" stroke="#243050" stroke-width=".8"/>
+          <text x="630" y="173" fill="#8fa3c8" font-family="monospace" font-size="10" text-anchor="middle">③ iOS gửi CSR → MDM Server (SCEP + mTLS)</text>
+          <text x="630" y="188" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">TLS mutual auth bắt buộc theo Apple MDM Protocol</text>
+          <line x1="630" y1="196" x2="630" y2="210" stroke="#243050" stroke-width="1.5" marker-end="url(#ae)"/>
+          <rect x="446" y="212" width="368" height="40" rx="4" fill="#111826" stroke="#243050" stroke-width=".8"/>
+          <text x="630" y="229" fill="#8fa3c8" font-family="monospace" font-size="10" text-anchor="middle">④ Server issue Client Certificate → iOS</text>
+          <text x="630" y="244" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Stored in iOS Secure Enclave Keychain (hardware-backed)</text>
+          <line x1="630" y1="252" x2="630" y2="266" stroke="#243050" stroke-width="1.5" marker-end="url(#ae)"/>
+          <rect x="446" y="268" width="368" height="40" rx="4" fill="#111826" stroke="#243050" stroke-width=".8"/>
+          <text x="630" y="285" fill="#8fa3c8" font-family="monospace" font-size="10" text-anchor="middle">⑤ iOS đăng ký APNs device token với MDM</text>
+          <text x="630" y="300" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Server lưu APNs token để gửi silent push lệnh sau này</text>
+          <line x1="630" y1="308" x2="630" y2="322" stroke="#243050" stroke-width="1.5" marker-end="url(#ae)"/>
+          <rect x="446" y="324" width="368" height="50" rx="4" fill="#1c2640" stroke="#a78bfa" stroke-width="1.2"/>
+          <text x="630" y="344" fill="#a78bfa" font-family="monospace" font-size="10" text-anchor="middle" font-weight="bold">⑥ ENROLLED — MDM check-in complete</text>
+          <text x="630" y="360" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Server stores: device_id · apns_token · cert_expiry · supervison_level</text>
+          <text x="630" y="374" fill="#4a5a7a" font-family="monospace" font-size="8" text-anchor="middle">Supervised vs Unsupervised — ảnh hưởng command access</text>
+        </svg>
+      </div>
+      <div class="note"><strong>📌 Critical Difference:</strong> iOS buộc phải qua Apple APNs — không thể gửi lệnh trực tiếp. Android có thể dùng cả FCM lẫn direct MQTT/WebSocket. Đây là constraint lớn nhất khi thiết kế Push Gateway cho MDM.</div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="qa-card" data-section="s1">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q4</span>
+      <span class="qa-q">Policy Enforcement Engine — từ Admin tạo policy đến device apply?</span>
+      <div class="qa-meta"><span class="qa-tag tag-arch">MDM Protocol</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"policy enforcement, remote commands"</span></div>
+      <p class="ans-text">Dùng mô hình <strong>Declarative + Event-Driven</strong>. Admin định nghĩa "desired state" — Engine đảm bảo device luôn đạt state đó.</p>
+      <div class="flow">
+        <div class="flow-item"><div class="flow-n">1</div><div class="flow-c"><strong>Admin tạo policy</strong> trên Console: JSON Schema với password, apps, network, screen rules → POST /api/policies</div></div>
+        <div class="flow-item"><div class="flow-n">2</div><div class="flow-c"><strong>Policy Store</strong>: lưu PostgreSQL JSONB, version-controlled. Publish event <code>policy.updated</code> lên Kafka.</div></div>
+        <div class="flow-item"><div class="flow-n">3</div><div class="flow-c"><strong>Policy Dispatcher</strong> consume event → query affected devices (by org_id / group / tag) → batch silent push APNs/FCM.</div></div>
+        <div class="flow-item"><div class="flow-n">4</div><div class="flow-c"><strong>Device Agent</strong> nhận silent push → GET /mdm/policies/{version} → apply locally: password, app whitelist, network config.</div></div>
+        <div class="flow-item"><div class="flow-n">5</div><div class="flow-c"><strong>Compliance Report</strong>: Agent gửi POST /devices/{id}/compliance → server cập nhật compliance_status. Non-compliant → auto-remediate hoặc alert.</div></div>
+      </div>
+      <div class="code-block">
+<span class="cm">// Policy JSON Schema — PostgreSQL JSONB</span>
+{
+  <span class="str">"policy_id"</span>: <span class="str">"pol_2025_001"</span>, <span class="str">"version"</span>: <span class="num">3</span>,
+  <span class="str">"targets"</span>: { <span class="str">"org_id"</span>: <span class="str">"acme"</span>, <span class="str">"group"</span>: <span class="str">"sales_team"</span> },
+  <span class="str">"rules"</span>: {
+    <span class="str">"password"</span>: { <span class="str">"min_length"</span>: <span class="num">8</span>, <span class="str">"require_complex"</span>: <span class="kw">true</span>, <span class="str">"max_failed_attempts"</span>: <span class="num">5</span> },
+    <span class="str">"apps"</span>: { <span class="str">"whitelist"</span>: [<span class="str">"com.slack"</span>, <span class="str">"com.zoom"</span>], <span class="str">"block_sideload"</span>: <span class="kw">true</span> },
+    <span class="str">"network"</span>: { <span class="str">"vpn_required"</span>: <span class="kw">true</span>, <span class="str">"wifi_ssid_whitelist"</span>: [<span class="str">"CORP_WIFI"</span>] },
+    <span class="str">"screen"</span>: { <span class="str">"timeout_seconds"</span>: <span class="num">60</span>, <span class="str">"lock_on_unenroll"</span>: <span class="kw">true</span> }
+  }
+}
+      </div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="qa-card" data-section="s1">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q5</span>
+      <span class="qa-q">API response time &lt; 200ms — đạt được bằng cách nào?</span>
+      <div class="qa-meta"><span class="qa-tag tag-arch">Performance</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 KPI 2: <span>Average API Response Time &lt; 200ms</span></div>
+      <ul class="ans-list">
+        <li><strong>Redis Caching</strong>: device metadata, policy data cache với TTL phù hợp. Cache-aside pattern. Hit rate mục tiêu &gt;85%.</li>
+        <li><strong>DB Optimization</strong>: Index đúng columns (device_id, org_id, policy_id). Connection pooling với PgBouncer. Query explain analyze định kỳ.</li>
+        <li><strong>Async Processing</strong>: Bulk commands, reporting dùng Kafka queue. API trả 202 Accepted ngay, worker xử lý background.</li>
+        <li><strong>GraphQL DataLoader</strong>: Batch và cache queries, tránh N+1 problem trong Admin Console.</li>
+        <li><strong>CDN</strong>: CloudFront cho Admin Console static assets, S3 pre-signed URLs cho file downloads.</li>
+        <li><strong>Profiling</strong>: Datadog APM trace mọi request. p95 latency alert nếu vượt 500ms. Golang pprof cho hot path optimization.</li>
+      </ul>
+      <div class="chips">
+        <span class="chip c-red">Redis Cache</span>
+        <span class="chip c-blue">PgBouncer</span>
+        <span class="chip c-green">Kafka Async</span>
+        <span class="chip c-amber">CloudFront CDN</span>
+        <span class="chip c-purple">Datadog APM</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="qa-card" data-section="s1">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q6</span>
+      <span class="qa-q">Kiosk Mode và Geofencing — kỹ thuật chi tiết Android vs iOS?</span>
+      <div class="qa-meta"><span class="qa-tag tag-arch">Advanced Features</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Kiosk mode, Geofencing, App Management"</span></div>
+      <table>
+        <tr><th>Feature</th><th>Android</th><th>iOS</th></tr>
+        <tr><td><strong>Kiosk Mode</strong></td><td>Lock Task Mode: <code>DevicePolicyManager.setLockTaskPackages()</code>. App gọi <code>startLockTask()</code>. Status bar, Home, Recent bị ẩn. Watchdog service tự restart app nếu crash.</td><td>Single App Mode (SAM) qua MDM command <code>ActivateSingleAppMode</code>. Cần Supervised device. ASAM cho app tự kích hoạt kiosk. <code>UIAccessibility.requestGuidedAccessSession()</code></td></tr>
+        <tr><td><strong>Geofencing</strong></td><td>Fused Location Provider + Geofencing API (Google). Battery-efficient, không GPS polling liên tục. Trigger ENTER/EXIT → apply policy.</td><td>CLLocationManager Significant Location Change. Không dùng GPS continuous. Region monitoring tối đa 20 regions/app.</td></tr>
+        <tr><td><strong>App Mgmt</strong></td><td>Android Enterprise: Managed Google Play. Silent install/uninstall không cần user confirm. App version lock.</td><td>Apple VPP (Volume Purchase Program). Managed App Config. Silent install qua MDM command.</td></tr>
+      </table>
+      <div class="flow">
+        <div class="flow-item"><div class="flow-n">1</div><div class="flow-c"><strong>Admin định nghĩa geofence</strong>: polygon coordinates + radius + triggered policy. Lưu PostgreSQL, sync xuống device cache.</div></div>
+        <div class="flow-item"><div class="flow-n">2</div><div class="flow-c"><strong>Device monitors location</strong>: battery-efficient API, không GPS polling. So sánh với cached geofence polygons.</div></div>
+        <div class="flow-item"><div class="flow-n">3</div><div class="flow-c"><strong>Enter/Exit trigger</strong>: agent evaluate local policy → enable VPN, lock screen, disable camera, wipe data...</div></div>
+        <div class="flow-item"><div class="flow-n">4</div><div class="flow-c"><strong>Geo-event report</strong> → MDM server audit log. Location data NOT stored permanently (GDPR compliance).</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="qa-card" data-section="s1">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q7</span>
+      <span class="qa-q">Push Notification Gateway: APNs (iOS) và FCM (Android) hoạt động trong MDM?</span>
+      <div class="qa-meta"><span class="qa-tag tag-arch">Push Protocol</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Thiết kế kiến trúc hệ thống MDM: push notification"</span></div>
+      <p class="ans-text">Push trong MDM là <strong>silent push</strong> — không hiện notification. Mục đích duy nhất: "đánh thức" agent để pull lệnh từ server. Payload thực tế KHÔNG gửi qua push (security reason).</p>
+      <table>
+        <tr><th>Concern</th><th>iOS / APNs</th><th>Android / FCM</th></tr>
+        <tr><td>Push type</td><td>Silent push (<code>content-available: 1</code>)</td><td>Data-only message (no notification body)</td></tr>
+        <tr><td>Must route via</td><td>Apple APNs — không bypass được</td><td>Firebase Cloud Messaging</td></tr>
+        <tr><td>Auth</td><td>APNs Certificate hoặc .p8 key + Team ID</td><td>FCM Server Key / OAuth2 v1</td></tr>
+        <tr><td>Offline queue</td><td>APNs queue 30 ngày, 1 pending notification</td><td>FCM queue, TTL configurable (max 4 tuần)</td></tr>
+        <tr><td>Protocol</td><td>HTTP/2 + TLS → api.push.apple.com</td><td>HTTPS → fcm.googleapis.com</td></tr>
+      </table>
+      <div class="warn"><strong>⚠️ Critical Ops Risk:</strong> APNs certificate expire hàng năm! Nếu expire, 100% iOS device mất kết nối MDM. Cần alert tự động 60 ngày trước expiry + runbook renew + test sau renew.</div>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="qa-card" data-section="s1">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q8</span>
+      <span class="qa-q">Tech Stack selection: Tại sao Golang? Khi nào Node.js? Trade-off với Java?</span>
+      <div class="qa-meta"><span class="qa-tag tag-arch">Tech Stack</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Backend: Golang, Java, Node.js/Python/Go, RESTful API, GraphQL, Microservices"</span></div>
+      <table>
+        <tr><th>Service</th><th>Language</th><th>Reasoning</th></tr>
+        <tr><td>MDM Core (Enrollment, Commands)</td><td><strong>Golang</strong></td><td>Goroutines cho 100k+ concurrent connections. Binary nhỏ, container cold-start nhanh. p99 latency thấp hơn JVM ~40%.</td></tr>
+        <tr><td>Policy Engine</td><td><strong>Golang</strong></td><td>Rule evaluation performance. Static typing tránh runtime errors trong critical path.</td></tr>
+        <tr><td>Admin API Gateway</td><td><strong>Node.js</strong></td><td>Apollo GraphQL ecosystem tốt nhất. I/O-bound workload phù hợp event loop. Rapid iteration.</td></tr>
+        <tr><td>Analytics / Reporting</td><td><strong>Python</strong></td><td>Pandas/Numpy cho data processing. ML integration nếu cần anomaly detection.</td></tr>
+        <tr><td>Android Agent</td><td><strong>Kotlin</strong></td><td>Native Android API. DevicePolicyManager, WorkManager, Coroutines. Kotlin &gt; Java cho modern Android.</td></tr>
+        <tr><td>iOS Agent</td><td><strong>Swift</strong></td><td>Native iOS MDM framework. Secure Enclave access. Swift Concurrency async/await.</td></tr>
+      </table>
+      <div class="tip"><strong>💡 Nếu hỏi tại sao không Java cho backend:</strong> Java viable, nhiều MDM lớn (VMware Workspace ONE) dùng Java. Với startup, Golang cho memory footprint nhỏ hơn ~40%, startup time nhanh hơn, concurrency model đơn giản hơn. Tuy nhiên Java có enterprise library ecosystem phong phú hơn.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 2 — TECHNICAL LEADERSHIP
+  ═══════════════════════════════════════════ -->
+  <div id="s2" class="sec-header">
+    <div class="sec-icon" style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.25)">👨‍💻</div>
+    <div class="sec-info">
+      <h3>Technical Leadership</h3>
+      <p>Sprint Planning · Code Review · Mentoring · Technical Decision-Making</p>
+    </div>
+    <span class="sec-count">Q9 – Q16</span>
+  </div>
+  <div class="global-controls">
+    <button class="ctrl-btn" onclick="toggleSection('s2',true)">Expand All</button>
+    <button class="ctrl-btn" onclick="toggleSection('s2',false)">Collapse All</button>
+  </div>
+
+  <!-- Q9 -->
+  <div class="qa-card" data-section="s2">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q9</span>
+      <span class="qa-q">Tổ chức Sprint Planning và phân công task cho Sub Lead + Senior Devs?</span>
+      <div class="qa-meta"><span class="qa-tag tag-lead">Leadership</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Phân chia module, lập sprint plan và assign task cho Sub Lead và Senior Developers"</span></div>
+      <ul class="ans-list">
+        <li><strong>Pre-Sprint</strong>: BA confirm requirements, tôi breakdown thành technical tasks với Definition of Ready (DoR). Mỗi task phải có Acceptance Criteria rõ ràng trong Jira.</li>
+        <li><strong>Sprint Planning</strong>: Team estimate bằng Planning Poker (Story Points). Tôi facilitate, không áp đặt estimate. Velocity history làm baseline.</li>
+        <li><strong>Assign Task</strong>: Sub Lead nhận module ownership (end-to-end), Senior dev nhận feature. Match skill + growth opportunity.</li>
+        <li><strong>Daily Standup 15 phút</strong>: Blocker được escalate ngay, không chờ đến hôm sau. Blockers của team là priority của tôi.</li>
+        <li><strong>Sprint Review + Retro</strong>: Data-driven. Track velocity trend, không blame khi miss sprint — analyze root cause.</li>
+      </ul>
+      <div class="kpi-row">
+        <div class="kpi"><span class="v">≥85%</span><span class="l">Story Points/Sprint (KPI 4)</span></div>
+        <div class="kpi"><span class="v">15 min</span><span class="l">Daily Standup cap</span></div>
+        <div class="kpi"><span class="v">DoR</span><span class="l">Definition of Ready per task</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="qa-card" data-section="s2">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q10</span>
+      <span class="qa-q">Quy trình Code Review — đảm bảo quality, security, performance?</span>
+      <div class="qa-meta"><span class="qa-tag tag-lead">Leadership</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Code review, đảm bảo chất lượng code, bảo mật và performance"</span> + Toolstack: <span>GitHub Team, SonarCloud</span></div>
+      <ul class="ans-list">
+        <li><strong>PR Size</strong>: tối đa 400 lines. Lớn hơn phải split — reviewer không thể review tốt PR 2000 lines.</li>
+        <li><strong>Automated Gates</strong>: SonarCloud quality gate (coverage ≥80%, zero critical issues), unit test pass, lint check. PR không merge nếu fail.</li>
+        <li><strong>Review Checklist</strong>: Logic correctness · Security (OWASP Top 10) · Performance (N+1, missing index) · Test coverage · Naming convention · Error handling.</li>
+        <li><strong>SLA 24h</strong>: Review trong 24 giờ, không để PR stale. Stale PR = blocked teammate.</li>
+        <li><strong>Feedback Style</strong>: Constructive + specific + kèm suggestion. Junior: explain "why", không chỉ "what is wrong". Dùng Conventional Comments (prefix: nitpick/blocking/question).</li>
+        <li><strong>Approve requirement</strong>: ≥ 1 reviewer có domain knowledge của feature đó.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="qa-card" data-section="s2">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q11</span>
+      <span class="qa-q">Mentor junior/senior developer — 1-on-1, pair programming, knowledge sharing?</span>
+      <div class="qa-meta"><span class="qa-tag tag-lead">Mentoring</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Khả năng lãnh đạo kỹ thuật, mentoring và phát triển đội ngũ"</span></div>
+      <ul class="ans-list">
+        <li><strong>1-on-1 hàng tuần</strong>: Career goals, blockers, feedback 2 chiều. Tôi cũng nhận feedback từ team — không phải 1 chiều.</li>
+        <li><strong>Pair Programming</strong>: Cho task phức tạp lần đầu. Shadow → co-drive → solo. 3 bước đảm bảo transfer knowledge thực sự.</li>
+        <li><strong>Stretch Tasks</strong>: Assign task đủ thách thức nhưng không overwhelm. 20% stretch beyond current skill level.</li>
+        <li><strong>ADR (Architecture Decision Records)</strong>: Document tại sao chọn giải pháp X thay vì Y. Team học từ reasoning, không chỉ kết quả.</li>
+        <li><strong>Tech Talk nội bộ 2 tuần/lần</strong>: Rotate presenter, mọi cấp độ đều present. Build confidence + knowledge sharing.</li>
+        <li><strong>Ownership Culture</strong>: Encourage team tự propose solution thay vì chờ tôi ra quyết định. Tôi là last resort, không phải first resort.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="qa-card" data-section="s2">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q12</span>
+      <span class="qa-q">Team không đồng ý với quyết định kỹ thuật của bạn — xử lý như thế nào?</span>
+      <div class="qa-meta"><span class="qa-tag tag-lead">Leadership</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Tư duy kiến trúc hệ thống, ra quyết định kỹ thuật chiến lược"</span></div>
+      <ul class="ans-list">
+        <li>Tôi <strong>welcome disagreement</strong> — đó là dấu hiệu team engaged và có ownership.</li>
+        <li>Yêu cầu người phản đối <strong>present solution của họ</strong> với trade-offs rõ ràng (pros/cons/risks/effort).</li>
+        <li>Dùng <strong>RFC format</strong>: document cả 2 phương án, team comment. Tránh HiPPO effect.</li>
+        <li>Nếu vẫn split: tôi ra quyết định cuối cùng, <strong>giải thích rõ reasoning</strong>, ghi vào ADR.</li>
+        <li>Nếu thực tế chứng minh họ đúng → tôi <strong>acknowledge publicly</strong>. Không defensive. Đây là cách build trust.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="qa-card" data-section="s2">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q13</span>
+      <span class="qa-q">Đảm bảo Code Coverage ≥ 80% mà không làm chậm team?</span>
+      <div class="qa-meta"><span class="qa-tag tag-lead">Quality</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 KPI 3: <span>Code Coverage ≥ 80% cho core modules</span></div>
+      <ul class="ans-list">
+        <li>Coverage target <strong>set từ ngày đầu</strong>, không phải "add test sau". Retroactive coverage rất tốn thời gian.</li>
+        <li><strong>TDD cho critical business logic</strong>: Policy Engine, Enrollment Flow, Command Dispatcher. Test trước, code sau.</li>
+        <li><strong>Unit test</strong> cho pure functions. <strong>Integration test</strong> cho API endpoints. <strong>E2E test</strong> cho enrollment flow end-to-end.</li>
+        <li>Mock external dependencies: APNs, FCM, AWS services dùng interface + mock. Test nhanh, không flaky.</li>
+        <li><strong>SonarCloud CI gate</strong>: PR không merge nếu coverage drop. Enforced, không optional.</li>
+        <li><strong>Exclude hợp lý</strong>: generated code, migration files, main() entry points. Không chase 100% coverage vô nghĩa.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="qa-card" data-section="s2">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q14</span>
+      <span class="qa-q">Xử lý Technical Debt trong sprint — 20% capacity allocation?</span>
+      <div class="qa-meta"><span class="qa-tag tag-lead">Leadership</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <ul class="ans-list">
+        <li>Allocate <strong>20% sprint capacity</strong> cho tech debt — không thương lượng với PM. Debt accumulate → productivity giảm dần.</li>
+        <li>Track trong Jira với label <code>tech-debt</code>, priority rõ ràng (High/Medium/Low).</li>
+        <li>Phân biệt: <strong>Accidental debt</strong> (fix ngay) vs <strong>Intentional debt</strong> (document + plan + track).</li>
+        <li>Trước mỗi sprint: review tech debt backlog, promote items có ROI cao nhất.</li>
+        <li>Không refactor "vì thích" — phải có business justification: performance, security, scalability.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="qa-card" data-section="s2">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q15</span>
+      <span class="qa-q">Communicate technical risk cho CEO/CTO non-technical như thế nào?</span>
+      <div class="qa-meta"><span class="qa-tag tag-lead">Communication</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Giao tiếp hiệu quả với cả team kỹ thuật và non-tech stakeholders"</span></div>
+      <ul class="ans-list">
+        <li><strong>Translate sang business impact</strong>: "nếu không fix memory leak này, hệ thống sẽ cần restart mỗi 2 ngày — downtime 15 phút ảnh hưởng X customers."</li>
+        <li><strong>Traffic light dashboard</strong>: Red/Yellow/Green cho từng risk area. Visual, không cần đọc text.</li>
+        <li><strong>3 options always</strong>: Do nothing (risk + cost), quick fix (cost/time/risk), proper fix (cost/time/benefit). Leadership chọn, tôi execute.</li>
+        <li><strong>Weekly 1-page technical health report</strong>: Uptime, bugs, velocity, top 3 risks. Mỗi risk có owner + ETA.</li>
+        <li>Không dùng jargon: "memory leak" → "hệ thống chậm dần và cần restart"; "SPOF" → "nếu server này down, toàn bộ users bị ảnh hưởng".</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q16 -->
+  <div class="qa-card" data-section="s2">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q16</span>
+      <span class="qa-q">Critical Bug trên production — P0 Incident Response process?</span>
+      <div class="qa-meta"><span class="qa-tag tag-lead">Incident</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 KPI 5: <span>Critical production bugs &lt; 2/month</span></div>
+      <div class="flow">
+        <div class="flow-item"><div class="flow-n">1</div><div class="flow-c"><strong>Detect</strong>: Datadog alert → PagerDuty → on-call engineer. SLA: acknowledge &lt; 5 phút cho P0.</div></div>
+        <div class="flow-item"><div class="flow-n">2</div><div class="flow-c"><strong>War Room</strong>: Tạo Slack channel #incident-YYYYMMDD-xxx. Assign Incident Commander (IC), Comms Lead.</div></div>
+        <div class="flow-item"><div class="flow-n">3</div><div class="flow-c"><strong>Mitigate FIRST</strong>: Rollback deploy, feature flag off, redirect traffic — ưu tiên restore service trước khi tìm root cause.</div></div>
+        <div class="flow-item"><div class="flow-n">4</div><div class="flow-c"><strong>Communicate</strong>: Update stakeholders mỗi 30 phút. Không im lặng — ngay cả "đang điều tra" cũng tốt hơn không nói gì.</div></div>
+        <div class="flow-item"><div class="flow-n">5</div><div class="flow-c"><strong>Post-mortem bắt buộc 48h</strong>: Timeline, root cause, 5 Whys, action items có owner + deadline. Blameless culture — focus process, không blame người.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 3 — SECURITY & PROTOCOLS
+  ═══════════════════════════════════════════ -->
+  <div id="s3" class="sec-header">
+    <div class="sec-icon" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25)">🔐</div>
+    <div class="sec-info">
+      <h3>Security & MDM Protocols</h3>
+      <p>OAuth 2.0 · JWT · E2EE · Certificate Management · Remote Wipe · BYOD</p>
+    </div>
+    <span class="sec-count">Q17 – Q21</span>
+  </div>
+  <div class="global-controls">
+    <button class="ctrl-btn" onclick="toggleSection('s3',true)">Expand All</button>
+    <button class="ctrl-btn" onclick="toggleSection('s3',false)">Collapse All</button>
+  </div>
+
+  <!-- Q17 -->
+  <div class="qa-card" data-section="s3">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q17</span>
+      <span class="qa-q">Implement Security trong MDM: OAuth 2.0, JWT, E2EE, Certificate management?</span>
+      <div class="qa-meta"><span class="qa-tag tag-sec">Security</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"OAuth 2.0, JWT, End-to-End Encryption (E2EE), certificate management"</span></div>
+      <table>
+        <tr><th>Layer</th><th>Mechanism</th><th>Implementation</th></tr>
+        <tr><td>Admin Auth</td><td>OAuth 2.0 + PKCE</td><td>AWS Cognito / Auth0, short-lived JWT (15 min), refresh token rotation</td></tr>
+        <tr><td>Device Auth</td><td>Mutual TLS (mTLS)</td><td>Unique client cert per device, signed bởi internal CA (HashiCorp Vault PKI)</td></tr>
+        <tr><td>Transit</td><td>TLS 1.3</td><td>Enforced tại ALB, HSTS, Certificate Pinning trên mobile agent</td></tr>
+        <tr><td>At Rest</td><td>AES-256</td><td>RDS Encryption, S3 SSE-KMS, mobile Keystore / Secure Enclave</td></tr>
+        <tr><td>Secrets</td><td>AWS KMS + Vault</td><td>No secrets in code/env. Auto-rotate. Audit logged every access.</td></tr>
+        <tr><td>API</td><td>JWT + RBAC</td><td>Roles: Super Admin / IT Admin / Viewer. Scoped token per organization.</td></tr>
+        <tr><td>Sensitive Commands</td><td>Double Authorization</td><td>Remote Wipe cần 2 admin confirm. Logged, irreversible action flag.</td></tr>
+      </table>
+      <div class="code-block">
+<span class="cm">// JWT Payload với MDM-specific claims</span>
+{
+  <span class="str">"sub"</span>: <span class="str">"admin_user_id"</span>,
+  <span class="str">"org_id"</span>: <span class="str">"acme_corp"</span>,
+  <span class="str">"roles"</span>: [<span class="str">"it_admin"</span>],
+  <span class="str">"permissions"</span>: [<span class="str">"devices:read"</span>, <span class="str">"policy:write"</span>, <span class="str">"commands:execute"</span>],
+  <span class="str">"exp"</span>: <span class="num">1735690500</span>,  <span class="cm">// 15 phút</span>
+  <span class="str">"jti"</span>: <span class="str">"unique-nonce"</span>  <span class="cm">// revocation support via Redis blacklist</span>
+}
+      </div>
+    </div>
+  </div>
+
+  <!-- Q18 -->
+  <div class="qa-card" data-section="s3">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q18</span>
+      <span class="qa-q">APNs và FCM hoạt động như thế nào trong MDM context?</span>
+      <div class="qa-meta"><span class="qa-tag tag-sec">Protocol</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <ul class="ans-list">
+        <li><strong>APNs</strong>: MDM server gửi silent push (<code>content-available: 1</code>) qua HTTP/2. Device nhận → check-in MDM server → pull pending commands. Apple yêu cầu APNs certificate (renew yearly!). Connection dùng TLS client certificate.</li>
+        <li><strong>FCM</strong>: MDM server gửi data-only message (không phải display notification). Android agent nhận → pull commands từ MDM server. Hỗ trợ cả foreground và background delivery.</li>
+        <li><strong>Key principle</strong>: Push là "knock on door" — payload thực tế được pull từ MDM server qua mTLS. Không gửi sensitive data qua push channel (security reason).</li>
+        <li><strong>Failure handling</strong>: Token rotation, delivery failure retry với exponential backoff, Dead Letter Queue cho devices offline quá lâu.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q19 -->
+  <div class="qa-card" data-section="s3">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q19</span>
+      <span class="qa-q">Remote Wipe an toàn — Double Authorization, Audit Log?</span>
+      <div class="qa-meta"><span class="qa-tag tag-sec">Security</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <ul class="ans-list">
+        <li>Remote Wipe là lệnh nhạy cảm nhất — cần <strong>double authorization</strong>: 2 admin confirm trong UI, mỗi người dùng separate session.</li>
+        <li><strong>Audit log đầy đủ</strong>: who triggered, when, device info, IP address, admin session ID. Immutable log, retain 1 năm.</li>
+        <li>Gửi lệnh qua <strong>encrypted channel (mTLS)</strong> — không thể intercept và replay.</li>
+        <li><strong>Android</strong>: <code>DevicePolicyManager.wipeData()</code> → factory reset. <strong>iOS</strong>: <code>EraseDevice</code> MDM command.</li>
+        <li><strong>Selective Wipe cho BYOD</strong>: chỉ xóa Work Profile / managed apps. Personal data không bị touch.</li>
+        <li>Confirm wipe thành công qua <strong>device last check-in</strong> trước khi device offline hoàn toàn.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q20 -->
+  <div class="qa-card" data-section="s3">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q20</span>
+      <span class="qa-q">Certificate Management cho 10,000+ devices fleet?</span>
+      <div class="qa-meta"><span class="qa-tag tag-sec">Security</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <ul class="ans-list">
+        <li><strong>SCEP Protocol</strong>: Dùng SCEP (Simple Certificate Enrollment Protocol) cho enrollment. Hoặc tích hợp <strong>HashiCorp Vault PKI</strong> / AWS Certificate Manager.</li>
+        <li><strong>Unique per-device cert</strong>: CN = device_id. Không share certificate giữa devices. Compromise 1 device không ảnh hưởng device khác.</li>
+        <li><strong>Auto-renewal 30 ngày trước expiry</strong>: Device tự request certificate mới khi còn 30 ngày. Silent, không interrupt user.</li>
+        <li><strong>Revocation</strong>: CRL (Certificate Revocation List) hoặc OCSP. Revoke ngay khi device lost/stolen/unenrolled. Revoked cert → device mất quyền pull commands.</li>
+        <li><strong>Certificate metadata</strong>: Lưu PostgreSQL (expiry, device mapping, revocation status), cache Redis cho fast lookup.</li>
+        <li><strong>Alert</strong>: Automated alert 60 ngày trước batch expiry. Dashboard hiển thị cert health per device.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q21 -->
+  <div class="qa-card" data-section="s3">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q21</span>
+      <span class="qa-q">BYOD vs Corporate-Owned vs COPE — khác nhau thế nào trong MDM?</span>
+      <div class="qa-meta"><span class="qa-tag tag-sec">Protocol</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <table>
+        <tr><th>Mode</th><th>Ownership</th><th>MDM Control Scope</th><th>Use Case</th></tr>
+        <tr><td><strong>BYOD</strong></td><td>Employee owns</td><td>Work Profile only (Android) / Managed Apple ID (iOS). Personal data untouched. MDM cannot see personal apps.</td><td>Small companies, cost-saving</td></tr>
+        <tr><td><strong>Corporate-Owned (COBO)</strong></td><td>Company owns</td><td>Full device control. Remote wipe tất cả. Strict policy. Camera disable toàn bộ.</td><td>High-security, kiosk deployments</td></tr>
+        <tr><td><strong>COPE</strong></td><td>Company owns</td><td>Corporate có full control nhưng allow personal use (personal app space). Selective wipe corporate data only.</td><td>Enterprise, balanced control</td></tr>
+      </table>
+      <div class="tip"><strong>💡 Privacy note:</strong> BYOD users phải biết rõ MDM có thể làm gì — transparent privacy policy bắt buộc. Android Work Profile: MDM không xem được personal apps, chỉ quản lý work profile.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 4 — CLOUD & INFRASTRUCTURE
+  ═══════════════════════════════════════════ -->
+  <div id="s4" class="sec-header">
+    <div class="sec-icon" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25)">☁️</div>
+    <div class="sec-info">
+      <h3>Cloud & Infrastructure</h3>
+      <p>AWS · Docker · Kubernetes · CI/CD · Monitoring · Database Migration</p>
+    </div>
+    <span class="sec-count">Q22 – Q26</span>
+  </div>
+  <div class="global-controls">
+    <button class="ctrl-btn" onclick="toggleSection('s4',true)">Expand All</button>
+    <button class="ctrl-btn" onclick="toggleSection('s4',false)">Collapse All</button>
+  </div>
+
+  <!-- Q22 -->
+  <div class="qa-card" data-section="s4">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q22</span>
+      <span class="qa-q">CI/CD Pipeline từ Code Push đến Production — GitHub Actions flow?</span>
+      <div class="qa-meta"><span class="qa-tag tag-cloud">CI/CD</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Xây dựng CI/CD pipeline, quy trình deploy, monitoring và incident response"</span> + Toolstack: <span>GitHub Team (CI/CD), Docker, K8s, Datadog, Sentry, SonarCloud</span></div>
+      <div class="dg-wrap">
+        <div class="dg-title">GitHub Actions CI/CD Pipeline — MDM Platform</div>
+        <svg viewBox="0 0 840 140" xmlns="http://www.w3.org/2000/svg" class="dg-svg">
+          <defs><marker id="ac" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#4f8ef7"/></marker></defs>
+          <rect width="840" height="140" fill="#080c17" rx="8"/>
+          <!-- Stages -->
+          <rect x="8" y="40" width="88" height="56" rx="4" fill="#111826" stroke="#4f8ef7" stroke-width="1"/>
+          <text x="52" y="63" fill="#4f8ef7" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">Code Push</text>
+          <text x="52" y="77" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">GitHub PR</text>
+          <text x="52" y="89" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">Actions trigger</text>
+          <line x1="96" y1="68" x2="108" y2="68" stroke="#4f8ef7" stroke-width="1" marker-end="url(#ac)"/>
+          <rect x="108" y="40" width="88" height="56" rx="4" fill="#111826" stroke="#a78bfa" stroke-width="1"/>
+          <text x="152" y="63" fill="#a78bfa" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">Lint+Scan</text>
+          <text x="152" y="77" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">SonarCloud</text>
+          <text x="152" y="89" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">OWASP check</text>
+          <line x1="196" y1="68" x2="208" y2="68" stroke="#4f8ef7" stroke-width="1" marker-end="url(#ac)"/>
+          <rect x="208" y="40" width="88" height="56" rx="4" fill="#111826" stroke="#06d6a0" stroke-width="1"/>
+          <text x="252" y="63" fill="#06d6a0" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">Unit Tests</text>
+          <text x="252" y="77" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">Coverage≥80%</text>
+          <text x="252" y="89" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">go test/jest</text>
+          <line x1="296" y1="68" x2="308" y2="68" stroke="#4f8ef7" stroke-width="1" marker-end="url(#ac)"/>
+          <rect x="308" y="40" width="88" height="56" rx="4" fill="#111826" stroke="#f59e0b" stroke-width="1"/>
+          <text x="352" y="63" fill="#f59e0b" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">Docker Build</text>
+          <text x="352" y="77" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">Multi-stage</text>
+          <text x="352" y="89" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">Trivy scan</text>
+          <line x1="396" y1="68" x2="408" y2="68" stroke="#4f8ef7" stroke-width="1" marker-end="url(#ac)"/>
+          <rect x="408" y="40" width="88" height="56" rx="4" fill="#111826" stroke="#4f8ef7" stroke-width="1"/>
+          <text x="452" y="63" fill="#4f8ef7" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">Integration</text>
+          <text x="452" y="77" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">API+E2E test</text>
+          <text x="452" y="89" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">test environ.</text>
+          <line x1="496" y1="68" x2="508" y2="68" stroke="#4f8ef7" stroke-width="1" marker-end="url(#ac)"/>
+          <rect x="508" y="40" width="88" height="56" rx="4" fill="#111826" stroke="#06d6a0" stroke-width="1"/>
+          <text x="552" y="63" fill="#06d6a0" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">→ Staging</text>
+          <text x="552" y="77" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">auto deploy</text>
+          <text x="552" y="89" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">smoke tests</text>
+          <line x1="596" y1="68" x2="608" y2="68" stroke="#ef4444" stroke-width="1.5" marker-end="url(#ac)"/>
+          <rect x="608" y="40" width="110" height="56" rx="4" fill="#1c2640" stroke="#ef4444" stroke-width="1.5"/>
+          <text x="663" y="60" fill="#ef4444" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">→ Production</text>
+          <text x="663" y="74" fill="#f59e0b" font-family="monospace" font-size="7" text-anchor="middle">⚠ Manual Approval</text>
+          <text x="663" y="86" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">Canary 10%→50%→100%</text>
+          <text x="663" y="98" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">Datadog post-deploy</text>
+          <line x1="718" y1="68" x2="730" y2="68" stroke="#06d6a0" stroke-width="1" marker-end="url(#ac)"/>
+          <rect x="730" y="40" width="100" height="56" rx="4" fill="#111826" stroke="#06d6a0" stroke-width="1"/>
+          <text x="780" y="60" fill="#06d6a0" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">Monitor</text>
+          <text x="780" y="74" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">Datadog APM</text>
+          <text x="780" y="86" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">Sentry errors</text>
+          <text x="780" y="98" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">Auto rollback↩</text>
+          <!-- steps -->
+          <text x="52" y="120" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">① Push</text>
+          <text x="152" y="120" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">② Quality</text>
+          <text x="252" y="120" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">③ Test</text>
+          <text x="352" y="120" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">④ Build</text>
+          <text x="452" y="120" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">⑤ Integration</text>
+          <text x="552" y="120" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">⑥ Staging</text>
+          <text x="663" y="120" fill="#ef4444" font-family="monospace" font-size="7" text-anchor="middle">⑦ GATE → Prod</text>
+          <text x="780" y="120" fill="#4a5a7a" font-family="monospace" font-size="7" text-anchor="middle">⑧ Observe</text>
+        </svg>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi"><span class="v">80%</span><span class="l">Coverage Gate (CI block)</span></div>
+        <div class="kpi"><span class="v">Canary</span><span class="l">10% → 50% → 100%</span></div>
+        <div class="kpi"><span class="v">Auto</span><span class="l">Rollback on error spike</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q23 -->
+  <div class="qa-card" data-section="s4">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q23</span>
+      <span class="qa-q">Scale MDM từ 1,000 lên 100,000 devices — Kubernetes HPA, Kafka, Sharding?</span>
+      <div class="qa-meta"><span class="qa-tag tag-cloud">Scalability</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <ul class="ans-list">
+        <li><strong>Horizontal Scaling</strong>: Kubernetes HPA dựa trên custom metrics (active device connections, command queue depth), không chỉ CPU.</li>
+        <li><strong>Database</strong>: Read replicas cho query-heavy workload. Partition bảng <code>device_commands</code> theo time (PostgreSQL partitioning). Connection pooling PgBouncer.</li>
+        <li><strong>Push Architecture</strong>: Device không maintain persistent TCP connection — dùng push + pull model. 100k devices x silent push = 100k HTTP/2 requests → Kafka buffer để smooth burst.</li>
+        <li><strong>Sharding</strong>: Partition devices theo <code>organization_id</code>. Mỗi shard có dedicated DB schema.</li>
+        <li><strong>Caching</strong>: Policy data aggressive cache (ít thay đổi, read nhiều). Redis Cluster cho cache layer.</li>
+        <li><strong>Load Test</strong>: k6 / Locust simulate 100k device check-ins trước khi go-live. Identify bottleneck trên staging.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q24 -->
+  <div class="qa-card" data-section="s4">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q24</span>
+      <span class="qa-q">Monitoring và Alerting — Datadog, Sentry, SLI/SLO setup?</span>
+      <div class="qa-meta"><span class="qa-tag tag-cloud">Monitoring</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 Toolstack: <span>Datadog + Sentry — Monitoring và error tracking</span></div>
+      <ul class="ans-list">
+        <li><strong>Metrics</strong>: Datadog APM + custom metrics: devices_online_count, command_latency_p99, enrollment_rate, policy_compliance_rate.</li>
+        <li><strong>Logs</strong>: Structured JSON logs → Datadog Log Management → saved search cho common issues (enrollment failure, push failure).</li>
+        <li><strong>Traces</strong>: Distributed tracing cho cross-service requests. Identify bottleneck trong enrollment flow.</li>
+        <li><strong>Alert Tiers</strong>: P0 (page immediately, wake on-call), P1 (page in 15 min), P2 (Jira ticket). Không alert fatigue — tune thresholds carefully.</li>
+        <li><strong>SLI/SLO</strong>: Uptime 99.5%, API p95 &lt; 200ms, enrollment success rate &gt; 99%. Error budget tracking.</li>
+        <li><strong>Dashboards</strong>: Executive (uptime, devices enrolled, compliance rate) + Engineering (latency heatmap, error rate, queue depth).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q25 -->
+  <div class="qa-card" data-section="s4">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q25</span>
+      <span class="qa-q">Docker + Kubernetes (EKS) — dùng thế nào trong MDM project?</span>
+      <div class="qa-meta"><span class="qa-tag tag-cloud">Infrastructure</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Cloud: AWS (EC2, S3, RDS, Lambda, IoT Core), Docker, Kubernetes"</span></div>
+      <ul class="ans-list">
+        <li><strong>Docker</strong>: Multi-stage build minimize image size. Non-root user (security). Distroless base image cho production. Trivy scan trong CI.</li>
+        <li><strong>Deployment</strong>: Stateless services (API, worker) dùng <code>Deployment</code>. Stateful (Kafka, Redis) dùng <code>StatefulSet</code>.</li>
+        <li><strong>HPA</strong>: Auto-scale dựa trên custom metrics via KEDA (Kubernetes Event-Driven Autoscaling) — scale theo Kafka queue depth.</li>
+        <li><strong>Security</strong>: <code>NetworkPolicy</code> cho zero-trust between pods. <code>ServiceAccount</code> với minimal RBAC. Secrets từ AWS Secrets Manager, không từ env vars.</li>
+        <li><strong>Config</strong>: <code>ConfigMap</code> cho non-sensitive. <code>Secret</code> encrypted với AWS KMS. Helm charts cho deployment templates.</li>
+        <li><strong>PDB (PodDisruptionBudget)</strong>: Đảm bảo ≥ 2 replicas luôn running khi rolling update hoặc node drain.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q26 -->
+  <div class="qa-card" data-section="s4">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q26</span>
+      <span class="qa-q">Database Migration không downtime — Flyway, backward-compatible pattern?</span>
+      <div class="qa-meta"><span class="qa-tag tag-cloud">Database</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <ul class="ans-list">
+        <li>Dùng <strong>Flyway hoặc Liquibase</strong> — version-controlled migrations, chạy tự động trong CI/CD.</li>
+        <li><strong>Backward-compatible pattern</strong> (không bao giờ rename/drop trong 1 deployment):</li>
+      </ul>
+      <div class="flow">
+        <div class="flow-item"><div class="flow-n">1</div><div class="flow-c"><strong>Add column nullable</strong> (không breaking change) — deploy migration</div></div>
+        <div class="flow-item"><div class="flow-n">2</div><div class="flow-c"><strong>Deploy new code</strong> — read cả cột cũ và cột mới, write vào cả 2</div></div>
+        <div class="flow-item"><div class="flow-n">3</div><div class="flow-c"><strong>Backfill data</strong> vào cột mới (background job, không lock table)</div></div>
+        <div class="flow-item"><div class="flow-n">4</div><div class="flow-c"><strong>Deploy code</strong> chỉ read cột mới</div></div>
+        <div class="flow-item"><div class="flow-n">5</div><div class="flow-c"><strong>Drop cột cũ</strong> sau khi confirm 100% traffic dùng cột mới</div></div>
+      </div>
+      <div class="warn"><strong>⚠️ NEVER</strong> rename column, drop column, hoặc add NOT NULL column không có default trong 1 single deployment. Test migration script trên staging với production-size data trước.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 5 — BEHAVIORAL
+  ═══════════════════════════════════════════ -->
+  <div id="s5" class="sec-header">
+    <div class="sec-icon" style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.25)">🤔</div>
+    <div class="sec-info">
+      <h3>Situational & Behavioral</h3>
+      <p>90-Day Plan · MDM Ramp-up · Scalefusion Benchmark · Questions to Ask</p>
+    </div>
+    <span class="sec-count">Q27 – Q30</span>
+  </div>
+  <div class="global-controls">
+    <button class="ctrl-btn" onclick="toggleSection('s5',true)">Expand All</button>
+    <button class="ctrl-btn" onclick="toggleSection('s5',false)">Collapse All</button>
+  </div>
+
+  <!-- Q27 -->
+  <div class="qa-card" data-section="s5">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q27</span>
+      <span class="qa-q">Join project MDM với technical debt lớn — làm gì trong 90 ngày đầu?</span>
+      <div class="qa-meta"><span class="qa-tag tag-sit">Behavioral</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="star-grid">
+        <div class="star-item"><div class="sl">30 Ngày Đầu — Listen & Learn</div><p>Đọc toàn bộ codebase, architecture docs. Talk to everyone (dev, BA, ops). KHÔNG thay đổi gì lớn. Identify top 5 pain points thực sự — không phải những gì tôi assume từ bên ngoài.</p></div>
+        <div class="star-item"><div class="sl">30–60 Ngày — Audit & Plan</div><p>Security audit, performance bottleneck analysis, test coverage gap. Prioritize backlog theo impact/effort. Propose improvement roadmap cho CTO. Quick wins list (high impact, low effort).</p></div>
+        <div class="star-item"><div class="sl">60–90 Ngày — Execute & Build Trust</div><p>Execute quick wins để build credibility. Bắt đầu refactor module critical nhất. Thiết lập coding standards + review process nếu chưa có. Team sees results, not just plans.</p></div>
+        <div class="star-item"><div class="sl">Nguyên tắc xuyên suốt</div><p>Không phán xét code cũ — đó là technical context. Mỗi quyết định đều có lý do tại thời điểm đó. Build on existing strengths, không phủ nhận toàn bộ.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q28 -->
+  <div class="qa-card" data-section="s5">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q28</span>
+      <span class="qa-q">Chưa có kinh nghiệm MDM/EMM — ramp-up như thế nào?</span>
+      <div class="qa-meta"><span class="qa-tag tag-sit">Behavioral</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"Ưu tiên có kinh nghiệm MDM/EMM" — nếu chưa có, cần answer thuyết phục</span></div>
+      <div class="flow">
+        <div class="flow-item"><div class="flow-n">1</div><div class="flow-c"><strong>Đã nghiên cứu</strong>: Apple MDM Protocol docs, Android Enterprise docs, SCEP/ACME specs. Open-source: MicroMDM (iOS), Headwind MDM (Android).</div></div>
+        <div class="flow-item"><div class="flow-n">2</div><div class="flow-c"><strong>Foundation mạnh</strong>: Tôi có nền tảng distributed systems, security (OAuth/JWT/mTLS), và mobile development — đây là 80% của MDM complexity.</div></div>
+        <div class="flow-item"><div class="flow-n">3</div><div class="flow-c"><strong>Timeline ramp-up</strong>: Tuần 1-2: deep-dive Apple/Android MDM protocol docs. Tuần 3-4: build POC enrollment flow. Tháng 2: implement policy engine + push. Tháng 3: production-ready.</div></div>
+        <div class="flow-item"><div class="flow-n">4</div><div class="flow-c"><strong>Committed to certify</strong>: Android Enterprise Professional + Apple MDM knowledge trong 3 tháng đầu.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q29 -->
+  <div class="qa-card" data-section="s5">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q29</span>
+      <span class="qa-q">Đảm bảo sản phẩm đạt chất lượng tương đương Scalefusion / MobiStyle?</span>
+      <div class="qa-meta"><span class="qa-tag tag-sit">Strategy</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <div class="jd-ref">📌 JD: <span>"đảm bảo sản phẩm MDM đạt chất lượng tương đương Scalefusion, MobiStyle"</span></div>
+      <ul class="ans-list">
+        <li><strong>Competitive Analysis</strong>: Trial Scalefusion + MobiStyle. Document feature matrix: tính năng nào họ có, performance benchmark (enrollment time, command latency, policy apply time).</li>
+        <li><strong>Core First</strong>: Focus vào reliability của core: enrollment success rate &gt;99%, command execution &lt;5s, policy apply trong 1 phút. Đây là foundation — fancy features sau.</li>
+        <li><strong>Admin UX</strong>: IT admin là primary user. Ưu tiên: bulk operations (select 1000 devices → apply policy), fast search, clear compliance dashboard.</li>
+        <li><strong>Dogfooding</strong>: Dùng chính product để manage internal devices từ ngày đầu. Detect issues trước khi customer thấy.</li>
+        <li><strong>Customer feedback loop sớm</strong>: Beta program với 3-5 customers từ tháng 2. Real usage = real feedback. Không build trong bóng tối.</li>
+        <li><strong>Không copy blindly</strong>: Understand <em>why</em> Scalefusion làm vậy. Đôi khi họ làm vì legacy constraints — ta có thể làm better.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q30 -->
+  <div class="qa-card" data-section="s5">
+    <div class="qa-head" onclick="toggle(this)">
+      <span class="qa-num">Q30</span>
+      <span class="qa-q">Câu hỏi ngược lại cho interviewer — bạn sẽ hỏi gì?</span>
+      <div class="qa-meta"><span class="qa-tag tag-sit">Closing</span></div>
+      <span class="qa-arrow">+</span>
+    </div>
+    <div class="qa-body">
+      <p class="ans-text">Hỏi ngược lại ít nhất 2-3 câu — cho thấy bạn đang <strong>evaluate họ</strong>, không chỉ xin việc. Đây là dấu hiệu của Tech Lead tư duy chủ động.</p>
+      <div class="flow">
+        <div class="flow-item"><div class="flow-n">1</div><div class="flow-c"><strong>"MDM platform hiện tại đang ở giai đoạn nào?"</strong> — Greenfield hay có legacy codebase? Số devices đang manage? Đang dùng vendor nào hay tự build từ đầu?</div></div>
+        <div class="flow-item"><div class="flow-n">2</div><div class="flow-c"><strong>"Team engineering hiện tại thế nào?"</strong> — Bao nhiêu người, seniority level, skill set? Sub Lead đã có chưa? Remote hay on-site?</div></div>
+        <div class="flow-item"><div class="flow-n">3</div><div class="flow-c"><strong>"Technical challenge lớn nhất hiện tại là gì?"</strong> — Câu hỏi này reveal rất nhiều về state thực tế của team và product.</div></div>
+        <div class="flow-item"><div class="flow-n">4</div><div class="flow-c"><strong>"Roadmap 12 tháng — tính năng nào được ưu tiên nhất?"</strong> — Hiểu business direction để biết tech investment nên focus vào đâu.</div></div>
+        <div class="flow-item"><div class="flow-n">5</div><div class="flow-c"><strong>"Tech Lead có quyền quyết định tech stack hay cần approval từ CTO?"</strong> — Understand autonomy level. Nếu mọi quyết định kỹ thuật đều cần CTO approve, đó là red flag.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TIPS SECTION
+  ═══════════════════════════════════════════ -->
+  <div id="tips" class="sec-header">
+    <div class="sec-icon" style="background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.25)">💡</div>
+    <div class="sec-info">
+      <h3>Interview Tips & Strategy</h3>
+      <p>STAR Method · Quantify · Ownership Mindset</p>
+    </div>
+  </div>
+
+  <div class="tips-grid">
+    <div class="tip-card">
+      <div class="ti">🎯 STAR Method</div>
+      <p><strong>S</strong>ituation → <strong>T</strong>ask → <strong>A</strong>ction → <strong>R</strong>esult. Mọi câu behavioral phải có cấu trúc này. Result phải được quantify.</p>
+    </div>
+    <div class="tip-card">
+      <div class="ti">📊 Always Quantify</div>
+      <p>"Giảm latency <strong>40%</strong>", "onboard <strong>3 junior devs</strong>", "<strong>0</strong> critical bugs trong 6 tháng". Số cụ thể tạo credibility.</p>
+    </div>
+    <div class="tip-card">
+      <div class="ti">🔑 Ownership Mindset</div>
+      <p>Không đổ lỗi cho constraints, team cũ, hay PM. Thể hiện bạn <em>làm chủ</em> vấn đề và tìm cách giải quyết trong context đó.</p>
+    </div>
+    <div class="tip-card">
+      <div class="ti">❓ Không biết → Approach</div>
+      <p>"Tôi chưa làm X trực tiếp, nhưng đây là cách tôi tiếp cận..." + research steps + timeline. Tốt hơn im lặng hoặc bluff.</p>
+    </div>
+    <div class="tip-card">
+      <div class="ti">🌐 Tiếng Anh</div>
+      <p>JD yêu cầu "Good English communication". Chuẩn bị trả lời technical questions bằng tiếng Anh. Practice Q1-8 bằng tiếng Anh.</p>
+    </div>
+    <div class="tip-card">
+      <div class="ti">🤝 Culture Fit Signal</div>
+      <p>Mention blameless culture, psychological safety, data-driven decisions. Align với mindset của company dùng Cursor Pro + Claude Pro.</p>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:20px"><strong>💼 Toolstack Alignment:</strong> Company dùng Cursor Pro + GitHub Copilot + Claude Pro. Đây là signal họ embrace AI-assisted development. Mention bạn comfortable với AI tools và đã dùng chúng để increase productivity — không phải threat to your job, mà là multiplier.</div>
+
+  <div class="footer">
+    <p style="margin-bottom:6px">MDM Technical Lead — Complete Interview Preparation Kit</p>
+    <p>30 Questions · 8 Architecture Diagrams · Expand/Collapse All · Bám sát Job Description</p>
+  </div>
+
+</main>
+</div>
+
+<script>
+function toggle(head) {
+  head.parentElement.classList.toggle('open');
+}
+
+function toggleSection(sectionId, openAll) {
+  document.querySelectorAll(`[data-section="${sectionId}"]`).forEach(card => {
+    if (openAll) card.classList.add('open');
+    else card.classList.remove('open');
+  });
+}
+
+// Smooth sidebar nav highlight
+const navItems = document.querySelectorAll('.nav-item');
+const sections = ['s1','s2','s3','s4','s5','tips'];
+
+window.addEventListener('scroll', () => {
+  let current = 's1';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 120) current = id;
+  });
+  navItems.forEach(item => {
+    item.classList.remove('active');
+    if (item.getAttribute('href') === '#' + current) item.classList.add('active');
+  });
+});
+
+// Initial: open first Q only
+document.querySelectorAll('.qa-card').forEach((card, i) => {
+  if (i !== 0) card.classList.remove('open');
+});
+</script>
+</body>
+</html>

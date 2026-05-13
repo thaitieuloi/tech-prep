@@ -8,18 +8,17 @@ interface StaticHtmlPageProps {
 
 export function StaticHtmlPage({ fileName }: StaticHtmlPageProps) {
   return (
-    <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900 overflow-hidden">
       <Sidebar 
         categories={categories} 
         selectedCategory="All" 
       />
       
-      <main className="flex-1 w-full flex flex-col">
+      <main className="flex-1 flex flex-col min-w-0 h-screen">
         <iframe 
           src={`/${fileName}`} 
           className="flex-1 w-full border-none"
           title={fileName}
-          style={{ height: '100vh' }}
         />
       </main>
     </div>
