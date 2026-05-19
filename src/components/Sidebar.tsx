@@ -194,6 +194,15 @@ export function Sidebar({ categories, selectedCategory }: SidebarProps) {
             {!isCollapsed && <span className="whitespace-nowrap overflow-hidden text-ellipsis">DE Interview Ques</span>}
           </Link>
           
+          <Link
+            to="/security-interview"
+            className={getLinkClasses("/security-interview")}
+            title={isCollapsed ? "Security Interview" : undefined}
+          >
+            <ShieldCheck className="w-5 h-5 flex-shrink-0" />
+            {!isCollapsed && <span className="whitespace-nowrap overflow-hidden text-ellipsis">Security Interview</span>}
+          </Link>
+          
           <div className="pt-4 pb-2">
             {isCollapsed ? (
               <div className="h-px bg-slate-200 mx-2" />

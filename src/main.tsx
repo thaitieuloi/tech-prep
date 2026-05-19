@@ -26,6 +26,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/interview-prep" element={<StaticHtmlPage fileName="self-interview.html" />} />
         <Route path="/auth-pipeline" element={<StaticHtmlPage fileName="auth-pipeline-job.html" />} />
         <Route path="/de-interview" element={<StaticHtmlPage fileName="de-interview-v1.html" />} />
+        <Route path="/security-interview" element={<StaticHtmlPage fileName="security-interview-v1.html" />} />
         <Route path="/rontech-mdm-interview" element={<StaticHtmlPage fileName="rontech-mdm-interview.html" />} />
         <Route path="/*" element={<App />} />
       </Routes>
